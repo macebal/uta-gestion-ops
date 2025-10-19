@@ -1,5 +1,14 @@
 from nicegui import ui
 
+from src.components import (
+    create_invoice_table,
+    date_input,
+    primary_button,
+    select_field,
+    select_with_edit,
+    text_input,
+)
+
 
 def create_payment_order_page():
     """Create the payment order form page"""
@@ -12,125 +21,62 @@ def create_payment_order_page():
 
             with ui.row().classes("w-full gap-4 mb-4"):
                 with ui.column().classes("flex-1"):
-                    ui.select(
-                        ["Sindical", "Otra Cuenta"], value="Sindical", label="Cuenta"
-                    ).classes("w-full").props("outlined")
+                    select_field(
+                        ["Sindical", "Otra Cuenta"], label="Cuenta", value="Sindical"
+                    )
 
                 with ui.column().classes("w-32"):
-                    ui.input(label="OP", value="123").classes("w-full").props(
-                        "outlined"
-                    )
+                    text_input("OP", value="123")
 
                 with ui.column().classes("flex-1"):
-                    ui.input(label="Fecha", value="01/01/2025").classes("w-full").props(
-                        "outlined"
-                    )
+                    date_input("Fecha", value="01/01/2025")
 
             with ui.row().classes("w-full gap-4 mb-4"):
                 with ui.column().classes("flex-1"):
-                    ui.input(label="Cheque", value="00123456").classes("w-full").props(
-                        "outlined"
-                    )
+                    text_input("Cheque", value="00123456")
 
                 with ui.column().classes("flex-1"):
-                    ui.input(label="Emisión", value="01/01/2025").classes(
-                        "w-full"
-                    ).props("outlined")
+                    date_input("Emisión", value="01/01/2025")
 
                 with ui.column().classes("flex-1"):
-                    ui.input(label="Vence", value="01/01/2025").classes("w-full").props(
-                        "outlined"
-                    )
+                    date_input("Vence", value="01/01/2025")
 
             with ui.column().classes("w-full mb-4"):
-                with ui.row().classes("w-full gap-2 items-center"):
-                    ui.select(
-                        ["Juan Pérez S.A.", "Otro Proveedor"],
-                        value="Juan Pérez S.A.",
-                        label="Proveedor",
-                    ).classes("flex-1")
-                    ui.icon("edit").classes("text-yellow-500 cursor-pointer text-xl")
+                select_with_edit(
+                    ["Juan Pérez S.A.", "Otro Proveedor"],
+                    label="Proveedor",
+                    value="Juan Pérez S.A.",
+                )
 
             with ui.column().classes("w-full mb-6"):
-                with ui.row().classes("w-full gap-2 items-center"):
-                    ui.select(
-                        ["Pago por XXXXXXXXXX", "Otro Detalle"],
-                        value="Pago por XXXXXXXXXX",
-                        label="Detalle",
-                    ).classes("flex-1")
-                    ui.icon("edit").classes("text-yellow-500 cursor-pointer text-xl")
+                select_with_edit(
+                    ["Pago por XXXXXXXXXX", "Otro Detalle"],
+                    label="Detalle",
+                    value="Pago por XXXXXXXXXX",
+                )
 
             with ui.column().classes("w-full items-center"):
                 ui.label("Facturas").classes("text-lg font-semibold text-gray-700 mb-2")
 
-                table = (
-                    ui.table(
-                        columns=[
-                            {
-                                "name": "factura",
-                                "label": "Factura",
-                                "field": "factura",
-                                "align": "left",
-                            },
-                            {
-                                "name": "importe",
-                                "label": "Importe",
-                                "field": "importe",
-                                "align": "right",
-                            },
-                            {
-                                "name": "acciones",
-                                "label": "Acciones",
-                                "field": "acciones",
-                                "align": "center",
-                            },
-                        ],
-                        rows=[
-                            {
-                                "factura": "01-123",
-                                "importe": "$10,000.00",
-                                "acciones": "delete",
-                            },
-                            {
-                                "factura": "04-567",
-                                "importe": "$12,000.00",
-                                "acciones": "delete",
-                            },
-                        ],
-                    )
-                    .classes("w-full max-w-2xl")
-                    .props("virtual-scroll sticky-header")
-                    .style("height: 200px")
-                )
+                # Invoice rows data
+                invoice_rows = [
+                    {
+                        "factura": "01-123",
+                        "importe": "$10,000.00",
+                        "acciones": "delete",
+                    },
+                    {
+                        "factura": "04-567",
+                        "importe": "$12,000.00",
+                        "acciones": "delete",
+                    },
+                ]
 
-                table.add_slot(
-                    "body-cell-acciones",
-                    """
-                    <q-td :props="props">
-                        <q-icon name="close" class="text-red-500 cursor-pointer" size="sm" />
-                    </q-td>
-                """,
-                )
-
-                table.add_slot(
-                    "bottom-row",
-                    """
-                    <q-tr style="position: sticky; bottom: 0; background-color: white; z-index: 1;">
-                        <q-td style="background-color: white;"></q-td>
-                        <q-td class="text-right" style="background-color: white;">
-                            <div class="text-lg font-semibold text-gray-800">$22,000.00</div>
-                        </q-td>
-                        <q-td class="text-center" style="background-color: white;">
-                            <q-btn label="AGREGAR" class="bg-blue-500 text-white" unelevated />
-                        </q-td>
-                    </q-tr>
-                """,
-                )
+                create_invoice_table(invoice_rows, total="$22,000.00")
 
             with ui.row().classes("w-full gap-6 mt-6"):
-                ui.input(label="Retenciones", value="$2,500.00").classes(
-                    "flex-1"
-                ).props("outlined")
+                with ui.column().classes("flex-1"):
+                    text_input("Retenciones", value="$2,500.00")
 
                 with ui.card().classes(
                     "flex-1 p-4 bg-gray-50 items-center justify-center"
@@ -144,6 +90,4 @@ def create_payment_order_page():
                         "text-gray-700"
                     )
 
-                ui.button("Agregar OP").classes(
-                    "bg-blue-500 text-white px-6 py-2 rounded-lg text-base"
-                )
+                primary_button("Agregar OP")
