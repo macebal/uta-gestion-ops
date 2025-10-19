@@ -27,6 +27,10 @@ def create_menu():
                         "Cuentas",
                         on_click=lambda: ui.navigate.to("/manage-accounts"),
                     )
+                    ui.menu_item(
+                        "Detalles",
+                        on_click=lambda: ui.navigate.to("/manage-details"),
+                    )
                     ui.menu_item("Configuración")
 
             # Print menu

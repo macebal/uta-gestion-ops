@@ -289,27 +289,22 @@ def manage_accounts_page(session_factory: Callable[[], Session]):
                 },
             ]
 
-            table = (
-                ui.table(
-                    columns=columns,
-                    rows=filtered_accounts_data,
-                    row_key="id",
-                    pagination={
-                        "rowsPerPage": 10,
-                        "sortBy": "name",
-                        "descending": False,
-                    },
-                )
-                .classes("w-full")
-                .props("rows-per-page-options=[10, 20, 50, 0]")
-                .props('pagination-label="$vuetify.dataIterator.rowsPerPageText"')
-            )
+            table = ui.table(
+                columns=columns,
+                rows=filtered_accounts_data,
+                row_key="id",
+                pagination={
+                    "rowsPerPage": 10,
+                    "sortBy": "name",
+                    "descending": False,
+                },
+            ).classes("w-full")
 
             table.props(
                 """
+                :rows-per-page-options="[10, 20, 50, 0]"
                 :rows-per-page-label="'Filas por página:'"
                 :pagination-label="(first, last, total) => `${first}-${last} de ${total}`"
-                all-rows-label="Todos"
             """
             )
 
