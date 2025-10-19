@@ -5,7 +5,6 @@ from sqlalchemy.orm import Session
 
 from src.components import (
     create_invoice_table,
-    date_input,
     primary_button,
     text_input,
 )
@@ -20,6 +19,10 @@ def create_payment_order_page(session_factory: Callable[[], Session]):
     suppliers_data: list[str] = []
     details_data: list[str] = []
     invoice_rows: list[dict] = []
+
+    # UI component references
+    op_input = None
+    check_input = None
 
     def load_accounts():
         """Load all accounts from database"""
@@ -54,6 +57,36 @@ def create_payment_order_page(session_factory: Callable[[], Session]):
         finally:
             session.close()
 
+    def on_account_change(e):
+        """Handle account selection change"""
+        nonlocal op_input, check_input
+        account_name = e.value
+        if not account_name:
+            return
+
+        session = session_factory()
+        try:
+            # Find the account by name
+            account = session.query(Account).filter_by(name=account_name).first()
+            if account and account.account_sequence:
+                # Get next order and check numbers
+                next_order = account.account_sequence.last_order_number + 1
+                next_check = account.account_sequence.last_check_number + 1
+
+                # Update the input fields
+                if op_input:
+                    op_input.value = str(next_order)
+                if check_input:
+                    check_input.value = str(next_check).zfill(8)  # Pad with zeros
+            elif account:
+                # No sequence yet, start from 1
+                if op_input:
+                    op_input.value = "1"
+                if check_input:
+                    check_input.value = str(1).zfill(8)
+        finally:
+            session.close()
+
     # Load data from database
     load_accounts()
     load_suppliers()
@@ -71,25 +104,77 @@ def create_payment_order_page(session_factory: Callable[[], Session]):
                         accounts_data,
                         label="Cuenta",
                         with_input=True,
-                    ).classes(
-                        "w-full"
-                    ).props("outlined use-input")
+                        on_change=on_account_change,
+                    ).classes("w-full").props("outlined use-input")
 
                 with ui.column().classes("w-32"):
-                    text_input("OP")
+                    op_input = text_input("OP")
 
                 with ui.column().classes("flex-1"):
-                    date_input("Fecha")
+                    with (
+                        ui.input("Fecha")
+                        .props("outlined")
+                        .classes("w-full") as fecha_input
+                    ):
+                        fecha_input.props('mask="##/##/####"')
+                        with fecha_input:
+                            with ui.menu() as date_menu:
+                                with ui.date().props("mask=DD/MM/YYYY") as date_picker:
+                                    date_picker.bind_value(fecha_input)
+                                    with ui.row().classes("justify-end q-pa-sm"):
+                                        ui.button(
+                                            "Cerrar", on_click=date_menu.close
+                                        ).props("flat")
+                        with fecha_input.add_slot("append"):
+                            ui.icon("event").on("click", date_menu.open).classes(
+                                "cursor-pointer"
+                            )
 
             with ui.row().classes("w-full gap-4 mb-4"):
                 with ui.column().classes("flex-1"):
-                    text_input("Cheque")
+                    check_input = text_input("Cheque")
 
                 with ui.column().classes("flex-1"):
-                    date_input("Emisión")
+                    with (
+                        ui.input("Emisión")
+                        .props("outlined")
+                        .classes("w-full") as emision_input
+                    ):
+                        emision_input.props('mask="##/##/####"')
+                        with emision_input:
+                            with ui.menu() as emision_menu:
+                                with ui.date().props(
+                                    "mask=DD/MM/YYYY"
+                                ) as emision_picker:
+                                    emision_picker.bind_value(emision_input)
+                                    with ui.row().classes("justify-end q-pa-sm"):
+                                        ui.button(
+                                            "Cerrar", on_click=emision_menu.close
+                                        ).props("flat")
+                        with emision_input.add_slot("append"):
+                            ui.icon("event").on("click", emision_menu.open).classes(
+                                "cursor-pointer"
+                            )
 
                 with ui.column().classes("flex-1"):
-                    date_input("Vence")
+                    with (
+                        ui.input("Vence")
+                        .props("outlined")
+                        .classes("w-full") as vence_input
+                    ):
+                        vence_input.props('mask="##/##/####"')
+                        with vence_input:
+                            with ui.menu() as vence_menu:
+                                with ui.date().props("mask=DD/MM/YYYY") as vence_picker:
+                                    vence_picker.bind_value(vence_input)
+                                    with ui.row().classes("justify-end q-pa-sm"):
+                                        ui.button(
+                                            "Cerrar", on_click=vence_menu.close
+                                        ).props("flat")
+                        with vence_input.add_slot("append"):
+                            ui.icon("event").on("click", vence_menu.open).classes(
+                                "cursor-pointer"
+                            )
 
             with ui.column().classes("w-full mb-4"):
                 with ui.row().classes("w-full gap-2 items-center"):
