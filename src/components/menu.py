@@ -20,7 +20,10 @@ def create_menu():
             with ui.button("Gestionar", icon="settings").props("flat color=grey-8"):
                 with ui.menu():
                     ui.menu_item("Proveedores")
-                    ui.menu_item("Cuentas")
+                    ui.menu_item(
+                        "Cuentas",
+                        on_click=lambda: ui.navigate.to("/manage-accounts"),
+                    )
                     ui.menu_item("Configuración")
 
             # Print menu

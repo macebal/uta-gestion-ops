@@ -34,7 +34,7 @@ class Account(Base):
         back_populates="account", cascade="all, delete-orphan"
     )
     account_sequence: Mapped[Optional["AccountSequence"]] = relationship(
-        back_populates="account", uselist=False
+        back_populates="account", uselist=False, cascade="all, delete-orphan"
     )
 
     def __repr__(self):
