@@ -1,0 +1,57 @@
+from nicegui import native, ui
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
+
+from src.models import Base
+from src.pages.home import home_page
+from src.pages.create_payment_order import create_payment_order_page
+from src.pages.manage_accounts import manage_accounts_page
+from src.pages.manage_suppliers import manage_suppliers_page
+from src.pages.manage_details import manage_details_page
+from src.components.menu import create_menu
+
+
+DATABASE_URL = "sqlite:///gestion_ops.db"
+engine = create_engine(DATABASE_URL, echo=True)
+
+Base.metadata.create_all(engine)
+
+SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+
+
+@ui.page("/")
+def page():
+    ui.page_title("UTA - Gestión de Órdenes de Pago")
+    create_menu()
+    home_page()
+
+
+@ui.page("/create-payment-order")
+def payment_order_page():
+    ui.page_title("Nueva Orden de Pago")
+    create_menu()
+    create_payment_order_page()
+
+
+@ui.page("/manage-accounts")
+def accounts_page():
+    ui.page_title("Gestión de Cuentas")
+    create_menu()
+    manage_accounts_page(SessionLocal)
+
+
+@ui.page("/manage-suppliers")
+def suppliers_page():
+    ui.page_title("Gestión de Proveedores")
+    create_menu()
+    manage_suppliers_page(SessionLocal)
+
+
+@ui.page("/manage-details")
+def details_page():
+    ui.page_title("Gestión de Detalles")
+    create_menu()
+    manage_details_page(SessionLocal)
+
+
+ui.run(reload=False, native=True, port=native.find_open_port())
