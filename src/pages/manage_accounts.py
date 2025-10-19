@@ -10,19 +10,20 @@ from src.models import Account, AccountSequence
 def manage_accounts_page(session_factory: Callable[[], Session]):
     """Create the account management page with CRUD operations"""
 
-    # State variables
     accounts_data: list[Dict[str, Any]] = []
+    filtered_accounts_data: list[Dict[str, Any]] = []
     table = None
     edit_dialog = None
     delete_dialog = None
     selected_account = None
+    search_input = None
 
     def load_accounts():
         """Load all accounts from database"""
-        nonlocal accounts_data, table
+        nonlocal accounts_data, filtered_accounts_data, table
         session = session_factory()
         try:
-            accounts = session.query(Account).all()
+            accounts = session.query(Account).order_by(Account.name).all()
             accounts_data.clear()
             for account in accounts:
                 accounts_data.append(
@@ -33,11 +34,31 @@ def manage_accounts_page(session_factory: Callable[[], Session]):
                         "actions": account.id,
                     }
                 )
-            if table:
-                table.rows = accounts_data
-                table.update()
+            filter_accounts()
         finally:
             session.close()
+
+    def filter_accounts():
+        """Filter accounts based on search query"""
+        nonlocal filtered_accounts_data, table
+        search_query = (
+            search_input.value.lower() if search_input and search_input.value else ""
+        )
+
+        if search_query:
+            filtered_accounts_data.clear()
+            for account in accounts_data:
+                if (
+                    search_query in account["name"].lower()
+                    or search_query in account["number"].lower()
+                ):
+                    filtered_accounts_data.append(account)
+        else:
+            filtered_accounts_data = accounts_data.copy()
+
+        if table:
+            table.rows = filtered_accounts_data
+            table.update()
 
     def create_account(name: str, number: str):
         """Create a new account"""
@@ -68,8 +89,6 @@ def manage_accounts_page(session_factory: Callable[[], Session]):
 
             ui.notify("Cuenta creada exitosamente", type="positive")
             load_accounts()
-
-            # Clear input fields
             name_input.value = ""
             number_input.value = ""
         except Exception as e:
@@ -145,7 +164,6 @@ def manage_accounts_page(session_factory: Callable[[], Session]):
         """Show dialog to edit an account"""
         nonlocal edit_dialog, selected_account
 
-        # Find the account in the data
         account_data = next((a for a in accounts_data if a["id"] == account_id), None)
         if not account_data:
             ui.notify("Cuenta no encontrada", type="negative")
@@ -182,7 +200,6 @@ def manage_accounts_page(session_factory: Callable[[], Session]):
         """Show confirmation dialog to delete an account"""
         nonlocal delete_dialog
 
-        # Find the account in the data
         account_data = next((a for a in accounts_data if a["id"] == account_id), None)
         if not account_data:
             ui.notify("Cuenta no encontrada", type="negative")
@@ -208,17 +225,12 @@ def manage_accounts_page(session_factory: Callable[[], Session]):
 
         dialog.open()
 
-    # Load initial data FIRST
-    load_accounts()
-
-    # Main page layout
     with ui.column().classes("w-full p-6"):
         with ui.card().classes("w-full max-w-6xl mx-auto p-6 shadow-lg"):
             ui.label("Gestión de Cuentas Bancarias").classes(
                 "text-2xl font-normal text-gray-700 mb-6"
             )
 
-            # Create new account section
             with ui.card().classes("w-full p-4 bg-gray-50 mb-6"):
                 ui.label("Nueva Cuenta").classes(
                     "text-lg font-semibold text-gray-700 mb-4"
@@ -239,10 +251,20 @@ def manage_accounts_page(session_factory: Callable[[], Session]):
                         ),
                     )
 
-            # Accounts table
             ui.label("Cuentas Existentes").classes(
                 "text-lg font-semibold text-gray-700 mb-4"
             )
+
+            with ui.row().classes("w-full mb-4"):
+                search_input = (
+                    ui.input(
+                        label="Buscar cuenta",
+                        value="",
+                        on_change=lambda e: filter_accounts(),
+                    )
+                    .classes("w-full")
+                    .props("outlined prepend-icon=search clearable")
+                )
 
             columns = [
                 {
@@ -267,37 +289,59 @@ def manage_accounts_page(session_factory: Callable[[], Session]):
                 },
             ]
 
-            table = ui.table(
-                columns=columns,
-                rows=accounts_data,
-                row_key="id",
-            ).classes("w-full")
+            table = (
+                ui.table(
+                    columns=columns,
+                    rows=filtered_accounts_data,
+                    row_key="id",
+                    pagination={
+                        "rowsPerPage": 10,
+                        "sortBy": "name",
+                        "descending": False,
+                    },
+                )
+                .classes("w-full")
+                .props("rows-per-page-options=[10, 20, 50, 0]")
+                .props('pagination-label="$vuetify.dataIterator.rowsPerPageText"')
+            )
 
-            # Custom slot for action buttons
+            table.props(
+                """
+                :rows-per-page-label="'Filas por página:'"
+                :pagination-label="(first, last, total) => `${first}-${last} de ${total}`"
+                all-rows-label="Todos"
+            """
+            )
+
             table.add_slot(
                 "body-cell-actions",
                 r"""
-                <q-td :props="props">
+                <q-td key="actions" :props="props">
                     <q-btn
                         flat
                         round
                         dense
                         icon="edit"
                         color="blue"
-                        @click="$parent.$emit('edit', props.row)"
-                    />
+                        @click="() => $parent.$emit('edit_row', props.row)"
+                    >
+                        <q-tooltip>Editar</q-tooltip>
+                    </q-btn>
                     <q-btn
                         flat
                         round
                         dense
                         icon="delete"
                         color="red"
-                        @click="$parent.$emit('delete', props.row)"
-                    />
+                        @click="() => $parent.$emit('delete_row', props.row)"
+                    >
+                        <q-tooltip>Eliminar</q-tooltip>
+                    </q-btn>
                 </q-td>
                 """,
             )
 
-            # Event handlers for table actions
-            table.on("edit", lambda e: show_edit_dialog(e.args["id"]))
-            table.on("delete", lambda e: show_delete_dialog(e.args["id"]))
+            table.on("edit_row", lambda e: show_edit_dialog(e.args["id"]))
+            table.on("delete_row", lambda e: show_delete_dialog(e.args["id"]))
+
+    load_accounts()
