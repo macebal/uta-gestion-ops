@@ -54,4 +54,10 @@ def details_page():
     manage_details_page(SessionLocal)
 
 
-ui.run(reload=False, native=True, port=native.find_open_port())
+ui.run(
+    reload=False,
+    native=True,
+    port=native.find_open_port(),
+    window_size=(1200, 700),
+    title="UTA - Gestión de Órdenes de Pago",
+)
