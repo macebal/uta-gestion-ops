@@ -13,7 +13,7 @@ def create_payment_order_page():
             with ui.column().classes("flex-1"):
                 ui.select(
                     ["Sindical", "Otra Cuenta"], value="Sindical", label="Cuenta"
-                ).classes("w-full")
+                ).classes("w-full").props("outlined")
 
             with ui.column().classes("w-32"):
                 ui.input(label="OP", value="123").classes("w-full").props("outlined")
@@ -96,8 +96,8 @@ def create_payment_order_page():
                     ],
                 )
                 .classes("w-full max-w-2xl")
-                .props("virtual-scroll")
-                .style("height: 250px")
+                .props("virtual-scroll sticky-header")
+                .style("height: 200px")
             )
 
             table.add_slot(
@@ -109,9 +109,20 @@ def create_payment_order_page():
             """,
             )
 
-            with ui.row().classes("w-full max-w-2xl items-center justify-between mt-4"):
-                ui.label("$22,000.00").classes("text-lg font-semibold text-gray-800")
-                ui.button("Agregar").classes("bg-blue-500 text-white px-4 py-1 rounded")
+            table.add_slot(
+                "bottom-row",
+                """
+                <q-tr style="position: sticky; bottom: 0; background-color: white; z-index: 1;">
+                    <q-td style="background-color: white;"></q-td>
+                    <q-td class="text-right" style="background-color: white;">
+                        <div class="text-lg font-semibold text-gray-800">$22,000.00</div>
+                    </q-td>
+                    <q-td class="text-center" style="background-color: white;">
+                        <q-btn label="AGREGAR" class="bg-blue-500 text-white" unelevated />
+                    </q-td>
+                </q-tr>
+            """,
+            )
 
         with ui.row().classes("w-full gap-6 mt-6"):
             ui.input(label="Retenciones", value="$2,500.00").classes("flex-1").props(
