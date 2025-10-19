@@ -26,11 +26,20 @@ def manage_accounts_page(session_factory: Callable[[], Session]):
             accounts = session.query(Account).order_by(Account.name).all()
             accounts_data.clear()
             for account in accounts:
+                # Get the sequence data for this account
+                last_order = 0
+                last_check = 0
+                if account.account_sequence:
+                    last_order = account.account_sequence.last_order_number
+                    last_check = account.account_sequence.last_check_number
+
                 accounts_data.append(
                     {
                         "id": account.id,
                         "name": account.name,
                         "number": account.number,
+                        "last_order_number": last_order,
+                        "last_check_number": last_check,
                         "actions": account.id,
                     }
                 )
@@ -60,7 +69,9 @@ def manage_accounts_page(session_factory: Callable[[], Session]):
             table.rows = filtered_accounts_data
             table.update()
 
-    def create_account(name: str, number: str):
+    def create_account(
+        name: str, number: str, last_order_number: int, last_check_number: int
+    ):
         """Create a new account"""
         if not name or not number:
             ui.notify("Por favor complete todos los campos", type="negative")
@@ -81,8 +92,8 @@ def manage_accounts_page(session_factory: Callable[[], Session]):
             # Create account sequence for the new account
             account_seq = AccountSequence(
                 account_id=new_account.id,
-                last_order_number=0,
-                last_check_number=0,
+                last_order_number=last_order_number,
+                last_check_number=last_check_number,
             )
             session.add(account_seq)
             session.commit()
@@ -91,13 +102,21 @@ def manage_accounts_page(session_factory: Callable[[], Session]):
             load_accounts()
             name_input.value = ""
             number_input.value = ""
+            order_number_input.value = 0
+            check_number_input.value = 0
         except Exception as e:
             session.rollback()
             ui.notify(f"Error al crear cuenta: {str(e)}", type="negative")
         finally:
             session.close()
 
-    def update_account(account_id: int, name: str, number: str):
+    def update_account(
+        account_id: int,
+        name: str,
+        number: str,
+        last_order_number: int,
+        last_check_number: int,
+    ):
         """Update an existing account"""
         if not name or not number:
             ui.notify("Por favor complete todos los campos", type="negative")
@@ -119,6 +138,20 @@ def manage_accounts_page(session_factory: Callable[[], Session]):
             if account:
                 account.name = name
                 account.number = number
+
+                # Update sequence numbers
+                if account.account_sequence:
+                    account.account_sequence.last_order_number = last_order_number
+                    account.account_sequence.last_check_number = last_check_number
+                else:
+                    # Create sequence if it doesn't exist
+                    account_seq = AccountSequence(
+                        account_id=account.id,
+                        last_order_number=last_order_number,
+                        last_check_number=last_check_number,
+                    )
+                    session.add(account_seq)
+
                 session.commit()
                 ui.notify("Cuenta actualizada exitosamente", type="positive")
                 load_accounts()
@@ -182,6 +215,31 @@ def manage_accounts_page(session_factory: Callable[[], Session]):
                 "Número de Cuenta", value=account_data["number"]
             )
 
+            with ui.row().classes("w-full gap-4"):
+                with ui.column().classes("flex-1"):
+                    edit_order_number_input = (
+                        ui.number(
+                            label="Último Número de OP",
+                            value=account_data["last_order_number"],
+                            min=0,
+                            step=1,
+                        )
+                        .props("outlined")
+                        .classes("w-full")
+                    )
+
+                with ui.column().classes("flex-1"):
+                    edit_check_number_input = (
+                        ui.number(
+                            label="Último Número de Cheque",
+                            value=account_data["last_check_number"],
+                            min=0,
+                            step=1,
+                        )
+                        .props("outlined")
+                        .classes("w-full")
+                    )
+
             with ui.row().classes("w-full gap-4 mt-6 justify-end"):
                 secondary_button(
                     "Cancelar",
@@ -190,7 +248,11 @@ def manage_accounts_page(session_factory: Callable[[], Session]):
                 primary_button(
                     "Guardar",
                     on_click=lambda: update_account(
-                        account_id, edit_name_input.value, edit_number_input.value
+                        account_id,
+                        edit_name_input.value,
+                        edit_number_input.value,
+                        int(edit_order_number_input.value or 0),
+                        int(edit_check_number_input.value or 0),
                     ),
                 )
 
@@ -236,18 +298,46 @@ def manage_accounts_page(session_factory: Callable[[], Session]):
                     "text-lg font-semibold text-gray-700 mb-4"
                 )
 
-                with ui.row().classes("w-full gap-4 items-end"):
+                with ui.row().classes("w-full gap-4"):
                     with ui.column().classes("flex-1"):
                         name_input = text_input("Nombre de la Cuenta")
 
                     with ui.column().classes("flex-1"):
                         number_input = text_input("Número de Cuenta")
 
+                with ui.row().classes("w-full gap-4 items-end mt-4"):
+                    with ui.column().classes("flex-1"):
+                        order_number_input = (
+                            ui.number(
+                                label="Último Número de OP",
+                                value=0,
+                                min=0,
+                                step=1,
+                            )
+                            .props("outlined")
+                            .classes("w-full")
+                        )
+
+                    with ui.column().classes("flex-1"):
+                        check_number_input = (
+                            ui.number(
+                                label="Último Número de Cheque",
+                                value=0,
+                                min=0,
+                                step=1,
+                            )
+                            .props("outlined")
+                            .classes("w-full")
+                        )
+
                     primary_button(
                         "Agregar",
                         icon="add",
                         on_click=lambda: create_account(
-                            name_input.value, number_input.value
+                            name_input.value,
+                            number_input.value,
+                            int(order_number_input.value or 0),
+                            int(check_number_input.value or 0),
                         ),
                     )
 
@@ -279,6 +369,20 @@ def manage_accounts_page(session_factory: Callable[[], Session]):
                     "label": "Número de Cuenta",
                     "field": "number",
                     "align": "left",
+                    "sortable": True,
+                },
+                {
+                    "name": "last_order_number",
+                    "label": "Último N° OP",
+                    "field": "last_order_number",
+                    "align": "center",
+                    "sortable": True,
+                },
+                {
+                    "name": "last_check_number",
+                    "label": "Último N° Cheque",
+                    "field": "last_check_number",
+                    "align": "center",
                     "sortable": True,
                 },
                 {
