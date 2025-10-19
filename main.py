@@ -30,7 +30,7 @@ def page():
 def payment_order_page():
     ui.page_title("Nueva Orden de Pago")
     create_menu()
-    create_payment_order_page()
+    create_payment_order_page(SessionLocal)
 
 
 @ui.page("/manage-accounts")
