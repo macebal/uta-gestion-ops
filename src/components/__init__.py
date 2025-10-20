@@ -3,7 +3,9 @@
 from .buttons import icon_button, primary_button, secondary_button, small_button
 from .inputs import (
     date_input,
+    date_input_with_calendar,
     number_input,
+    searchable_select,
     select_field,
     select_with_edit,
     text_input,
@@ -22,7 +24,9 @@ __all__ = [
     "select_field",
     "select_with_edit",
     "date_input",
+    "date_input_with_calendar",
     "number_input",
+    "searchable_select",
     # Tables
     "scrollable_table",
     "simple_table",
