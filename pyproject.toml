@@ -12,3 +12,12 @@ dependencies = [
     "sqlalchemy>=2.0.44",
     "weasyprint>=66.0",
 ]
+
+[dependency-groups]
+dev = ["pytest>=8.4.2", "selenium>=4.37.0"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+asyncio_mode = "auto"
+main_file = "main.py"
+addopts = "-p nicegui.testing.plugin"
