@@ -5,7 +5,9 @@ from sqlalchemy.orm import Session
 
 from src.components import (
     create_invoice_table,
+    date_input_with_calendar,
     primary_button,
+    searchable_select,
     text_input,
 )
 from src.models import Account, Supplier, Detail
@@ -100,99 +102,33 @@ def create_payment_order_page(session_factory: Callable[[], Session]):
 
             with ui.row().classes("w-full gap-4 mb-4"):
                 with ui.column().classes("flex-1"):
-                    ui.select(
+                    searchable_select(
                         accounts_data,
                         label="Cuenta",
-                        with_input=True,
                         on_change=on_account_change,
-                    ).classes("w-full").props("outlined use-input")
+                    )
 
                 with ui.column().classes("w-32"):
                     op_input = text_input("OP")
 
                 with ui.column().classes("flex-1"):
-                    with (
-                        ui.input("Fecha")
-                        .props("outlined")
-                        .classes("w-full") as fecha_input
-                    ):
-                        fecha_input.props('mask="##/##/####"')
-                        with fecha_input:
-                            with ui.menu().props("no-parent-event") as date_menu:
-                                with ui.date().props("mask=DD/MM/YYYY") as date_picker:
-                                    date_picker.bind_value(fecha_input)
-                                    with ui.row().classes("justify-end q-pa-sm"):
-                                        ui.button(
-                                            "Cerrar", on_click=date_menu.close
-                                        ).props("flat")
-                        with fecha_input.add_slot("append"):
-                            ui.icon("event").on("click", date_menu.open).classes(
-                                "cursor-pointer"
-                            )
+                    date_input_with_calendar("Fecha")
 
             with ui.row().classes("w-full gap-4 mb-4"):
                 with ui.column().classes("flex-1"):
                     check_input = text_input("Cheque")
 
                 with ui.column().classes("flex-1"):
-                    with (
-                        ui.input("Emisión")
-                        .props("outlined")
-                        .classes("w-full") as emision_input
-                    ):
-                        emision_input.props('mask="##/##/####"')
-                        with emision_input:
-                            with ui.menu().props("no-parent-event") as emision_menu:
-                                with ui.date().props(
-                                    "mask=DD/MM/YYYY"
-                                ) as emision_picker:
-                                    emision_picker.bind_value(emision_input)
-                                    with ui.row().classes("justify-end q-pa-sm"):
-                                        ui.button(
-                                            "Cerrar", on_click=emision_menu.close
-                                        ).props("flat")
-                        with emision_input.add_slot("append"):
-                            ui.icon("event").on("click", emision_menu.open).classes(
-                                "cursor-pointer"
-                            )
+                    date_input_with_calendar("Emisión")
 
                 with ui.column().classes("flex-1"):
-                    with (
-                        ui.input("Vence")
-                        .props("outlined")
-                        .classes("w-full") as vence_input
-                    ):
-                        vence_input.props('mask="##/##/####"')
-                        with vence_input:
-                            with ui.menu().props("no-parent-event") as vence_menu:
-                                with ui.date().props("mask=DD/MM/YYYY") as vence_picker:
-                                    vence_picker.bind_value(vence_input)
-                                    with ui.row().classes("justify-end q-pa-sm"):
-                                        ui.button(
-                                            "Cerrar", on_click=vence_menu.close
-                                        ).props("flat")
-                        with vence_input.add_slot("append"):
-                            ui.icon("event").on("click", vence_menu.open).classes(
-                                "cursor-pointer"
-                            )
+                    date_input_with_calendar("Vence")
 
             with ui.column().classes("w-full mb-4"):
-                ui.select(
-                    suppliers_data,
-                    label="Proveedor",
-                    with_input=True,
-                ).classes(
-                    "w-full"
-                ).props("outlined use-input")
+                searchable_select(suppliers_data, label="Proveedor")
 
             with ui.column().classes("w-full mb-6"):
-                ui.select(
-                    details_data,
-                    label="Detalle",
-                    with_input=True,
-                ).classes(
-                    "w-full"
-                ).props("outlined use-input")
+                searchable_select(details_data, label="Detalle")
 
             with ui.column().classes("w-full items-center"):
                 ui.label("Facturas").classes("text-lg font-semibold text-gray-700 mb-2")
