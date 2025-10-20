@@ -118,7 +118,7 @@ def create_payment_order_page(session_factory: Callable[[], Session]):
                     ):
                         fecha_input.props('mask="##/##/####"')
                         with fecha_input:
-                            with ui.menu() as date_menu:
+                            with ui.menu().props("no-parent-event") as date_menu:
                                 with ui.date().props("mask=DD/MM/YYYY") as date_picker:
                                     date_picker.bind_value(fecha_input)
                                     with ui.row().classes("justify-end q-pa-sm"):
@@ -142,7 +142,7 @@ def create_payment_order_page(session_factory: Callable[[], Session]):
                     ):
                         emision_input.props('mask="##/##/####"')
                         with emision_input:
-                            with ui.menu() as emision_menu:
+                            with ui.menu().props("no-parent-event") as emision_menu:
                                 with ui.date().props(
                                     "mask=DD/MM/YYYY"
                                 ) as emision_picker:
@@ -164,7 +164,7 @@ def create_payment_order_page(session_factory: Callable[[], Session]):
                     ):
                         vence_input.props('mask="##/##/####"')
                         with vence_input:
-                            with ui.menu() as vence_menu:
+                            with ui.menu().props("no-parent-event") as vence_menu:
                                 with ui.date().props("mask=DD/MM/YYYY") as vence_picker:
                                     vence_picker.bind_value(vence_input)
                                     with ui.row().classes("justify-end q-pa-sm"):
@@ -177,28 +177,22 @@ def create_payment_order_page(session_factory: Callable[[], Session]):
                             )
 
             with ui.column().classes("w-full mb-4"):
-                with ui.row().classes("w-full gap-2 items-center"):
-                    ui.select(
-                        suppliers_data,
-                        label="Proveedor",
-                        with_input=True,
-                    ).classes("flex-1").props("outlined use-input")
-                    ui.icon("edit").classes(
-                        "text-yellow-500 cursor-pointer text-xl"
-                    ).on("click", lambda: ui.navigate.to("/manage-suppliers"))
+                ui.select(
+                    suppliers_data,
+                    label="Proveedor",
+                    with_input=True,
+                ).classes(
+                    "w-full"
+                ).props("outlined use-input")
 
             with ui.column().classes("w-full mb-6"):
-                with ui.row().classes("w-full gap-2 items-center"):
-                    ui.select(
-                        details_data,
-                        label="Detalle",
-                        with_input=True,
-                    ).classes(
-                        "flex-1"
-                    ).props("outlined use-input")
-                    ui.icon("edit").classes(
-                        "text-yellow-500 cursor-pointer text-xl"
-                    ).on("click", lambda: ui.navigate.to("/manage-details"))
+                ui.select(
+                    details_data,
+                    label="Detalle",
+                    with_input=True,
+                ).classes(
+                    "w-full"
+                ).props("outlined use-input")
 
             with ui.column().classes("w-full items-center"):
                 ui.label("Facturas").classes("text-lg font-semibold text-gray-700 mb-2")
