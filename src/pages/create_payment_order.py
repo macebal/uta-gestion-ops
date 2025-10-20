@@ -11,7 +11,7 @@ from src.components import (
     secondary_button,
     text_input,
 )
-from src.models import Account, Supplier, Detail
+from src.models import Account, PaymentOrder, Supplier, Detail
 
 
 def create_payment_order_page(session_factory: Callable[[], Session]):
@@ -30,6 +30,12 @@ def create_payment_order_page(session_factory: Callable[[], Session]):
     invoice_table = None
     total_op_label = None
     add_invoice_dialog = None
+    account_select = None
+    supplier_select = None
+    detail_select = None
+    order_date_input = None
+    issue_date_input = None
+    due_date_input = None
 
     def load_accounts():
         """Load all accounts from database"""
@@ -64,6 +70,39 @@ def create_payment_order_page(session_factory: Callable[[], Session]):
         finally:
             session.close()
 
+    def get_account_id_by_name(account_name: str) -> int | None:
+        """Get account ID by name"""
+        if not account_name:
+            return None
+        session = session_factory()
+        try:
+            account = session.query(Account).filter_by(name=account_name).first()
+            return account.id if account else None
+        finally:
+            session.close()
+
+    def get_supplier_id_by_name(supplier_name: str) -> int | None:
+        """Get supplier ID by name"""
+        if not supplier_name:
+            return None
+        session = session_factory()
+        try:
+            supplier = session.query(Supplier).filter_by(name=supplier_name).first()
+            return supplier.id if supplier else None
+        finally:
+            session.close()
+
+    def get_detail_id_by_value(detail_value: str) -> int | None:
+        """Get detail ID by value"""
+        if not detail_value:
+            return None
+        session = session_factory()
+        try:
+            detail = session.query(Detail).filter_by(value=detail_value).first()
+            return detail.id if detail else None
+        finally:
+            session.close()
+
     def on_account_change(e):
         """Handle account selection change"""
         nonlocal op_input, check_input
@@ -73,20 +112,16 @@ def create_payment_order_page(session_factory: Callable[[], Session]):
 
         session = session_factory()
         try:
-            # Find the account by name
             account = session.query(Account).filter_by(name=account_name).first()
             if account and account.account_sequence:
-                # Get next order and check numbers
                 next_order = account.account_sequence.last_order_number + 1
                 next_check = account.account_sequence.last_check_number + 1
 
-                # Update the input fields
                 if op_input:
                     op_input.value = str(next_order)
                 if check_input:
-                    check_input.value = str(next_check).zfill(8)  # Pad with zeros
+                    check_input.value = str(next_check).zfill(8)
             elif account:
-                # No sequence yet, start from 1
                 if op_input:
                     op_input.value = "1"
                 if check_input:
@@ -97,7 +132,6 @@ def create_payment_order_page(session_factory: Callable[[], Session]):
     def format_currency(amount: float | Decimal | str) -> str:
         """Format a number as currency"""
         if isinstance(amount, str):
-            # Remove currency symbols and convert to float
             amount = amount.replace("$", "").replace(",", "")
             try:
                 amount = float(amount)
@@ -109,7 +143,6 @@ def create_payment_order_page(session_factory: Callable[[], Session]):
         """Parse a currency string to Decimal"""
         if not currency_str:
             return Decimal("0.00")
-        # Remove currency symbols and commas
         clean_str = currency_str.replace("$", "").replace(",", "").strip()
         try:
             return Decimal(clean_str)
@@ -120,24 +153,19 @@ def create_payment_order_page(session_factory: Callable[[], Session]):
         """Calculate and update invoice total and total OP"""
         nonlocal total_op_label, retenciones_input, invoice_table
 
-        # Calculate invoice total
         invoice_total = sum(
             parse_currency(row.get("importe", "0")) for row in invoice_rows
         )
 
-        # Get withholdings
         withholdings = Decimal("0.00")
         if retenciones_input and retenciones_input.value:
             withholdings = parse_currency(retenciones_input.value)
 
-        # Calculate total OP
         total_op = invoice_total - withholdings
 
-        # Update total OP label
         if total_op_label:
             total_op_label.text = format_currency(total_op)
 
-        # Update the invoice table footer via JavaScript
         if invoice_table:
             ui.run_javascript(
                 f'document.getElementById("total-facturas").innerText = "{format_currency(invoice_total)}"'
@@ -152,30 +180,25 @@ def create_payment_order_page(session_factory: Callable[[], Session]):
             return
 
         try:
-            # Validate amount
             parsed_amount = parse_currency(amount)
             if parsed_amount <= 0:
                 ui.notify("El importe debe ser mayor a 0", type="negative")
                 return
 
-            # Add invoice to rows
             invoice_rows.append(
                 {
-                    "id": len(invoice_rows),  # Temporary ID
+                    "id": len(invoice_rows),
                     "factura": invoice_number,
                     "importe": format_currency(parsed_amount),
                 }
             )
 
-            # Update table
             if invoice_table:
                 invoice_table.rows = invoice_rows
                 invoice_table.update()
 
-            # Recalculate totals
             calculate_totals()
 
-            # Close dialog
             if add_invoice_dialog:
                 add_invoice_dialog.close()
 
@@ -189,17 +212,14 @@ def create_payment_order_page(session_factory: Callable[[], Session]):
         nonlocal invoice_table
 
         try:
-            # Remove invoice from rows
             invoice_rows[:] = [
                 row for row in invoice_rows if row.get("id") != row_data.get("id")
             ]
 
-            # Update table
             if invoice_table:
                 invoice_table.rows = invoice_rows
                 invoice_table.update()
 
-            # Recalculate totals
             calculate_totals()
 
             ui.notify("Factura eliminada exitosamente", type="positive")
@@ -232,6 +252,156 @@ def create_payment_order_page(session_factory: Callable[[], Session]):
 
         dialog.open()
 
+    def update_account_sequence(account_id: int, order_number: int, check_number: int):
+        """Update account sequence numbers after creating payment order"""
+        session = session_factory()
+        try:
+            account = session.query(Account).filter_by(id=account_id).first()
+            if account:
+                if account.account_sequence:
+                    account.account_sequence.last_order_number = order_number
+                    account.account_sequence.last_check_number = check_number
+                else:
+                    from src.models import AccountSequence
+
+                    account_seq = AccountSequence(
+                        account_id=account.id,
+                        last_order_number=order_number,
+                        last_check_number=check_number,
+                    )
+                    session.add(account_seq)
+                session.commit()
+        except Exception as e:
+            session.rollback()
+            ui.notify(
+                f"Error al actualizar secuencia de cuenta: {str(e)}", type="negative"
+            )
+        finally:
+            session.close()
+
+    def create_payment_order():
+        """Create a new payment order"""
+        account_name = account_select.value if account_select else ""
+        supplier_name = supplier_select.value if supplier_select else ""
+        detail_value = detail_select.value if detail_select else ""
+        op = op_input.value if op_input else ""
+        check = check_input.value if check_input else ""
+        retenciones = retenciones_input.value if retenciones_input else "$0.00"
+        order_date_str = order_date_input.value if order_date_input else ""
+        issue_date_str = issue_date_input.value if issue_date_input else ""
+        due_date_str = due_date_input.value if due_date_input else ""
+
+        if not all(
+            [
+                account_name,
+                supplier_name,
+                detail_value,
+                op,
+                check,
+                order_date_str,
+                issue_date_str,
+                due_date_str,
+            ]
+        ):
+            ui.notify(
+                "Por favor complete todos los campos obligatorios", type="negative"
+            )
+            return
+
+        if not invoice_rows:
+            ui.notify("Debe agregar al menos una factura", type="negative")
+            return
+
+        account_id = get_account_id_by_name(account_name)
+        supplier_id = get_supplier_id_by_name(supplier_name)
+        detail_id = get_detail_id_by_value(detail_value)
+
+        if not all([account_id, supplier_id, detail_id]):
+            ui.notify("Error al obtener datos de la base de datos", type="negative")
+            return
+
+        try:
+            from datetime import datetime
+
+            order_date = datetime.strptime(order_date_str, "%d/%m/%Y").date()
+            issue_date = datetime.strptime(issue_date_str, "%d/%m/%Y").date()
+            due_date = datetime.strptime(due_date_str, "%d/%m/%Y").date()
+        except ValueError:
+            ui.notify("Formato de fecha inválido. Use DD/MM/YYYY", type="negative")
+            return
+
+        withholding_amount = parse_currency(retenciones)
+        total_amount = parse_currency(
+            total_op_label.text if total_op_label else "$0.00"
+        )
+
+        session = session_factory()
+        try:
+            payment_order = PaymentOrder(
+                order_number=int(op),
+                check_number=int(check),
+                account_id=account_id,
+                supplier_id=supplier_id,
+                detail_id=detail_id,
+                withholding_amount=withholding_amount,
+                amount=total_amount,
+                order_date=order_date,
+                issue_date=issue_date,
+                due_date=due_date,
+            )
+            session.add(payment_order)
+            session.flush()
+
+            from src.models import Invoice
+
+            for invoice_row in invoice_rows:
+                invoice = Invoice(
+                    payment_order_id=payment_order.id,
+                    invoice_number=invoice_row["factura"],
+                    amount=parse_currency(invoice_row["importe"]),
+                    supplier_id=supplier_id,
+                )
+                session.add(invoice)
+
+            session.commit()
+
+            update_account_sequence(account_id, int(op), int(check))
+
+            ui.notify("Orden de pago creada exitosamente", type="positive")
+
+            if account_select:
+                account_select.value = ""
+            if supplier_select:
+                supplier_select.value = ""
+            if detail_select:
+                detail_select.value = ""
+            if op_input:
+                op_input.value = ""
+            if check_input:
+                check_input.value = ""
+            if retenciones_input:
+                retenciones_input.value = "$0.00"
+            if order_date_input:
+                order_date_input.value = ""
+            if issue_date_input:
+                issue_date_input.value = ""
+            if due_date_input:
+                due_date_input.value = ""
+
+            invoice_rows.clear()
+            if invoice_table:
+                invoice_table.rows = invoice_rows
+                invoice_table.update()
+
+            if total_op_label:
+                total_op_label.text = "$0.00"
+
+        except Exception as e:
+            session.rollback()
+            ui.notify(f"Error al crear la orden de pago: {str(e)}", type="negative")
+        finally:
+            session.close()
+
     # Load data from database
     load_accounts()
     load_suppliers()
@@ -245,7 +415,7 @@ def create_payment_order_page(session_factory: Callable[[], Session]):
 
             with ui.row().classes("w-full gap-4 mb-4"):
                 with ui.column().classes("flex-1"):
-                    searchable_select(
+                    account_select = searchable_select(
                         accounts_data,
                         label="Cuenta",
                         on_change=on_account_change,
@@ -255,23 +425,23 @@ def create_payment_order_page(session_factory: Callable[[], Session]):
                     op_input = text_input("OP")
 
                 with ui.column().classes("flex-1"):
-                    date_input_with_calendar("Fecha")
+                    order_date_input = date_input_with_calendar("Fecha")
 
             with ui.row().classes("w-full gap-4 mb-4"):
                 with ui.column().classes("flex-1"):
                     check_input = text_input("Cheque")
 
                 with ui.column().classes("flex-1"):
-                    date_input_with_calendar("Emisión")
+                    issue_date_input = date_input_with_calendar("Emisión")
 
                 with ui.column().classes("flex-1"):
-                    date_input_with_calendar("Vence")
+                    due_date_input = date_input_with_calendar("Vence")
 
             with ui.column().classes("w-full mb-4"):
-                searchable_select(suppliers_data, label="Proveedor")
+                supplier_select = searchable_select(suppliers_data, label="Proveedor")
 
             with ui.column().classes("w-full mb-6"):
-                searchable_select(details_data, label="Detalle")
+                detail_select = searchable_select(details_data, label="Detalle")
 
             with ui.column().classes("w-full items-center"):
                 with ui.row().classes(
@@ -282,7 +452,6 @@ def create_payment_order_page(session_factory: Callable[[], Session]):
                         "Agregar Factura", icon="add", on_click=show_add_invoice_dialog
                     )
 
-                # Invoice table columns
                 columns = [
                     {
                         "name": "factura",
@@ -304,14 +473,12 @@ def create_payment_order_page(session_factory: Callable[[], Session]):
                     },
                 ]
 
-                # Create invoice table
                 invoice_table = (
                     ui.table(columns=columns, rows=invoice_rows, row_key="id")
                     .classes("w-full max-w-2xl")
                     .props("flat bordered")
                 )
 
-                # Add delete button slot
                 invoice_table.add_slot(
                     "body-cell-acciones",
                     r"""
@@ -330,7 +497,6 @@ def create_payment_order_page(session_factory: Callable[[], Session]):
                     """,
                 )
 
-                # Add footer row with total
                 invoice_table.add_slot(
                     "bottom-row",
                     r"""
@@ -344,15 +510,13 @@ def create_payment_order_page(session_factory: Callable[[], Session]):
                     """,
                 )
 
-                # Wire up delete event
                 invoice_table.on("delete_invoice", lambda e: delete_invoice(e.args))
 
             with ui.row().classes("w-full gap-6 mt-6"):
                 with ui.column().classes("flex-1"):
-                    retenciones_input = text_input("Retenciones", value="$0.00")
-                    retenciones_input.on(
-                        "change", lambda: calculate_totals()
-                    )  # Recalculate on change
+                    retenciones_input = text_input(
+                        "Retenciones", value="$0.00", on_change=calculate_totals
+                    )
 
                 with ui.card().classes(
                     "flex-1 p-4 bg-gray-50 items-center justify-center"
@@ -368,4 +532,4 @@ def create_payment_order_page(session_factory: Callable[[], Session]):
                         "text-gray-700"
                     )
 
-                primary_button("Agregar OP")
+                primary_button("Agregar OP", on_click=create_payment_order)

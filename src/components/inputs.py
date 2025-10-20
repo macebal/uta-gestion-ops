@@ -1,7 +1,10 @@
+from typing import Callable
 from nicegui import ui
 
 
-def text_input(label: str, value: str = "", **kwargs):
+def text_input(
+    label: str, value: str = "", on_change: Callable | None = None, **kwargs
+):
     """
     Standardized text input field with outlined style
 
@@ -12,7 +15,9 @@ def text_input(label: str, value: str = "", **kwargs):
     """
     classes = kwargs.pop("classes", "w-full")
     return (
-        ui.input(label=label, value=value).classes(classes).props("outlined", **kwargs)
+        ui.input(label=label, value=value, on_change=on_change)
+        .classes(classes)
+        .props("outlined", **kwargs)
     )
 
 
