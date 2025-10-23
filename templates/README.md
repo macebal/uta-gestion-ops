@@ -11,6 +11,12 @@ This guide explains the recommended process to modify or recreate the templates 
 2. **Edit the Template as Needed**
    - Make any necessary changes to the form, text, styles, or layout within Excel.
 
+2.1 **For Dynamic Template Values**
+   - When you need certain fields to be filled by the application (such as names, dates, amounts, etc.), replace their contents in Excel with the Jinja2 variable syntax: `{{ variable_name }}`
+   - Example:  
+     To create a placeholder for the account name, enter `{{ account_name }}` as the cell value.
+   - Later, these placeholders will be automatically filled in by the code using Jinja2.
+
 3. **Export as Web Page**
    - In Excel, choose **File > Save As**.
    - Select **Web Page (.htm, .html)** as the file format.
