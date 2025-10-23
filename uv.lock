@@ -1099,6 +1099,7 @@ name = "uta-gestion-ops"
 version = "0.1.0"
 source = { virtual = "." }
 dependencies = [
+    { name = "jinja2" },
     { name = "loguru" },
     { name = "nicegui" },
     { name = "pywebview" },
@@ -1107,6 +1108,7 @@ dependencies = [
 
 [package.metadata]
 requires-dist = [
+    { name = "jinja2", specifier = ">=3.1.6" },
     { name = "loguru", specifier = ">=0.7.3" },
     { name = "nicegui", specifier = ">=3.0.4" },
     { name = "pywebview", specifier = ">=6.0" },
