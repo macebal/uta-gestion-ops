@@ -13,7 +13,7 @@ from src.components import (
     text_input,
 )
 from src.models import Account, PaymentOrder, Supplier, Detail
-from generate_payment_order_pdf import generate_payment_order_pdf
+from src.services.pdf_generator import create_payment_order_pdf
 
 
 def create_payment_order_page(session_factory: Callable[[], Session]):
@@ -403,7 +403,7 @@ def create_payment_order_page(session_factory: Callable[[], Session]):
                     }
 
                     output_path = f"orden_pago_{op}.pdf"
-                    pdf_path = generate_payment_order_pdf(template_data, output_path)
+                    pdf_path = create_payment_order_pdf(template_data, output_path)
                     ui.notify(f"PDF generado: {Path(pdf_path).name}", type="positive")
                 except Exception as e:
                     ui.notify(f"Error al generar PDF: {str(e)}", type="warning")
