@@ -1,5 +1,6 @@
 from typing import Callable
 from decimal import Decimal
+from pathlib import Path
 
 from nicegui import ui
 from sqlalchemy.orm import Session
@@ -12,6 +13,7 @@ from src.components import (
     text_input,
 )
 from src.models import Account, PaymentOrder, Supplier, Detail
+from generate_payment_order_pdf import generate_payment_order_pdf
 
 
 def create_payment_order_page(session_factory: Callable[[], Session]):
@@ -36,6 +38,7 @@ def create_payment_order_page(session_factory: Callable[[], Session]):
     order_date_input = None
     issue_date_input = None
     due_date_input = None
+    print_checkbox = None
 
     def load_accounts():
         """Load all accounts from database"""
@@ -369,6 +372,42 @@ def create_payment_order_page(session_factory: Callable[[], Session]):
 
             ui.notify("Orden de pago creada exitosamente", type="positive")
 
+            # Generate PDF if checkbox is checked
+            if print_checkbox and print_checkbox.value:
+                try:
+                    account = session.query(Account).filter_by(id=account_id).first()
+
+                    invoice_total = sum(
+                        parse_currency(row.get("importe", "0")) for row in invoice_rows
+                    )
+
+                    # Format invoice numbers (concatenate if multiple)
+                    invoice_numbers = ", ".join(
+                        [row["factura"] for row in invoice_rows]
+                    )
+
+                    template_data = {
+                        "account_name": account_name,
+                        "payment_order_id": str(op),
+                        "payment_order_date": order_date_str,
+                        "supplier_name": supplier_name,
+                        "invoice_amount": format_currency(invoice_total),
+                        "detail": detail_value,
+                        "witholding_amount": format_currency(withholding_amount),
+                        "payment_order_total": format_currency(total_amount),
+                        "invoice_number": invoice_numbers,
+                        "account_number": account.number if account else "",
+                        "check_number": str(check).zfill(8),
+                        "issue_date": issue_date_str,
+                        "due_date": due_date_str,
+                    }
+
+                    output_path = f"orden_pago_{op}.pdf"
+                    pdf_path = generate_payment_order_pdf(template_data, output_path)
+                    ui.notify(f"PDF generado: {Path(pdf_path).name}", type="positive")
+                except Exception as e:
+                    ui.notify(f"Error al generar PDF: {str(e)}", type="warning")
+
             if account_select:
                 account_select.value = ""
             if supplier_select:
@@ -528,8 +567,8 @@ def create_payment_order_page(session_factory: Callable[[], Session]):
 
             with ui.row().classes("w-full items-center justify-between mt-6"):
                 with ui.row().classes("items-center gap-2"):
-                    ui.checkbox("Imprimir orden de pago", value=True).classes(
-                        "text-gray-700"
-                    )
+                    print_checkbox = ui.checkbox(
+                        "Imprimir orden de pago", value=True
+                    ).classes("text-gray-700")
 
                 primary_button("Agregar OP", on_click=create_payment_order)
