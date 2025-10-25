@@ -1,7 +1,21 @@
+import sys
 from pathlib import Path
 from jinja2 import Environment, FileSystemLoader, select_autoescape
 from weasyprint import HTML  # type: ignore
 from weasyprint.text.fonts import FontConfiguration  # type: ignore
+
+
+def get_template_dir(template_name: str) -> tuple[Path, Path]:
+    """Get the template directory and executable directory"""
+    if getattr(sys, "frozen", False):
+        # If the application is frozen, use the bundle directory
+        bundle_dir = Path(sys._MEIPASS)  # type: ignore
+        executable_dir = Path(sys.executable).parent
+    else:
+        # If the application is not frozen, use the current directory
+        bundle_dir = Path(__file__).parent.parent.parent
+        executable_dir = bundle_dir
+    return bundle_dir / "templates" / template_name, executable_dir
 
 
 def create_payment_order_pdf(
@@ -35,11 +49,10 @@ def create_payment_order_pdf(
         FileNotFoundError: If the template file is not found
         Exception: If PDF generation fails
     """
-    # Get the project root directory (assuming this file is in src/services/)
-    project_root = Path(__file__).parent.parent.parent
-    template_dir = project_root / "templates" / "payment_order"
+    template_name = "payment_order"
+    template_dir, executable_dir = get_template_dir(template_name)
+    template_file = template_dir / f"{template_name}.htm"
 
-    template_file = template_dir / "payment_order.htm"
     if not template_file.exists():
         raise FileNotFoundError(f"Template file not found: {template_file}")
 
@@ -58,7 +71,7 @@ def create_payment_order_pdf(
 
     html_doc = HTML(string=rendered_html, base_url=str(template_dir))
 
-    pdf_path = project_root / output_path
+    pdf_path = executable_dir / output_path
     html_doc.write_pdf(str(pdf_path), font_config=font_config, optimize_images=True)
 
     return str(pdf_path.absolute())
