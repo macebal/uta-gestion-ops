@@ -1,5 +1,6 @@
 # -*- mode: python ; coding: utf-8 -*-
 import os
+import sys
 from pathlib import Path
 
 msys2_bin = Path('C:/msys64/mingw64/bin')
@@ -40,11 +41,17 @@ if msys2_bin.exists():
         if dll_path.exists():
             binaries_list.append((str(dll_path), '.'))
 
+import nicegui
+nicegui_path = Path(nicegui.__file__).parent
+
 a = Analysis(
     ['main.py'],
     pathex=[],
     binaries=binaries_list,
-    datas=[('D:\\Proyectos\\uta-gestion-ops\\.venv\\Lib\\site-packages\\nicegui', 'nicegui')],
+    datas=[
+        (str(nicegui_path), 'nicegui'),
+        ('templates', 'templates'),
+    ],
     hiddenimports=[],
     hookspath=[],
     hooksconfig={},
