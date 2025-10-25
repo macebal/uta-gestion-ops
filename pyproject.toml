@@ -1,7 +1,7 @@
 [project]
 name = "uta-gestion-ops"
 version = "0.1.0"
-description = "Add your description here"
+description = "An application to manage payment orders for UTA"
 readme = "README.md"
 requires-python = ">=3.13"
 dependencies = [
@@ -12,3 +12,6 @@ dependencies = [
     "sqlalchemy>=2.0.44",
     "weasyprint>=66.0",
 ]
+
+[dependency-groups]
+packaging = ["pyinstaller>=6.16.0"]
