@@ -30,6 +30,9 @@ def manage_suppliers_page(session_factory: Callable[[], Session]):
                     {
                         "id": supplier.id,
                         "name": supplier.name,
+                        "cuit": supplier.cuit or "",
+                        "phone": supplier.phone or "",
+                        "email": supplier.email or "",
                         "actions": supplier.id,
                     }
                 )
@@ -56,7 +59,7 @@ def manage_suppliers_page(session_factory: Callable[[], Session]):
             table.rows = filtered_suppliers_data
             table.update()
 
-    def create_supplier(name: str):
+    def create_supplier(name: str, cuit: str, phone: str, email: str):
         """Create a new supplier"""
         if not name:
             ui.notify("Por favor ingrese el nombre del proveedor", type="negative")
@@ -64,28 +67,34 @@ def manage_suppliers_page(session_factory: Callable[[], Session]):
 
         session = session_factory()
         try:
-            # Check if supplier with same name already exists
             existing = session.query(Supplier).filter_by(name=name).first()
             if existing:
                 ui.notify("Ya existe un proveedor con este nombre", type="negative")
                 return
 
-            new_supplier = Supplier(name=name)
+            new_supplier = Supplier(
+                name=name,
+                cuit=cuit if cuit else None,
+                phone=phone if phone else None,
+                email=email if email else None,
+            )
             session.add(new_supplier)
             session.commit()
 
             ui.notify("Proveedor creado exitosamente", type="positive")
             load_suppliers()
 
-            # Clear input field
             name_input.value = ""
+            cuit_input.value = ""
+            phone_input.value = ""
+            email_input.value = ""
         except Exception as e:
             session.rollback()
             ui.notify(f"Error al crear proveedor: {str(e)}", type="negative")
         finally:
             session.close()
 
-    def update_supplier(supplier_id: int, name: str):
+    def update_supplier(supplier_id: int, name: str, cuit: str, phone: str, email: str):
         """Update an existing supplier"""
         if not name:
             ui.notify("Por favor ingrese el nombre del proveedor", type="negative")
@@ -93,7 +102,6 @@ def manage_suppliers_page(session_factory: Callable[[], Session]):
 
         session = session_factory()
         try:
-            # Check if another supplier has the same name
             existing = (
                 session.query(Supplier)
                 .filter(Supplier.name == name, Supplier.id != supplier_id)
@@ -106,6 +114,9 @@ def manage_suppliers_page(session_factory: Callable[[], Session]):
             supplier = session.query(Supplier).filter_by(id=supplier_id).first()
             if supplier:
                 supplier.name = name
+                supplier.cuit = cuit if cuit else None
+                supplier.phone = phone if phone else None
+                supplier.email = email if email else None
                 session.commit()
                 ui.notify("Proveedor actualizado exitosamente", type="positive")
                 load_suppliers()
@@ -151,7 +162,6 @@ def manage_suppliers_page(session_factory: Callable[[], Session]):
         """Show dialog to edit a supplier"""
         nonlocal edit_dialog, selected_supplier
 
-        # Find the supplier in the data
         supplier_data = next(
             (s for s in suppliers_data if s["id"] == supplier_id), None
         )
@@ -168,6 +178,15 @@ def manage_suppliers_page(session_factory: Callable[[], Session]):
             edit_name_input = text_input(
                 "Nombre del Proveedor", value=supplier_data["name"]
             )
+            edit_cuit_input = text_input(
+                "CUIT", value=supplier_data["cuit"]
+            )
+            edit_phone_input = text_input(
+                "Teléfono", value=supplier_data["phone"]
+            )
+            edit_email_input = text_input(
+                "Email", value=supplier_data["email"]
+            )
 
             with ui.row().classes("w-full gap-4 mt-6 justify-end"):
                 secondary_button(
@@ -177,7 +196,11 @@ def manage_suppliers_page(session_factory: Callable[[], Session]):
                 primary_button(
                     "Guardar",
                     on_click=lambda: update_supplier(
-                        supplier_id, edit_name_input.value
+                        supplier_id,
+                        edit_name_input.value,
+                        edit_cuit_input.value,
+                        edit_phone_input.value,
+                        edit_email_input.value,
                     ),
                 )
 
@@ -226,15 +249,30 @@ def manage_suppliers_page(session_factory: Callable[[], Session]):
                     "text-lg font-semibold text-gray-700 mb-4"
                 )
 
-                with ui.row().classes("w-full gap-4 items-end"):
-                    with ui.column().classes("flex-1"):
-                        name_input = text_input("Nombre del Proveedor")
-
-                    primary_button(
-                        "Agregar",
-                        icon="add",
-                        on_click=lambda: create_supplier(name_input.value),
-                    )
+                with ui.column().classes("w-full gap-4"):
+                    with ui.row().classes("w-full gap-4"):
+                        with ui.column().classes("flex-1"):
+                            name_input = text_input("Nombre del Proveedor")
+                        with ui.column().classes("flex-1"):
+                            cuit_input = text_input("CUIT")
+                    
+                    with ui.row().classes("w-full gap-4"):
+                        with ui.column().classes("flex-1"):
+                            phone_input = text_input("Teléfono")
+                        with ui.column().classes("flex-1"):
+                            email_input = text_input("Email")
+                    
+                    with ui.row().classes("w-full justify-end"):
+                        primary_button(
+                            "Agregar",
+                            icon="add",
+                            on_click=lambda: create_supplier(
+                                name_input.value,
+                                cuit_input.value,
+                                phone_input.value,
+                                email_input.value,
+                            ),
+                        )
 
             ui.label("Proveedores Existentes").classes(
                 "text-lg font-semibold text-gray-700 mb-4"
@@ -256,6 +294,27 @@ def manage_suppliers_page(session_factory: Callable[[], Session]):
                     "name": "name",
                     "label": "Nombre del Proveedor",
                     "field": "name",
+                    "align": "left",
+                    "sortable": True,
+                },
+                {
+                    "name": "cuit",
+                    "label": "CUIT",
+                    "field": "cuit",
+                    "align": "left",
+                    "sortable": True,
+                },
+                {
+                    "name": "phone",
+                    "label": "Teléfono",
+                    "field": "phone",
+                    "align": "left",
+                    "sortable": True,
+                },
+                {
+                    "name": "email",
+                    "label": "Email",
+                    "field": "email",
                     "align": "left",
                     "sortable": True,
                 },
