@@ -68,6 +68,9 @@ class Supplier(Base):
 
     id: Mapped[int] = mapped_column(primary_key=True)
     name: Mapped[str] = mapped_column(String, nullable=False)
+    cuit: Mapped[Optional[str]] = mapped_column(String, nullable=True)
+    phone: Mapped[Optional[str]] = mapped_column(String, nullable=True)
+    email: Mapped[Optional[str]] = mapped_column(String, nullable=True)
 
     # Relationships
     payment_orders: Mapped[List["PaymentOrder"]] = relationship(
