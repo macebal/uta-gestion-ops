@@ -13,7 +13,7 @@ from src.components import (
     text_input,
 )
 from src.models import Account, PaymentOrder
-from src.services.pdf_generator import create_multiple_payment_orders_pdf
+from src.services.pdf_generator import generate_pdf
 
 
 def print_payment_orders_page(session_factory: Callable[[], Session]):
@@ -246,7 +246,7 @@ def print_payment_orders_page(session_factory: Callable[[], Session]):
                 if filtered_orders:
                     with print_button_container:
                         primary_button(
-                            "Imprimir PDFs", icon="print", on_click=generate_pdf
+                            "Imprimir PDFs", icon="print", on_click=handle_generate_pdf
                         )
 
             if active_filters:
@@ -260,7 +260,7 @@ def print_payment_orders_page(session_factory: Callable[[], Session]):
         finally:
             session.close()
 
-    def generate_pdf():
+    def handle_generate_pdf():
         """Generate PDF with all filtered payment orders"""
         if not filtered_orders:
             ui.notify("No hay órdenes para imprimir", type="negative")
@@ -313,7 +313,7 @@ def print_payment_orders_page(session_factory: Callable[[], Session]):
 
             timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
             output_path = f"ordenes_pago_{timestamp}.pdf"
-            create_multiple_payment_orders_pdf(payment_orders_data, output_path)
+            generate_pdf("payment_order", payment_orders_data, output_path)
 
             ui.notify(f"PDF generado exitosamente: {output_path}", type="positive")
 
