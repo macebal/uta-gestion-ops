@@ -1,0 +1,56 @@
+order_number,check_number,account_number,supplier_name,detail_value,withholding_amount,amount,order_date,issue_date,due_date
+1001,5001,1234567/01,Constructora San Martin S.A.,Mantenimiento de edificio,0.00,15000.00,2025-01-05,2025-01-06,2025-01-21
+1002,5002,2345678/02,Servicios Integrales Lopez,Suministros medicos,450.00,8500.00,2025-01-08,2025-01-09,2025-01-24
+1003,5003,3456789/03,Materiales del Norte SRL,Publicidad y marketing,1200.00,22000.00,2025-01-10,2025-01-11,2025-01-26
+1004,5004,1234567/01,Transportes Belgrano,Material de oficina,0.00,3500.00,2025-01-12,2025-01-13,2025-01-28
+1005,5005,2345678/02,Inmobiliaria Central,Servicios de limpieza,280.50,5200.00,2025-01-15,2025-01-16,2025-01-31
+1006,5006,3456789/03,Servicios de Limpieza Total,Eventos y capacitacion,850.00,18000.00,2025-01-18,2025-01-19,2025-02-03
+1007,5007,1234567/01,Proveedor General SA,Servicios administrativos,0.00,12000.00,2025-01-20,2025-01-21,2025-02-05
+1008,5008,2345678/02,Mantenimiento Industrial,Honorarios profesionales,1500.00,28000.00,2025-01-22,2025-01-23,2025-02-07
+1009,5009,3456789/03,Suministros ABC,Material promocional,320.00,6800.00,2025-01-25,2025-01-26,2025-02-10
+1010,5010,1234567/01,Distribuidora Rosales,Gastos generales,0.00,4200.00,2025-01-28,2025-01-29,2025-02-13
+1011,5011,2345678/02,Tecnologia y Sistemas SA,Pago por equipo medico,2100.00,45000.00,2025-02-01,2025-02-02,2025-02-17
+1012,5012,3456789/03,Papelera del Sur,Publicidad y marketing,650.00,14500.00,2025-02-03,2025-02-04,2025-02-19
+1013,5013,1234567/01,Electronica Martinez,Tecnologia e informatica,890.00,17500.00,2025-02-05,2025-02-06,2025-02-21
+1014,5014,2345678/02,Ferreteria Industrial SA,Mantenimiento de edificio,0.00,9800.00,2025-02-08,2025-02-09,2025-02-24
+1015,5015,3456789/03,Alimentos y Bebidas SRL,Desarrollo de contenidos,425.00,8900.00,2025-02-10,2025-02-11,2025-02-26
+1016,5016,1234567/01,Constructora San Martin S.A.,Material de oficina,0.00,5600.00,2025-02-12,2025-02-13,2025-02-28
+1017,5017,2345678/02,Servicios Integrales Lopez,Suministros medicos,750.00,13200.00,2025-02-15,2025-02-16,2025-03-03
+1018,5018,3456789/03,Materiales del Norte SRL,Eventos y capacitacion,1800.00,32000.00,2025-02-18,2025-02-19,2025-03-06
+1019,5019,1234567/01,Transportes Belgrano,Servicios administrativos,0.00,8500.00,2025-02-20,2025-02-21,2025-03-08
+1020,5020,2345678/02,Inmobiliaria Central,Farmacia y medicamentos,1200.00,24000.00,2025-02-22,2025-02-23,2025-03-10
+1021,5021,3456789/03,Servicios de Limpieza Total,Material promocional,0.00,7200.00,2025-02-25,2025-02-26,2025-03-13
+1022,5022,1234567/01,Proveedor General SA,Servicios legales,980.00,19500.00,2025-02-28,2025-03-01,2025-03-16
+1023,5023,2345678/02,Mantenimiento Industrial,Honorarios profesionales,1650.00,31000.00,2025-03-03,2025-03-04,2025-03-19
+1024,5024,3456789/03,Suministros ABC,Publicidad y marketing,550.00,12500.00,2025-03-05,2025-03-06,2025-03-21
+1025,5025,1234567/01,Distribuidora Rosales,Gastos generales,0.00,6200.00,2025-03-08,2025-03-09,2025-03-24
+1026,5026,2345678/02,Tecnologia y Sistemas SA,Pago por equipo medico,2500.00,52000.00,2025-03-10,2025-03-11,2025-03-26
+1027,5027,3456789/03,Papelera del Sur,Desarrollo de contenidos,780.00,16800.00,2025-03-12,2025-03-13,2025-03-28
+1028,5028,1234567/01,Electronica Martinez,Tecnologia e informatica,0.00,11200.00,2025-03-15,2025-03-16,2025-03-31
+1029,5029,2345678/02,Ferreteria Industrial SA,Mantenimiento de edificio,420.00,8800.00,2025-03-18,2025-03-19,2025-04-03
+1030,5030,3456789/03,Alimentos y Bebidas SRL,Eventos y capacitacion,1450.00,26500.00,2025-03-20,2025-03-21,2025-04-05
+1031,5031,1234567/01,Constructora San Martin S.A.,Material de oficina,0.00,4800.00,2025-03-22,2025-03-23,2025-04-07
+1032,5032,2345678/02,Servicios Integrales Lopez,Suministros medicos,680.00,14500.00,2025-03-25,2025-03-26,2025-04-10
+1033,5033,3456789/03,Materiales del Norte SRL,Material promocional,0.00,9200.00,2025-03-28,2025-03-29,2025-04-13
+1034,5034,1234567/01,Transportes Belgrano,Servicios administrativos,520.00,10800.00,2025-04-01,2025-04-02,2025-04-17
+1035,5035,2345678/02,Inmobiliaria Central,Farmacia y medicamentos,1350.00,27500.00,2025-04-03,2025-04-04,2025-04-19
+1036,5036,3456789/03,Servicios de Limpieza Total,Publicidad y marketing,920.00,19800.00,2025-04-05,2025-04-06,2025-04-21
+1037,5037,1234567/01,Proveedor General SA,Servicios legales,0.00,15600.00,2025-04-08,2025-04-09,2025-04-24
+1038,5038,2345678/02,Mantenimiento Industrial,Honorarios profesionales,1850.00,35000.00,2025-04-10,2025-04-11,2025-04-26
+1039,5039,3456789/03,Suministros ABC,Desarrollo de contenidos,640.00,13800.00,2025-04-12,2025-04-13,2025-04-28
+1040,5040,1234567/01,Distribuidora Rosales,Gastos generales,0.00,5400.00,2025-04-15,2025-04-16,2025-05-01
+1041,5041,2345678/02,Tecnologia y Sistemas SA,Pago por equipo medico,2800.00,58000.00,2025-04-18,2025-04-19,2025-05-04
+1042,5042,3456789/03,Papelera del Sur,Eventos y capacitacion,1100.00,23500.00,2025-04-20,2025-04-21,2025-05-06
+1043,5043,1234567/01,Electronica Martinez,Tecnologia e informatica,890.00,18200.00,2025-04-22,2025-04-23,2025-05-08
+1044,5044,2345678/02,Ferreteria Industrial SA,Mantenimiento de edificio,0.00,10500.00,2025-04-25,2025-04-26,2025-05-11
+1045,5045,3456789/03,Alimentos y Bebidas SRL,Material promocional,480.00,9600.00,2025-04-28,2025-04-29,2025-05-14
+1046,5046,1234567/01,Constructora San Martin S.A.,Material de oficina,0.00,5800.00,2025-05-01,2025-05-02,2025-05-17
+1047,5047,2345678/02,Servicios Integrales Lopez,Suministros medicos,820.00,16200.00,2025-05-03,2025-05-04,2025-05-19
+1048,5048,3456789/03,Materiales del Norte SRL,Publicidad y marketing,1550.00,29000.00,2025-05-05,2025-05-06,2025-05-21
+1049,5049,1234567/01,Transportes Belgrano,Servicios administrativos,0.00,9200.00,2025-05-08,2025-05-09,2025-05-24
+1050,5050,2345678/02,Inmobiliaria Central,Farmacia y medicamentos,1480.00,30000.00,2025-05-10,2025-05-11,2025-05-26
+1051,5051,3456789/03,Servicios de Limpieza Total,Desarrollo de contenidos,0.00,11800.00,2025-05-12,2025-05-13,2025-05-28
+1052,5052,1234567/01,Proveedor General SA,Servicios legales,1020.00,21500.00,2025-05-15,2025-05-16,2025-05-31
+1053,5053,2345678/02,Mantenimiento Industrial,Honorarios profesionales,1950.00,38000.00,2025-05-18,2025-05-19,2025-06-03
+1054,5054,3456789/03,Suministros ABC,Eventos y capacitacion,1280.00,24800.00,2025-05-20,2025-05-21,2025-06-05
+1055,5055,1234567/01,Distribuidora Rosales,Gastos generales,0.00,6800.00,2025-05-22,2025-05-23,2025-06-07
