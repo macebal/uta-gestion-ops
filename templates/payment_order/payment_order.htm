@@ -2281,7 +2281,7 @@ ZGlhL2ltYWdlMS5qcGVnUEsFBgAAAAAGAAYAhQEAAI9BAAAAAA==
             FECHA:
           </td>
           <td class="xl7410753" style="border-top: none">
-            {{ payment_order_date }}
+            {{ payment_order_date|format_date_short }}
           </td>
         </tr>
         <tr height="30" style="mso-height-source: userset; height: 23.1pt">
@@ -2328,7 +2328,7 @@ ZGlhL2ltYWdlMS5qcGVnUEsFBgAAAAAGAAYAhQEAAI9BAAAAAA==
             &nbsp;
           </td>
           <td class="xl7610753" style="border-left: none">
-            {{ invoice_amount }}
+            {{ invoice_amount|format_currency }}
           </td>
         </tr>
         <tr height="22" style="mso-height-source: userset; height: 17.1pt">
@@ -2423,7 +2423,7 @@ ZGlhL2ltYWdlMS5qcGVnUEsFBgAAAAAGAAYAhQEAAI9BAAAAAA==
             class="xl7910753"
             style="border-top: none; border-left: none; vertical-align: middle"
           >
-            {{ witholding_amount }}
+            {{ witholding_amount|format_currency }}
           </td>
         </tr>
         <tr height="22" style="mso-height-source: userset; height: 17.25pt">
@@ -2433,10 +2433,10 @@ ZGlhL2ltYWdlMS5qcGVnUEsFBgAAAAAGAAYAhQEAAI9BAAAAAA==
             class="xl13710753"
             style="border-right: 1pt solid black; height: 17.25pt"
           >
-            TOTAL DE GASTOS:<span style="mso-spacerun: yes"> </span>
+            TOTAL DE GASTOS:<span style="mso-spacerun: yes"> </span>
           </td>
           <td class="xl7510753" style="border-top: none; border-left: none">
-            {{ payment_order_total }}
+            {{ payment_order_total|format_currency }}
           </td>
         </tr>
         <tr height="24" style="mso-height-source: userset; height: 18pt">
@@ -2498,10 +2498,10 @@ ZGlhL2ltYWdlMS5qcGVnUEsFBgAAAAAGAAYAhQEAAI9BAAAAAA==
           >
             CHEQUE N°
           </td>
-          <td class="xl8110753" style="border-top: none">{{ check_number }}</td>
+          <td class="xl8110753" style="border-top: none">{{ check_number|format_check_number }}</td>
           <td class="xl8310753" style="border-top: none">EMISION:</td>
           <td class="xl8510753" style="border-top: none; border-left: none">
-            {{ issue_date }}
+            {{ issue_date|format_date_short }}
           </td>
           <td class="xl8310753" style="border-top: none; border-left: none">
             VENCE:
@@ -2511,7 +2511,7 @@ ZGlhL2ltYWdlMS5qcGVnUEsFBgAAAAAGAAYAhQEAAI9BAAAAAA==
             width="130"
             style="border-top: none; width: 98pt"
           >
-            {{ due_date }}
+            {{ due_date|format_date_short }}
           </td>
         </tr>
         <tr height="23" style="mso-height-source: userset; height: 17.4pt">

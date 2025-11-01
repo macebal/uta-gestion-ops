@@ -1,5 +1,4 @@
 from typing import Callable
-from decimal import Decimal
 from datetime import datetime
 
 from nicegui import ui
@@ -14,6 +13,7 @@ from src.components import (
 )
 from src.models import Account, PaymentOrder
 from src.services.pdf_generator import generate_pdf
+from src.utils import format_currency, format_date, format_check_number
 
 
 def print_payment_orders_page(session_factory: Callable[[], Session]):
@@ -50,22 +50,6 @@ def print_payment_orders_page(session_factory: Callable[[], Session]):
             return account.id if account else None
         finally:
             session.close()
-
-    def format_currency(amount: float | Decimal | str) -> str:
-        """Format a number as currency"""
-        if isinstance(amount, str):
-            amount = amount.replace("$", "").replace(",", "")
-            try:
-                amount = float(amount)
-            except ValueError:
-                amount = 0
-        return f"${amount:,.2f}"
-
-    def format_date(date_obj) -> str:
-        """Format date as DD/MM/YYYY"""
-        if isinstance(date_obj, str):
-            return date_obj
-        return date_obj.strftime("%d/%m/%Y")
 
     def render_filters():
         """Render active filters as chips"""
@@ -225,7 +209,7 @@ def print_payment_orders_page(session_factory: Callable[[], Session]):
                     {
                         "id": po.id,
                         "order_number": po.order_number,
-                        "check_number": str(po.check_number).zfill(8),
+                        "check_number": format_check_number(po.check_number),
                         "supplier_name": po.supplier.name if po.supplier else "",
                         "detail": po.detail.value if po.detail else "",
                         "amount": format_currency(po.amount),
@@ -286,17 +270,17 @@ def print_payment_orders_page(session_factory: Callable[[], Session]):
                 template_data = {
                     "account_name": account.name if account else "",
                     "payment_order_id": str(po.order_number),
-                    "payment_order_date": format_date(po.order_date),
+                    "payment_order_date": po.order_date,
                     "supplier_name": po.supplier.name if po.supplier else "",
-                    "invoice_amount": format_currency(invoice_total),
+                    "invoice_amount": invoice_total,
                     "detail": po.detail.value if po.detail else "",
-                    "witholding_amount": format_currency(po.withholding_amount),
-                    "payment_order_total": format_currency(po.amount),
+                    "witholding_amount": po.withholding_amount,
+                    "payment_order_total": po.amount,
                     "invoice_number": invoice_numbers,
                     "account_number": account.number if account else "",
-                    "check_number": str(po.check_number).zfill(8),
-                    "issue_date": format_date(po.issue_date),
-                    "due_date": format_date(po.due_date),
+                    "check_number": po.check_number,
+                    "issue_date": po.issue_date,
+                    "due_date": po.due_date,
                 }
 
                 payment_orders_data.append(template_data)
