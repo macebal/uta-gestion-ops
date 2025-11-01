@@ -75,3 +75,53 @@ def create_payment_order_pdf(
     html_doc.write_pdf(str(pdf_path), font_config=font_config, optimize_images=True)
 
     return str(pdf_path.absolute())
+
+
+def create_multiple_payment_orders_pdf(
+    payment_orders_data: list[dict[str, str]],
+    output_path: str = "payment_orders_batch.pdf",
+) -> str:
+    """
+    Generate a multi-page PDF from multiple payment order templates.
+
+    Args:
+        payment_orders_data: List of dictionaries, each containing data for one payment order.
+            Each dictionary should have the same keys as expected by create_payment_order_pdf.
+        output_path: Path where the PDF will be saved (relative to project root)
+
+    Returns:
+        str: Absolute path to the generated PDF file
+
+    Raises:
+        FileNotFoundError: If the template file is not found
+        Exception: If PDF generation fails
+    """
+    template_name = "payment_order"
+    template_dir, executable_dir = get_template_dir(template_name)
+    template_file = template_dir / f"{template_name}.htm"
+
+    if not template_file.exists():
+        raise FileNotFoundError(f"Template file not found: {template_file}")
+
+    env = Environment(
+        loader=FileSystemLoader(str(template_dir)),
+        autoescape=select_autoescape(["html", "htm"]),
+    )
+
+    template = env.get_template("payment_order.htm")
+    font_config = FontConfiguration()
+
+    documents = []
+    for order_data in payment_orders_data:
+        rendered_html = template.render(**order_data)
+        html_doc = HTML(string=rendered_html, base_url=str(template_dir))
+        documents.append(html_doc.render(font_config=font_config))
+
+    all_pages = []
+    for doc in documents:
+        all_pages.extend(doc.pages)
+
+    pdf_path = executable_dir / output_path
+    documents[0].copy(all_pages).write_pdf(str(pdf_path))
+
+    return str(pdf_path.absolute())

@@ -5,6 +5,7 @@ from sqlalchemy.orm import sessionmaker
 from src.models import Base
 from src.pages.home import home_page
 from src.pages.create_payment_order import create_payment_order_page
+from src.pages.print_payment_orders import print_payment_orders_page
 from src.pages.manage_accounts import manage_accounts_page
 from src.pages.manage_suppliers import manage_suppliers_page
 from src.pages.manage_details import manage_details_page
@@ -31,6 +32,13 @@ def payment_order_page():
     ui.page_title("Nueva Orden de Pago")
     create_menu()
     create_payment_order_page(SessionLocal)
+
+
+@ui.page("/payment-orders/print")
+def print_orders_page():
+    ui.page_title("Imprimir Órdenes de Pago")
+    create_menu()
+    print_payment_orders_page(SessionLocal)
 
 
 @ui.page("/manage-accounts")

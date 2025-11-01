@@ -41,6 +41,9 @@ def create_menu():
             # Print menu
             with ui.button("Imprimir", icon="print").props("flat color=grey-8"):
                 with ui.menu():
-                    ui.menu_item("Orden de Pago")
+                    ui.menu_item(
+                        "Órdenes de Pago",
+                        on_click=lambda: ui.navigate.to("/payment-orders/print"),
+                    )
                     ui.menu_item("Reporte de Órdenes")
                     ui.menu_item("Resumen")
