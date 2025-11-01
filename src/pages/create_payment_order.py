@@ -14,6 +14,7 @@ from src.components import (
 )
 from src.models import Account, PaymentOrder, Supplier, Detail
 from src.services.pdf_generator import generate_pdf
+from src.utils import format_currency, parse_currency, format_check_number
 
 
 def create_payment_order_page(session_factory: Callable[[], Session]):
@@ -123,34 +124,14 @@ def create_payment_order_page(session_factory: Callable[[], Session]):
                 if op_input:
                     op_input.value = str(next_order)
                 if check_input:
-                    check_input.value = str(next_check).zfill(8)
+                    check_input.value = format_check_number(next_check)
             elif account:
                 if op_input:
                     op_input.value = "1"
                 if check_input:
-                    check_input.value = str(1).zfill(8)
+                    check_input.value = format_check_number(1)
         finally:
             session.close()
-
-    def format_currency(amount: float | Decimal | str) -> str:
-        """Format a number as currency"""
-        if isinstance(amount, str):
-            amount = amount.replace("$", "").replace(",", "")
-            try:
-                amount = float(amount)
-            except ValueError:
-                amount = 0
-        return f"${amount:,.2f}"
-
-    def parse_currency(currency_str: str) -> Decimal:
-        """Parse a currency string to Decimal"""
-        if not currency_str:
-            return Decimal("0.00")
-        clean_str = currency_str.replace("$", "").replace(",", "").strip()
-        try:
-            return Decimal(clean_str)
-        except (ValueError, Exception):
-            return Decimal("0.00")
 
     def calculate_totals():
         """Calculate and update invoice total and total OP"""
@@ -389,17 +370,17 @@ def create_payment_order_page(session_factory: Callable[[], Session]):
                     template_data = {
                         "account_name": account_name,
                         "payment_order_id": str(op),
-                        "payment_order_date": order_date_str,
+                        "payment_order_date": order_date,
                         "supplier_name": supplier_name,
-                        "invoice_amount": format_currency(invoice_total),
+                        "invoice_amount": invoice_total,
                         "detail": detail_value,
-                        "witholding_amount": format_currency(withholding_amount),
-                        "payment_order_total": format_currency(total_amount),
+                        "witholding_amount": withholding_amount,
+                        "payment_order_total": total_amount,
                         "invoice_number": invoice_numbers,
                         "account_number": account.number if account else "",
-                        "check_number": str(check).zfill(8),
-                        "issue_date": issue_date_str,
-                        "due_date": due_date_str,
+                        "check_number": int(check),
+                        "issue_date": issue_date,
+                        "due_date": due_date,
                     }
 
                     output_path = f"orden_pago_{op}.pdf"

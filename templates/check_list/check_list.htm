@@ -58,7 +58,7 @@
   <td>{{ order.order_number }}</td>
   <td>{{ order.issue_date|format_date_short }}</td>
   <td>{{ order.due_date|format_date_short }}</td>
-  <td style="text-align:center">{{ order.check_number }}</td>
+  <td style="text-align:center">{{ order.check_number|format_check_number }}</td>
   <td>{{ order.supplier.name if order.supplier else '' }}</td>
   <td>{{ order.detail.value if order.detail else '' }}</td>
   <td>{% if order.invoices %}{{ order.invoices|map(attribute='invoice_number')|join(', ') }}{% endif %}</td>
