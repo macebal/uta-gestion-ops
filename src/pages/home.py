@@ -45,7 +45,7 @@ def home_page():
                 with (
                     ui.card()
                     .classes(
-                        "flex-1 p-8 cursor-pointer hover:shadow-xl transition-shadow bg-gradient-to-br from-green-500 to-green-600"
+                        "flex-1 p-8 hover:shadow-xl transition-shadow bg-gradient-to-br from-green-500 to-green-600"
                     )
                     .style("min-height: 280px")
                 ):
@@ -61,8 +61,12 @@ def home_page():
                         )
                         with ui.row().classes("gap-2 mt-2 justify-center"):
                             ui.button("Orden de Pago", icon="description").props(
-                                "flat color=white text-color=green-600"
-                            ).classes("text-sm")
+                                "color=white text-color=green-600"
+                            ).classes(
+                                "text-sm hover:shadow-lg hover:scale-105 transition-all"
+                            ).on(
+                                "click", lambda: ui.navigate.to("/payment-orders/print")
+                            )
                             ui.button("Resumen", icon="summarize").props(
                                 "flat color=white text-color=green-600"
                             ).classes("text-sm")
