@@ -18,6 +18,41 @@ def get_template_dir(template_name: str) -> tuple[Path, Path]:
     return bundle_dir / "templates" / template_name, executable_dir
 
 
+def format_date_short(date_obj):
+    """
+    Format a date as dd/mm/yyyy (e.g., 01/11/2024)
+    """
+    if not date_obj:
+        return ''
+    return date_obj.strftime('%d/%m/%Y')
+
+
+def format_currency(amount):
+    """
+    Format a decimal amount as currency (e.g., $ 12.345.678,90)
+    Uses space after $, dots for thousands, comma for decimals
+    """
+    if not amount or amount == 0:
+        return ''
+    
+    # Convert to string with 2 decimal places
+    amount_str = f"{float(amount):.2f}"
+    
+    # Split integer and decimal parts
+    integer_part, decimal_part = amount_str.split('.')
+    
+    # Add thousands separators (dots) to integer part
+    # Process from right to left
+    integer_with_dots = ''
+    for i, digit in enumerate(reversed(integer_part)):
+        if i > 0 and i % 3 == 0:
+            integer_with_dots = '.' + integer_with_dots
+        integer_with_dots = digit + integer_with_dots
+    
+    # Format with space after $ and comma for decimal separator
+    return f"$ {integer_with_dots},{decimal_part}"
+
+
 def render_template_html(template_name: str, template_data: dict) -> tuple[str, Path]:
     """
     Render a Jinja2 template to HTML string.
@@ -43,6 +78,10 @@ def render_template_html(template_name: str, template_data: dict) -> tuple[str, 
         loader=FileSystemLoader(str(template_dir)),
         autoescape=select_autoescape(["html", "htm"]),
     )
+    
+    # Add custom filters
+    env.filters['format_date_short'] = format_date_short
+    env.filters['format_currency'] = format_currency
 
     # Load and render the template
     template = env.get_template(f"{template_name}.htm")
