@@ -36,7 +36,6 @@ def create_menu():
                         "Detalles",
                         on_click=lambda: ui.navigate.to("/manage-details"),
                     )
-                    ui.menu_item("Configuración")
 
             # Print menu
             with ui.button("Imprimir", icon="print").props("flat color=grey-8"):
@@ -49,5 +48,3 @@ def create_menu():
                         "Lista de Cheques",
                         on_click=lambda: ui.navigate.to("/checks/print"),
                     )
-                    ui.menu_item("Reporte de Órdenes")
-                    ui.menu_item("Resumen")
