@@ -28,7 +28,7 @@ def home_page():
                         "flex-1 p-8 cursor-pointer hover:shadow-xl transition-shadow bg-gradient-to-br from-blue-500 to-blue-600"
                     )
                     .style("min-height: 280px")
-                    .on("click", lambda: ui.navigate.to("/create-payment-order"))
+                    .on("click", lambda: ui.navigate.to("/payment-orders/create"))
                 ):
                     with ui.column().classes(
                         "items-center justify-center gap-4 w-full h-full"
@@ -92,7 +92,7 @@ def home_page():
                     .classes(
                         "flex-1 p-6 cursor-pointer hover:shadow-lg transition-shadow"
                     )
-                    .on("click", lambda: ui.navigate.to("/manage-suppliers"))
+                    .on("click", lambda: ui.navigate.to("/suppliers/manage"))
                 ):
                     with ui.row().classes("items-center gap-4"):
                         ui.icon("business", size="2.5rem").classes("text-purple-600")
@@ -110,7 +110,7 @@ def home_page():
                     .classes(
                         "flex-1 p-6 cursor-pointer hover:shadow-lg transition-shadow"
                     )
-                    .on("click", lambda: ui.navigate.to("/manage-accounts"))
+                    .on("click", lambda: ui.navigate.to("/accounts/manage"))
                 ):
                     with ui.row().classes("items-center gap-4"):
                         ui.icon("account_balance", size="2.5rem").classes(
@@ -130,7 +130,7 @@ def home_page():
                     .classes(
                         "flex-1 p-6 cursor-pointer hover:shadow-lg transition-shadow"
                     )
-                    .on("click", lambda: ui.navigate.to("/manage-details"))
+                    .on("click", lambda: ui.navigate.to("/details/manage"))
                 ):
                     with ui.row().classes("items-center gap-4"):
                         ui.icon("list_alt", size="2.5rem").classes("text-teal-600")
