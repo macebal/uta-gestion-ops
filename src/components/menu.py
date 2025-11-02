@@ -15,9 +15,8 @@ def create_menu():
                 with ui.menu():
                     ui.menu_item(
                         "Nueva Orden de Pago",
-                        on_click=lambda: ui.navigate.to("/create-payment-order"),
+                        on_click=lambda: ui.navigate.to("/payment-orders/create"),
                     )
-                    ui.menu_item("Abrir")
                     ui.separator()
                     ui.menu_item("Salir", on_click=app.shutdown)
 
@@ -26,15 +25,15 @@ def create_menu():
                 with ui.menu():
                     ui.menu_item(
                         "Proveedores",
-                        on_click=lambda: ui.navigate.to("/manage-suppliers"),
+                        on_click=lambda: ui.navigate.to("/suppliers/manage"),
                     )
                     ui.menu_item(
                         "Cuentas",
-                        on_click=lambda: ui.navigate.to("/manage-accounts"),
+                        on_click=lambda: ui.navigate.to("/accounts/manage"),
                     )
                     ui.menu_item(
                         "Detalles",
-                        on_click=lambda: ui.navigate.to("/manage-details"),
+                        on_click=lambda: ui.navigate.to("/details/manage"),
                     )
 
             # Print menu
