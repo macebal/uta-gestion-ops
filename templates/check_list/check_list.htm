@@ -34,7 +34,7 @@
             class="title-cell"
             width="1000"
           >
-            REGISTROS OBRA SOCIAL {{ month }} {{ year }}
+            REGISTROS {{ account_name|upper }} {{ month }} {{ year }}
           </td>
         </tr>
         {% endif %} {% if show_header %}
@@ -64,21 +64,6 @@
   <td>{% if order.invoices %}{{ order.invoices|map(attribute='invoice_number')|join(', ') }}{% endif %}</td>
   <td style="text-align:right">{{ order.withholding_amount|format_currency }}</td>
   <td style="text-align:right">{{ order.amount|format_currency }}</td>
- </tr>
-{% endfor %}
-
-{# Fill remaining empty rows #}
-{% for i in range(payment_orders|length, rows_per_page) %}
- <tr height=24 style='height:18.0pt'>
-  <td>&nbsp;</td>
-  <td>&nbsp;</td>
-  <td>&nbsp;</td>
-  <td>&nbsp;</td>
-  <td>&nbsp;</td>
-  <td>&nbsp;</td>
-  <td>&nbsp;</td>
-  <td>&nbsp;</td>
-  <td>&nbsp;</td>
  </tr>
 {% endfor %}
       </table>
