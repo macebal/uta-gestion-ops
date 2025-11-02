@@ -41,35 +41,45 @@ def home_page():
                             "text-blue-100 text-center"
                         )
 
-                # Print button - large card
+                # Print Payment Orders button - large card
                 with (
                     ui.card()
                     .classes(
-                        "flex-1 p-8 hover:shadow-xl transition-shadow bg-gradient-to-br from-green-500 to-green-600"
+                        "flex-1 p-8 cursor-pointer hover:shadow-xl transition-shadow bg-gradient-to-br from-green-500 to-green-600"
                     )
                     .style("min-height: 280px")
+                    .on("click", lambda: ui.navigate.to("/payment-orders/print"))
                 ):
                     with ui.column().classes(
                         "items-center justify-center gap-4 w-full h-full"
                     ):
-                        ui.icon("print", size="4rem").classes("text-white")
-                        ui.label("Imprimir").classes(
+                        ui.icon("description", size="4rem").classes("text-white")
+                        ui.label("Imprimir Órdenes de Pago").classes(
                             "text-2xl font-bold text-white text-center"
                         )
-                        ui.label("Imprimir órdenes y resúmenes").classes(
+                        ui.label("Imprimir órdenes de pago individuales").classes(
                             "text-green-100 text-center"
                         )
-                        with ui.row().classes("gap-2 mt-2 justify-center"):
-                            ui.button("Orden de Pago", icon="description").props(
-                                "color=white text-color=green-600"
-                            ).classes(
-                                "text-sm hover:shadow-lg hover:scale-105 transition-all"
-                            ).on(
-                                "click", lambda: ui.navigate.to("/payment-orders/print")
-                            )
-                            ui.button("Resumen", icon="summarize").props(
-                                "flat color=white text-color=green-600"
-                            ).classes("text-sm")
+
+                # Print Check List button - large card
+                with (
+                    ui.card()
+                    .classes(
+                        "flex-1 p-8 cursor-pointer hover:shadow-xl transition-shadow bg-gradient-to-br from-teal-500 to-teal-600"
+                    )
+                    .style("min-height: 280px")
+                    .on("click", lambda: ui.navigate.to("/checks/print"))
+                ):
+                    with ui.column().classes(
+                        "items-center justify-center gap-4 w-full h-full"
+                    ):
+                        ui.icon("list", size="4rem").classes("text-white")
+                        ui.label("Imprimir Lista de Cheques").classes(
+                            "text-2xl font-bold text-white text-center"
+                        )
+                        ui.label("Generar lista de cheques por cuenta y mes").classes(
+                            "text-teal-100 text-center"
+                        )
 
         # Management section - less frequent actions
         with ui.column().classes("w-full max-w-6xl gap-4"):
