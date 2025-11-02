@@ -20,6 +20,21 @@ class Base(DeclarativeBase):
     pass
 
 
+class AppState(Base):
+    """AppState table - stores application state like last opened date and reminder dismissal"""
+
+    __tablename__ = "app_state"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    last_opened_date: Mapped[Optional[date]] = mapped_column(Date, nullable=True)
+    reminder_dismissed_month: Mapped[Optional[str]] = mapped_column(
+        String, nullable=True
+    )
+
+    def __repr__(self):
+        return f"<AppState(id={self.id}, last_opened={self.last_opened_date}, dismissed={self.reminder_dismissed_month})>"
+
+
 class Account(Base):
     """Accounts table - stores bank account information"""
 
