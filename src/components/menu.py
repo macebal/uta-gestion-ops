@@ -45,5 +45,9 @@ def create_menu():
                         "Órdenes de Pago",
                         on_click=lambda: ui.navigate.to("/payment-orders/print"),
                     )
+                    ui.menu_item(
+                        "Lista de Cheques",
+                        on_click=lambda: ui.navigate.to("/checks/print"),
+                    )
                     ui.menu_item("Reporte de Órdenes")
                     ui.menu_item("Resumen")
