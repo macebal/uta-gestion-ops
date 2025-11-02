@@ -17,7 +17,6 @@ def create_menu():
                         "Nueva Orden de Pago",
                         on_click=lambda: ui.navigate.to("/payment-orders/create"),
                     )
-                    ui.menu_item("Abrir")
                     ui.separator()
                     ui.menu_item("Salir", on_click=app.shutdown)
 
