@@ -25,7 +25,7 @@ SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 def page():
     ui.page_title("UTA - Gestión de Órdenes de Pago")
     create_menu()
-    home_page()
+    home_page(SessionLocal)
 
 
 @ui.page("/payment-orders/create")

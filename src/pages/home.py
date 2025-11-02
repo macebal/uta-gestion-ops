@@ -1,7 +1,13 @@
+from typing import Callable
+from datetime import date
+
 from nicegui import ui
+from sqlalchemy.orm import Session
+
+from src.models import AppState
 
 
-def home_page():
+def home_page(session_factory: Callable[[], Session]):
     """Create the home page with main action buttons"""
 
     with ui.column().classes("w-full items-center p-8"):
@@ -141,3 +147,73 @@ def home_page():
                             ui.label("Gestionar detalles de pago").classes(
                                 "text-sm text-gray-500"
                             )
+
+        def check_and_show_reminder():
+            """Check if reminder should be shown and return visibility state
+            
+            If the reminder has been dismissed for the current month, it will not be shown.
+            If the reminder has not been dismissed for the current month, it will be shown.
+            """
+            session = session_factory()
+            try:
+                app_state = session.query(AppState).first()
+                today = date.today()
+                current_month_str = today.strftime("%Y-%m")
+
+                if not app_state:
+                    app_state = AppState(
+                        last_opened_date=today, reminder_dismissed_month=None
+                    )
+                    session.add(app_state)
+                    session.commit()
+                    return True
+
+                should_show = app_state.reminder_dismissed_month != current_month_str
+
+                app_state.last_opened_date = today
+                session.commit()
+
+                return should_show
+            finally:
+                session.close()
+
+        def dismiss_reminder_for_month():
+            """Mark reminder as dismissed for current month and navigate to accounts"""
+            session = session_factory()
+            try:
+                app_state = session.query(AppState).first()
+                if app_state:
+                    today = date.today()
+                    app_state.reminder_dismissed_month = today.strftime("%Y-%m")
+                    session.commit()
+            finally:
+                session.close()
+            ui.navigate.to("/accounts/manage")
+
+    show_reminder = check_and_show_reminder()
+
+    reminder_container = ui.column().classes("fixed bottom-0 left-0 right-0 z-50 px-4 pb-4")
+    reminder_container.visible = show_reminder
+    
+    with reminder_container:
+        with ui.card().classes(
+            "w-full max-w-6xl mx-auto p-6 bg-gradient-to-r from-amber-50 to-orange-50 border-l-4 border-orange-400 shadow-2xl"
+        ):
+            with ui.row().classes("items-center gap-4 w-full"):
+                ui.icon("account_balance", size="2.5rem").classes("text-orange-600")
+                with ui.column().classes("flex-1 gap-2"):
+                    ui.label("Recordatorio Mensual").classes(
+                        "text-lg font-semibold text-gray-800"
+                    )
+                    ui.label(
+                        "Revise y actualice los números de cheque y orden de pago de las cuentas"
+                    ).classes("text-gray-700")
+                with ui.row().classes("gap-3"):
+                    # clicking on the button will hide the reminder container and it will be 
+                    # shown again next time the user opens the app if the reminder has not been dismissed for the current month
+                    ui.button("Posponer", on_click=lambda: reminder_container.set_visibility(False)).props(
+                        "outline color=orange-7"
+                    ).classes("px-4")
+                    ui.button("Ir a Cuentas", on_click=dismiss_reminder_for_month).props(
+                        "color=orange"
+                    ).classes("px-4")
