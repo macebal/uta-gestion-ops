@@ -551,7 +551,7 @@ def create_payment_order_page(session_factory: Callable[[], Session]):
             with ui.row().classes("w-full items-center justify-between mt-6"):
                 with ui.row().classes("items-center gap-2"):
                     print_checkbox = ui.checkbox(
-                        "Imprimir orden de pago", value=True
+                        "Generar PDF de orden de pago", value=True
                     ).classes("text-gray-700")
 
                 primary_button("Agregar OP", on_click=create_payment_order)

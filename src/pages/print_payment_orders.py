@@ -230,7 +230,7 @@ def print_payment_orders_page(session_factory: Callable[[], Session]):
                 if filtered_orders:
                     with print_button_container:
                         primary_button(
-                            "Imprimir PDFs", icon="print", on_click=handle_generate_pdf
+                            "Generar PDF", icon="picture_as_pdf", on_click=handle_generate_pdf
                         )
 
             if active_filters:
@@ -247,7 +247,7 @@ def print_payment_orders_page(session_factory: Callable[[], Session]):
     def handle_generate_pdf():
         """Generate PDF with all filtered payment orders"""
         if not filtered_orders:
-            ui.notify("No hay órdenes para imprimir", type="negative")
+            ui.notify("No hay órdenes para generar PDF", type="negative")
             return
 
         session = session_factory()
@@ -310,7 +310,7 @@ def print_payment_orders_page(session_factory: Callable[[], Session]):
 
     with ui.column().classes("w-full p-6"):
         with ui.card().classes("w-full max-w-6xl mx-auto p-6 shadow-lg"):
-            ui.label("Imprimir Órdenes de Pago").classes(
+            ui.label("Generar PDFs de Órdenes de Pago").classes(
                 "text-2xl font-normal text-gray-700 mb-6"
             )
 

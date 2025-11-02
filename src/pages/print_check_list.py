@@ -159,7 +159,7 @@ def print_check_list_page(session_factory: Callable[[], Session]):
 
     with ui.column().classes("w-full p-6"):
         with ui.card().classes("w-full max-w-4xl mx-auto p-6 shadow-lg"):
-            ui.label("Imprimir Lista de Cheques").classes(
+            ui.label("Generar PDF de Lista de Cheques").classes(
                 "text-2xl font-normal text-gray-700 mb-6"
             )
 
