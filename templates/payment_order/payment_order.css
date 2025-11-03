@@ -15,7 +15,7 @@ table#form-table {
   border-collapse: collapse;
   table-layout: fixed;
   width: 470pt;
-  border: 2pt solid black;
+  border: 1pt solid black;
 }
 
 table#check-box-table {
@@ -31,6 +31,10 @@ col.col-4 { width: 79pt; }
 col.col-5 { width: 79pt; }
 col.col-6 { width: 98pt; }
 
+tr.header-top td, tr.header-bottom td {
+  height: 26.5pt;
+}
+
 tr.row-2 td, tr.row-3 td {
   height: 22.5pt;
 }
@@ -40,23 +44,27 @@ tr.row-4 td, tr.row-5 td {
 }
 
 tr.row-6 td, tr.row-7 td, tr.row-8 td, tr.row-9 td, tr.row-10 td, tr.row-11 td {
-  height: 16.5pt;
+  height: 15pt;
 }
 
 tr.row-12 td {
   height: 17.25pt;
 }
 
-tr.row-13 td, tr.row-14 td {
+tr.row-13 td{
   height: 18pt;
 }
 
+tr.row-14 td {
+  height: 17.25pt;
+}
+
 tr.row-15 td {
-  height: 30pt;
+  height: 27.75pt;
 }
 
 tr.row-16 td {
-  height: 21pt;
+  height: 19.5pt;
 }
 
 tr.row-17 td {
@@ -108,16 +116,19 @@ td.logo {
 }
 
 .payment-order-number-label {
+  border: 1pt solid black;
   border-right: none;
   text-align: center;
 }
 
 .payment-order-number {
+  border: 1pt solid black;
   border-left: none;
 }
 
 .payment-order-date-label {
   text-align: right;
+  border: 1pt solid black;
   border-right: none;
   padding-right: 2pt;
   font-family: Calibri, Arial, sans-serif;
@@ -125,22 +136,26 @@ td.logo {
 
 .payment-order-date {
   text-align: left;
+  border: 1pt solid black;
   border-left: none;
   padding-left: 2pt;
   font-family: Calibri, Arial, sans-serif;
 }
 
 .supplier-name-label {
+  border: 1pt solid black;
   border-right: none;
   text-align: center;
 }
 
 .supplier-name {
+  border: 1pt solid black;
   border-left: none;
   text-align: left;
 }
 
 .imputacion-contable-label {
+  border: 1pt solid black;
   text-align: center;
   font-size: 14pt;
 }
@@ -148,16 +163,19 @@ td.logo {
 .denomination-account-label {
   text-align: center;
   font-size: 10pt;
+  border-bottom: 1pt solid black;
 }
 
 .code-account-label {
   text-align: center;
   font-family: Calibri, Arial, sans-serif;
+  border-bottom: 1pt solid black;
 }
 
 .amount-label {
   text-align: center;
   font-family: Calibri, Arial, sans-serif;
+  border-bottom: 1pt solid black;
 }
 
 .detail-label {
@@ -196,12 +214,15 @@ td.logo {
   text-align: right;
   padding-right: 2pt;
   font-size: 10pt;
+  border-top: 1pt solid black;
+  border-right: 1pt solid black;
 }
 
 .total-amount-value {
   text-align: left;
   padding-left: 2pt;
   font-family: Calibri, Arial, sans-serif;
+  border-top: 1pt solid black;
 }
 
 .bonds-label {
@@ -218,6 +239,7 @@ td.logo {
 .invoice-number-value {
   text-align: center;
   font-size: 10pt;
+  border: 1pt solid black;
 }
 
 .bank-label {
@@ -284,11 +306,13 @@ td.logo {
 .created-by-label {
   text-align: center;
   font-size: 8pt;
+  border: 1pt solid black;
 }
 
 .authorizations-label {
   text-align: center;
   font-size: 8pt;
+  border: 1pt solid black;
 }
 
 .created-by-value {
@@ -296,6 +320,7 @@ td.logo {
   vertical-align: center;
   font-size: 12pt;
   font-family: Calibri, Arial, sans-serif;
+  border-bottom: 1pt solid black;
 }
 
 .signee-label {
@@ -306,11 +331,13 @@ td.logo {
   border-right: none;
   font-size: 8pt;
   font-family: Calibri, Arial, sans-serif;
+  border-bottom: 1pt solid black;
 }
 
 .central-accounting-label {
   text-align: center;
   font-size: 10pt;
+  border-top: 1pt solid black;
 }
 
 .control-label {

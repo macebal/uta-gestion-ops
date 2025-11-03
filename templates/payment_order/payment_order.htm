@@ -15,7 +15,7 @@
         <col class="col-4" />
         <col class="col-5" />
         <col class="col-6" />
-        <tr>
+        <tr class="header-top">
           <td colspan="5" class="header header-top" style="border-bottom: none">
             UNION TRANVIARIOS AUTOMOTOR
           </td>
@@ -27,21 +27,21 @@
             />
           </td>
         </tr>
-        <tr>
+        <tr class="header-bottom">
           <td colspan="5" class="header header-bottom" style="border-top: none">
-            S I N D I C A L
+            {{ account_name|upper|join(' ') }}
           </td>
         </tr>
         <tr class="row-2">
           <td colspan="2" class="payment-order-number-label">ORDEN DE PAGO</td>
-          <td class="payment-order-number">182</td>
-          <td></td>
+          <td class="payment-order-number">{{ payment_order_id }}</td>
+          <td class="payment-order-number-label"></td>
           <td class="payment-order-date-label">FECHA:</td>
-          <td class="payment-order-date">11/03/2025</td>
+          <td class="payment-order-date">{{ payment_order_date|format_date_short }}</td>
         </tr>
         <tr class="row-3">
           <td colspan="2" class="supplier-name-label">Paguese a:</td>
-          <td colspan="4" class="supplier-name">CONFLUENCIA</td>
+          <td colspan="4" class="supplier-name">{{ supplier_name }}</td>
         </tr>
         <tr class="row-4">
           <td colspan="6" class="imputacion-contable-label">IMPUTACION CONTABLE</td>
@@ -54,12 +54,11 @@
         <tr class="row-6">
           <td colspan="3" class="detail-label">DETALLE:</td>
           <td colspan="2"></td>
-          <td class="invoice-value">$15,000,000.00</td>
+          <td class="invoice-value">{{ invoice_amount|format_currency }}</td>
         </tr>
         <tr class="row-7">
           <td colspan="3" rowspan="5" class="detail-value">
-            Servicios de mantenimiento y reparación de unidades correspondientes
-            al mes de octubre 2025
+            {{ detail }}
           </td>
           <td colspan="2"></td>
           <td class="invoice-value"></td>
@@ -78,32 +77,32 @@
         </tr>
         <tr class="row-11">
           <td colspan="2" class="witholding-label">R E T E N C I O N E S</td>
-          <td class="witholding-value">$25,000.00</td>
+          <td class="witholding-value">{{ withholding_amount|format_currency }}</td>
         </tr>
         <tr class="row-12">
           <td colspan="5" class="total-amount-label">TOTAL DE GASTOS:</td>
-          <td class="total-amount-value">$14,975,000.00</td>
+          <td class="total-amount-value">{{ payment_order_total|format_currency }}</td>
         </tr>
         <tr class="row-13">
           <td colspan="6" class="bonds-label">BONOS PROVINCIALES Y/O NACIONALES</td>
         </tr>
         <tr class="row-14">
           <td colspan="2" class="invoice-number-label">FACTURA N°</td>
-          <td colspan="2" class="invoice-number-value">0</td>
-          <td colspan="2"></td>
+          <td colspan="2" class="invoice-number-value">{{ invoice_number }}</td>
+          <td colspan="2" class="invoice-number-value"></td>
         </tr>
         <tr class="row-15">
           <td colspan="3" class="bank-label">BANCO DE LA NACION ARGENTINA</td>
           <td colspan="2" class="account-number-label">NUMERO DE CUENTA</td>
-          <td colspan="1" class="account-number-value">1300564/23</td>
+          <td colspan="1" class="account-number-value">{{ account_number }}</td>
         </tr>
         <tr class="row-16">
           <td colspan="1" class="check-number-label">CHEQUE N°</td>
-          <td colspan="1" class="check-number-value">00148685</td>
+          <td colspan="1" class="check-number-value">{{ check_number }}</td>
           <td colspan="1" class="issue-date-label">EMISION:</td>
-          <td colspan="1" class="issue-date-value">11/03/2025</td>
+          <td colspan="1" class="issue-date-value">{{ issue_date|format_date_short }}</td>
           <td colspan="1" class="due-date-label">VENCE:</td>
-          <td colspan="1" class="due-date-value">11/03/2025</td>
+          <td colspan="1" class="due-date-value">{{ due_date|format_date_short }}</td>
         </tr>
         <tr class="row-17">
           <td colspan="3" class="check-clarification-label">ACLARACION DE CHEQUE:</td>
