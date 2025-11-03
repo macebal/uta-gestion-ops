@@ -15,9 +15,8 @@ def create_menu():
                 with ui.menu():
                     ui.menu_item(
                         "Nueva Orden de Pago",
-                        on_click=lambda: ui.navigate.to("/create-payment-order"),
+                        on_click=lambda: ui.navigate.to("/payment-orders/create"),
                     )
-                    ui.menu_item("Abrir")
                     ui.separator()
                     ui.menu_item("Salir", on_click=app.shutdown)
 
@@ -26,21 +25,25 @@ def create_menu():
                 with ui.menu():
                     ui.menu_item(
                         "Proveedores",
-                        on_click=lambda: ui.navigate.to("/manage-suppliers"),
+                        on_click=lambda: ui.navigate.to("/suppliers/manage"),
                     )
                     ui.menu_item(
                         "Cuentas",
-                        on_click=lambda: ui.navigate.to("/manage-accounts"),
+                        on_click=lambda: ui.navigate.to("/accounts/manage"),
                     )
                     ui.menu_item(
                         "Detalles",
-                        on_click=lambda: ui.navigate.to("/manage-details"),
+                        on_click=lambda: ui.navigate.to("/details/manage"),
                     )
-                    ui.menu_item("Configuración")
 
             # Print menu
             with ui.button("Imprimir", icon="print").props("flat color=grey-8"):
                 with ui.menu():
-                    ui.menu_item("Orden de Pago")
-                    ui.menu_item("Reporte de Órdenes")
-                    ui.menu_item("Resumen")
+                    ui.menu_item(
+                        "Órdenes de Pago",
+                        on_click=lambda: ui.navigate.to("/payment-orders/print"),
+                    )
+                    ui.menu_item(
+                        "Lista de Cheques",
+                        on_click=lambda: ui.navigate.to("/checks/print"),
+                    )

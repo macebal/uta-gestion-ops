@@ -1,0 +1,42 @@
+/* CSS for proper PDF rendering with WeasyPrint */
+@page {
+  size: A4;
+  margin: 1.5cm 1cm;
+}
+
+body {
+  font-family: Calibri, Arial, sans-serif;
+}
+
+table {
+  border-collapse: collapse;
+  width: 100%;
+  border: 2px solid black;
+}
+
+td {
+  border: 1px solid black;
+  padding: 3px 4px;
+  font-size: 7.5pt;
+  vertical-align: middle;
+}
+
+.header-cell {
+  font-weight: bold;
+  text-align: center;
+  background-color: #e0e0e0;
+  border: 1.5px solid black;
+  padding: 5px 2px;
+  font-size: 8pt;
+}
+
+.title-cell {
+  background-color: #92D050;
+  color: white;
+  font-size: 18pt;
+  font-weight: bold;
+  text-align: center;
+  border: 2px solid black;
+  padding: 10px;
+}
+

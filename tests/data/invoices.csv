@@ -1,0 +1,111 @@
+payment_order_number,invoice_number,amount,supplier_name
+1001,FC-2025-0001,7500.00,Constructora San Martin S.A.
+1001,FC-2025-0002,7500.00,Constructora San Martin S.A.
+1002,FC-2025-0003,8500.00,Servicios Integrales Lopez
+1003,FC-2025-0004,11000.00,Materiales del Norte SRL
+1003,FC-2025-0005,11000.00,Materiales del Norte SRL
+1004,FC-2025-0006,3500.00,Transportes Belgrano
+1005,FC-2025-0007,2600.00,Inmobiliaria Central
+1005,FC-2025-0008,2600.00,Inmobiliaria Central
+1006,FC-2025-0009,6000.00,Servicios de Limpieza Total
+1006,FC-2025-0010,6000.00,Servicios de Limpieza Total
+1006,FC-2025-0011,6000.00,Servicios de Limpieza Total
+1007,FC-2025-0012,12000.00,Proveedor General SA
+1008,FC-2025-0013,14000.00,Mantenimiento Industrial
+1008,FC-2025-0014,14000.00,Mantenimiento Industrial
+1009,FC-2025-0015,3400.00,Suministros ABC
+1009,FC-2025-0016,3400.00,Suministros ABC
+1010,FC-2025-0017,4200.00,Distribuidora Rosales
+1011,FC-2025-0018,15000.00,Tecnologia y Sistemas SA
+1011,FC-2025-0019,15000.00,Tecnologia y Sistemas SA
+1011,FC-2025-0020,15000.00,Tecnologia y Sistemas SA
+1012,FC-2025-0021,7250.00,Papelera del Sur
+1012,FC-2025-0022,7250.00,Papelera del Sur
+1013,FC-2025-0023,8750.00,Electronica Martinez
+1013,FC-2025-0024,8750.00,Electronica Martinez
+1014,FC-2025-0025,9800.00,Ferreteria Industrial SA
+1015,FC-2025-0026,4450.00,Alimentos y Bebidas SRL
+1015,FC-2025-0027,4450.00,Alimentos y Bebidas SRL
+1016,FC-2025-0028,5600.00,Constructora San Martin S.A.
+1017,FC-2025-0029,6600.00,Servicios Integrales Lopez
+1017,FC-2025-0030,6600.00,Servicios Integrales Lopez
+1018,FC-2025-0031,10666.67,Materiales del Norte SRL
+1018,FC-2025-0032,10666.67,Materiales del Norte SRL
+1018,FC-2025-0033,10666.66,Materiales del Norte SRL
+1019,FC-2025-0034,8500.00,Transportes Belgrano
+1020,FC-2025-0035,12000.00,Inmobiliaria Central
+1020,FC-2025-0036,12000.00,Inmobiliaria Central
+1021,FC-2025-0037,3600.00,Servicios de Limpieza Total
+1021,FC-2025-0038,3600.00,Servicios de Limpieza Total
+1022,FC-2025-0039,9750.00,Proveedor General SA
+1022,FC-2025-0040,9750.00,Proveedor General SA
+1023,FC-2025-0041,15500.00,Mantenimiento Industrial
+1023,FC-2025-0042,15500.00,Mantenimiento Industrial
+1024,FC-2025-0043,6250.00,Suministros ABC
+1024,FC-2025-0044,6250.00,Suministros ABC
+1025,FC-2025-0045,6200.00,Distribuidora Rosales
+1026,FC-2025-0046,13000.00,Tecnologia y Sistemas SA
+1026,FC-2025-0047,13000.00,Tecnologia y Sistemas SA
+1026,FC-2025-0048,13000.00,Tecnologia y Sistemas SA
+1026,FC-2025-0049,13000.00,Tecnologia y Sistemas SA
+1027,FC-2025-0050,8400.00,Papelera del Sur
+1027,FC-2025-0051,8400.00,Papelera del Sur
+1028,FC-2025-0052,11200.00,Electronica Martinez
+1029,FC-2025-0053,4400.00,Ferreteria Industrial SA
+1029,FC-2025-0054,4400.00,Ferreteria Industrial SA
+1030,FC-2025-0055,8833.33,Alimentos y Bebidas SRL
+1030,FC-2025-0056,8833.33,Alimentos y Bebidas SRL
+1030,FC-2025-0057,8833.34,Alimentos y Bebidas SRL
+1031,FC-2025-0058,4800.00,Constructora San Martin S.A.
+1032,FC-2025-0059,7250.00,Servicios Integrales Lopez
+1032,FC-2025-0060,7250.00,Servicios Integrales Lopez
+1033,FC-2025-0061,4600.00,Materiales del Norte SRL
+1033,FC-2025-0062,4600.00,Materiales del Norte SRL
+1034,FC-2025-0063,5400.00,Transportes Belgrano
+1034,FC-2025-0064,5400.00,Transportes Belgrano
+1035,FC-2025-0065,9166.67,Inmobiliaria Central
+1035,FC-2025-0066,9166.67,Inmobiliaria Central
+1035,FC-2025-0067,9166.66,Inmobiliaria Central
+1036,FC-2025-0068,9900.00,Servicios de Limpieza Total
+1036,FC-2025-0069,9900.00,Servicios de Limpieza Total
+1037,FC-2025-0070,15600.00,Proveedor General SA
+1038,FC-2025-0071,17500.00,Mantenimiento Industrial
+1038,FC-2025-0072,17500.00,Mantenimiento Industrial
+1039,FC-2025-0073,6900.00,Suministros ABC
+1039,FC-2025-0074,6900.00,Suministros ABC
+1040,FC-2025-0075,2700.00,Distribuidora Rosales
+1040,FC-2025-0076,2700.00,Distribuidora Rosales
+1041,FC-2025-0077,14500.00,Tecnologia y Sistemas SA
+1041,FC-2025-0078,14500.00,Tecnologia y Sistemas SA
+1041,FC-2025-0079,14500.00,Tecnologia y Sistemas SA
+1041,FC-2025-0080,14500.00,Tecnologia y Sistemas SA
+1042,FC-2025-0081,11750.00,Papelera del Sur
+1042,FC-2025-0082,11750.00,Papelera del Sur
+1043,FC-2025-0083,9100.00,Electronica Martinez
+1043,FC-2025-0084,9100.00,Electronica Martinez
+1044,FC-2025-0085,5250.00,Ferreteria Industrial SA
+1044,FC-2025-0086,5250.00,Ferreteria Industrial SA
+1045,FC-2025-0087,4800.00,Alimentos y Bebidas SRL
+1045,FC-2025-0088,4800.00,Alimentos y Bebidas SRL
+1046,FC-2025-0089,5800.00,Constructora San Martin S.A.
+1047,FC-2025-0090,8100.00,Servicios Integrales Lopez
+1047,FC-2025-0091,8100.00,Servicios Integrales Lopez
+1048,FC-2025-0092,9666.67,Materiales del Norte SRL
+1048,FC-2025-0093,9666.67,Materiales del Norte SRL
+1048,FC-2025-0094,9666.66,Materiales del Norte SRL
+1049,FC-2025-0095,9200.00,Transportes Belgrano
+1050,FC-2025-0096,10000.00,Inmobiliaria Central
+1050,FC-2025-0097,10000.00,Inmobiliaria Central
+1050,FC-2025-0098,10000.00,Inmobiliaria Central
+1051,FC-2025-0099,5900.00,Servicios de Limpieza Total
+1051,FC-2025-0100,5900.00,Servicios de Limpieza Total
+1052,FC-2025-0101,10750.00,Proveedor General SA
+1052,FC-2025-0102,10750.00,Proveedor General SA
+1053,FC-2025-0103,12666.67,Mantenimiento Industrial
+1053,FC-2025-0104,12666.67,Mantenimiento Industrial
+1053,FC-2025-0105,12666.66,Mantenimiento Industrial
+1054,FC-2025-0106,8266.67,Suministros ABC
+1054,FC-2025-0107,8266.67,Suministros ABC
+1054,FC-2025-0108,8266.66,Suministros ABC
+1055,FC-2025-0109,3400.00,Distribuidora Rosales
+1055,FC-2025-0110,3400.00,Distribuidora Rosales

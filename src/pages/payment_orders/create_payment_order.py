@@ -12,8 +12,9 @@ from src.components import (
     secondary_button,
     text_input,
 )
-from src.models import Account, PaymentOrder, Supplier, Detail
-from src.services.pdf_generator import create_payment_order_pdf
+from src.models import Account, PaymentOrder, Supplier, Detail, Invoice
+from src.services.pdf_generator import generate_pdf
+from src.utils import format_currency, parse_currency, format_check_number, format_date
 
 
 def create_payment_order_page(session_factory: Callable[[], Session]):
@@ -39,6 +40,8 @@ def create_payment_order_page(session_factory: Callable[[], Session]):
     issue_date_input = None
     due_date_input = None
     print_checkbox = None
+    invoice_counter_label = None
+    add_invoice_button = None
 
     def load_accounts():
         """Load all accounts from database"""
@@ -123,34 +126,20 @@ def create_payment_order_page(session_factory: Callable[[], Session]):
                 if op_input:
                     op_input.value = str(next_order)
                 if check_input:
-                    check_input.value = str(next_check).zfill(8)
+                    check_input.value = format_check_number(next_check)
             elif account:
                 if op_input:
                     op_input.value = "1"
                 if check_input:
-                    check_input.value = str(1).zfill(8)
+                    check_input.value = format_check_number(1)
         finally:
             session.close()
 
-    def format_currency(amount: float | Decimal | str) -> str:
-        """Format a number as currency"""
-        if isinstance(amount, str):
-            amount = amount.replace("$", "").replace(",", "")
-            try:
-                amount = float(amount)
-            except ValueError:
-                amount = 0
-        return f"${amount:,.2f}"
-
-    def parse_currency(currency_str: str) -> Decimal:
-        """Parse a currency string to Decimal"""
-        if not currency_str:
-            return Decimal("0.00")
-        clean_str = currency_str.replace("$", "").replace(",", "").strip()
-        try:
-            return Decimal(clean_str)
-        except (ValueError, Exception):
-            return Decimal("0.00")
+    def on_supplier_change(e):
+        """Handle supplier selection change"""
+        nonlocal add_invoice_button
+        if add_invoice_button:
+            add_invoice_button.enabled = bool(e.value)
 
     def calculate_totals():
         """Calculate and update invoice total and total OP"""
@@ -176,13 +165,53 @@ def create_payment_order_page(session_factory: Callable[[], Session]):
 
     def add_invoice(invoice_number: str, amount: str):
         """Add an invoice to the list"""
-        nonlocal invoice_table, add_invoice_dialog
+        nonlocal invoice_table, add_invoice_dialog, invoice_counter_label
+
+        if len(invoice_rows) >= 5:
+            ui.notify("No se pueden agregar más de 5 facturas", type="negative")
+            return
 
         if not invoice_number or not amount:
             ui.notify("Por favor complete todos los campos", type="negative")
             return
 
+        if any(row.get("factura") == invoice_number for row in invoice_rows):
+            ui.notify(
+                f"La factura {invoice_number} ya fue agregada a esta orden de pago",
+                type="negative",
+            )
+            return
+
+        supplier_name = supplier_select.value if supplier_select else ""
+        if not supplier_name:
+            ui.notify("Por favor seleccione un proveedor primero", type="negative")
+            return
+
+        supplier_id = get_supplier_id_by_name(supplier_name)
+        if not supplier_id:
+            ui.notify("Error al obtener datos del proveedor", type="negative")
+            return
+
+        session = session_factory()
         try:
+            existing_invoice = (
+                session.query(Invoice)
+                .filter_by(invoice_number=invoice_number, supplier_id=supplier_id)
+                .first()
+            )
+
+            if existing_invoice:
+                payment_order = existing_invoice.payment_order
+                error_msg = (
+                    f"La factura {invoice_number} ya fue procesada en la "
+                    f"orden de pago #{payment_order.order_number}, "
+                    f"cuenta {payment_order.account.name}, "
+                    f"cheque {format_check_number(payment_order.check_number)}, "
+                    f"fecha {format_date(payment_order.order_date)}"
+                )
+                ui.notify(error_msg, type="negative")
+                return
+
             parsed_amount = parse_currency(amount)
             if parsed_amount <= 0:
                 ui.notify("El importe debe ser mayor a 0", type="negative")
@@ -202,6 +231,9 @@ def create_payment_order_page(session_factory: Callable[[], Session]):
 
             calculate_totals()
 
+            if invoice_counter_label:
+                invoice_counter_label.text = f"{len(invoice_rows)}/5"
+
             if add_invoice_dialog:
                 add_invoice_dialog.close()
 
@@ -209,10 +241,12 @@ def create_payment_order_page(session_factory: Callable[[], Session]):
 
         except Exception as e:
             ui.notify(f"Error al agregar factura: {str(e)}", type="negative")
+        finally:
+            session.close()
 
     def delete_invoice(row_data):
         """Delete an invoice from the list"""
-        nonlocal invoice_table
+        nonlocal invoice_table, invoice_counter_label
 
         try:
             invoice_rows[:] = [
@@ -224,6 +258,9 @@ def create_payment_order_page(session_factory: Callable[[], Session]):
                 invoice_table.update()
 
             calculate_totals()
+
+            if invoice_counter_label:
+                invoice_counter_label.text = f"{len(invoice_rows)}/5"
 
             ui.notify("Factura eliminada exitosamente", type="positive")
 
@@ -377,33 +414,37 @@ def create_payment_order_page(session_factory: Callable[[], Session]):
                 try:
                     account = session.query(Account).filter_by(id=account_id).first()
 
-                    invoice_total = sum(
-                        parse_currency(row.get("importe", "0")) for row in invoice_rows
-                    )
-
                     # Format invoice numbers (concatenate if multiple)
                     invoice_numbers = ", ".join(
                         [row["factura"] for row in invoice_rows]
                     )
 
+                    # Prepare invoices list for template
+                    invoices_list = [
+                        {"amount": parse_currency(row.get("importe", "0"))}
+                        for row in invoice_rows
+                    ]
+
                     template_data = {
                         "account_name": account_name,
                         "payment_order_id": str(op),
-                        "payment_order_date": order_date_str,
+                        "payment_order_date": order_date,
                         "supplier_name": supplier_name,
-                        "invoice_amount": format_currency(invoice_total),
+                        "invoices": invoices_list,
                         "detail": detail_value,
-                        "witholding_amount": format_currency(withholding_amount),
-                        "payment_order_total": format_currency(total_amount),
+                        "withholding_amount": withholding_amount,
+                        "payment_order_total": total_amount,
                         "invoice_number": invoice_numbers,
                         "account_number": account.number if account else "",
-                        "check_number": str(check).zfill(8),
-                        "issue_date": issue_date_str,
-                        "due_date": due_date_str,
+                        "check_number": int(check),
+                        "issue_date": issue_date,
+                        "due_date": due_date,
                     }
 
-                    output_path = f"orden_pago_{op}.pdf"
-                    pdf_path = create_payment_order_pdf(template_data, output_path)
+                    output_path = f"orden_pago_{op}_{account_name}.pdf"
+                    pdf_path = generate_pdf(
+                        "payment_order", [template_data], output_path
+                    )
                     ui.notify(f"PDF generado: {Path(pdf_path).name}", type="positive")
                 except Exception as e:
                     ui.notify(f"Error al generar PDF: {str(e)}", type="warning")
@@ -434,6 +475,12 @@ def create_payment_order_page(session_factory: Callable[[], Session]):
 
             if total_op_label:
                 total_op_label.text = "$0.00"
+
+            if invoice_counter_label:
+                invoice_counter_label.text = "0/5"
+
+            if add_invoice_button:
+                add_invoice_button.enabled = False
 
         except Exception as e:
             session.rollback()
@@ -477,7 +524,9 @@ def create_payment_order_page(session_factory: Callable[[], Session]):
                     due_date_input = date_input_with_calendar("Vence")
 
             with ui.column().classes("w-full mb-4"):
-                supplier_select = searchable_select(suppliers_data, label="Proveedor")
+                supplier_select = searchable_select(
+                    suppliers_data, label="Proveedor", on_change=on_supplier_change
+                )
 
             with ui.column().classes("w-full mb-6"):
                 detail_select = searchable_select(details_data, label="Detalle")
@@ -486,10 +535,13 @@ def create_payment_order_page(session_factory: Callable[[], Session]):
                 with ui.row().classes(
                     "w-full max-w-2xl justify-between items-center mb-2"
                 ):
-                    ui.label("Facturas").classes("text-lg font-semibold text-gray-700")
-                    primary_button(
+                    with ui.row().classes("items-center gap-2"):
+                        ui.label("Facturas").classes("text-lg font-semibold text-gray-700")
+                        invoice_counter_label = ui.label("0/5").classes("text-sm text-gray-500")
+                    add_invoice_button = primary_button(
                         "Agregar Factura", icon="add", on_click=show_add_invoice_dialog
                     )
+                    add_invoice_button.enabled = False
 
                 columns = [
                     {
@@ -568,7 +620,7 @@ def create_payment_order_page(session_factory: Callable[[], Session]):
             with ui.row().classes("w-full items-center justify-between mt-6"):
                 with ui.row().classes("items-center gap-2"):
                     print_checkbox = ui.checkbox(
-                        "Imprimir orden de pago", value=True
+                        "Generar PDF de orden de pago", value=True
                     ).classes("text-gray-700")
 
                 primary_button("Agregar OP", on_click=create_payment_order)

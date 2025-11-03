@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Check List - Registros Obra Social</title>
+    <link rel="stylesheet" href="check_list.css" />
+  </head>
+
+  <body>
+    <div id="check_list" align="center">
+      <table
+        border="0"
+        cellpadding="0"
+        cellspacing="0"
+        width="700"
+        style="border-collapse: collapse; table-layout: fixed; width: 525pt"
+      >
+        <col width="35" style="width: 26pt" />
+        <col width="55" style="width: 41pt" />
+        <col width="55" style="width: 41pt" />
+        <col width="55" style="width: 41pt" />
+        <col width="130" style="width: 98pt" />
+        <col width="120" style="width: 90pt" />
+        <col width="95" style="width: 71pt" />
+        <col width="70" style="width: 53pt" />
+        <col width="85" style="width: 64pt" />
+        {% if show_header %}
+        <tr height="19" style="height: 14.45pt">
+          <td
+            colspan="9"
+            rowspan="3"
+            height="60"
+            class="title-cell"
+            width="1000"
+          >
+            REGISTROS {{ account_name|upper }} {{ month }} {{ year }}
+          </td>
+        </tr>
+        {% endif %} {% if show_header %}
+        <tr height="20" style="height: 15pt"></tr>
+        <tr height="21" style="height: 15.75pt"></tr>
+        <tr height="35" style="height: 26.25pt">
+          <td height="35" class="header-cell" style="height: 26.25pt">OP</td>
+          <td class="header-cell">FECHA</td>
+          <td class="header-cell">VENCE</td>
+          <td class="header-cell">CHEQUE</td>
+          <td class="header-cell">PROVEEDOR</td>
+          <td class="header-cell">DETALLE</td>
+          <td class="header-cell">FACTURA</td>
+          <td class="header-cell">RETENCION</td>
+          <td class="header-cell">IMPORTE</td>
+        </tr>
+{% endif %}
+{# Loop through payment orders for this page #}
+{% for order in payment_orders %}
+ <tr height=24 style='height:18.0pt'>
+  <td>{{ order.order_number }}</td>
+  <td>{{ order.issue_date|format_date_short }}</td>
+  <td>{{ order.due_date|format_date_short }}</td>
+  <td style="text-align:center">{{ order.check_number|format_check_number }}</td>
+  <td>{{ order.supplier.name if order.supplier else '' }}</td>
+  <td>{{ order.detail.value if order.detail else '' }}</td>
+  <td>{% if order.invoices %}{{ order.invoices|map(attribute='invoice_number')|join(', ') }}{% endif %}</td>
+  <td style="text-align:right">{{ order.withholding_amount|format_currency }}</td>
+  <td style="text-align:right">{{ order.amount|format_currency }}</td>
+ </tr>
+{% endfor %}
+      </table>
+    </div>
+  </body>
+</html>

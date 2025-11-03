@@ -4,6 +4,8 @@ from jinja2 import Environment, FileSystemLoader, select_autoescape
 from weasyprint import HTML  # type: ignore
 from weasyprint.text.fonts import FontConfiguration  # type: ignore
 
+from src.utils import format_currency, format_date, format_check_number
+
 
 def get_template_dir(template_name: str) -> tuple[Path, Path]:
     """Get the template directory and executable directory"""
@@ -18,39 +20,21 @@ def get_template_dir(template_name: str) -> tuple[Path, Path]:
     return bundle_dir / "templates" / template_name, executable_dir
 
 
-def create_payment_order_pdf(
-    template_data: dict[str, str], output_path: str = "payment_order.pdf"
-) -> str:
+def render_template_html(template_name: str, template_data: dict) -> tuple[str, Path]:
     """
-    Generate a PDF from the payment order template using Jinja2 and WeasyPrint.
+    Render a Jinja2 template to HTML string.
 
     Args:
-        template_data: Dictionary containing all the data to populate the template.
-            Expected keys:
-            - account_name: Name of the account
-            - payment_order_id: Order number
-            - payment_order_date: Date of the order (DD/MM/YYYY)
-            - supplier_name: Name of the supplier
-            - invoice_amount: Total invoice amount (formatted as currency)
-            - detail: Payment detail description
-            - witholding_amount: Withholding amount (formatted as currency)
-            - payment_order_total: Net total after retentions (formatted as currency)
-            - invoice_number: Invoice number(s)
-            - account_number: Bank account number
-            - check_number: Check number (zero-padded)
-            - issue_date: Issue date (DD/MM/YYYY)
-            - due_date: Due date (DD/MM/YYYY)
-        output_path: Path where the PDF will be saved (relative to project root)
+        template_name: Name of the template directory and file (without extension)
+        template_data: Dictionary containing all the data to populate the template
 
     Returns:
-        str: Absolute path to the generated PDF file
+        tuple: (rendered HTML string, template directory path for base_url)
 
     Raises:
         FileNotFoundError: If the template file is not found
-        Exception: If PDF generation fails
     """
-    template_name = "payment_order"
-    template_dir, executable_dir = get_template_dir(template_name)
+    template_dir, _ = get_template_dir(template_name)
     template_file = template_dir / f"{template_name}.htm"
 
     if not template_file.exists():
@@ -61,17 +45,60 @@ def create_payment_order_pdf(
         loader=FileSystemLoader(str(template_dir)),
         autoescape=select_autoescape(["html", "htm"]),
     )
+    
+    # Add custom filters
+    env.filters['format_date_short'] = format_date
+    env.filters['format_currency'] = format_currency
+    env.filters['format_check_number'] = format_check_number
 
     # Load and render the template
-    template = env.get_template("payment_order.htm")
+    template = env.get_template(f"{template_name}.htm")
     rendered_html = template.render(**template_data)
 
-    # Configure font settings for better PDF rendering
+    return rendered_html, template_dir
+
+
+def generate_pdf(
+    template_name: str,
+    pages_data: list[dict],
+    output_path: str,
+) -> str:
+    """
+    Generate a PDF from one or more pages using a specified template.
+
+    Args:
+        template_name: Name of the template to use (e.g., "payment_order")
+        pages_data: List of dictionaries, each containing data for one page.
+                    For single page PDFs, pass a list with one element.
+        output_path: Path where the PDF will be saved (relative to executable/project root)
+
+    Returns:
+        str: Absolute path to the generated PDF file
+
+    Raises:
+        FileNotFoundError: If the template file is not found
+        Exception: If PDF generation fails
+    """
+    if not pages_data:
+        raise ValueError("pages_data cannot be empty")
+
+    _, executable_dir = get_template_dir(template_name)
     font_config = FontConfiguration()
 
-    html_doc = HTML(string=rendered_html, base_url=str(template_dir))
+    # Render all pages
+    documents = []
+    for page_data in pages_data:
+        rendered_html, template_dir = render_template_html(template_name, page_data)
+        html_doc = HTML(string=rendered_html, base_url=str(template_dir))
+        documents.append(html_doc.render(font_config=font_config))
 
+    # Combine all pages
+    all_pages = []
+    for doc in documents:
+        all_pages.extend(doc.pages)
+
+    # Write PDF
     pdf_path = executable_dir / output_path
-    html_doc.write_pdf(str(pdf_path), font_config=font_config, optimize_images=True)
+    documents[0].copy(all_pages).write_pdf(str(pdf_path))
 
     return str(pdf_path.absolute())

@@ -1,4 +1,4 @@
-.PHONY: sync run package clean
+.PHONY: sync run package clean create-test-data
 
 sync:
 	uv sync --all-groups
@@ -11,4 +11,7 @@ package: clean sync
 
 clean:
 	rm -rf build dist __pycache__ src/__pycache__
+
+create-test-data: sync
+	uv run python scripts/load_test_data.py
 
