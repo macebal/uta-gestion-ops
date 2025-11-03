@@ -8,8 +8,31 @@ table {
   border-collapse: collapse;
   table-layout: fixed;
   width: 470pt;
+  border: 2pt solid black;
 }
 
 td {
   border: 1px solid black;
+}
+
+.header {
+  font-weight: bold;
+  color: black;
+  font-size: 15pt;
+  text-align: center;
+  border-right: none;
+}
+
+.header-top {
+  border-bottom: none;
+  vertical-align: bottom;
+}
+
+.header-bottom {
+  border-top: none;
+  vertical-align: top;
+}
+
+td.logo {
+  border-left: none;
 }
