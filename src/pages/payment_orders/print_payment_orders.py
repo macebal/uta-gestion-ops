@@ -262,17 +262,18 @@ def print_payment_orders_page(session_factory: Callable[[], Session]):
                 account = po.account
                 invoices = po.invoices
 
-                invoice_total = sum(invoice.amount for invoice in invoices)
                 invoice_numbers = ", ".join(
                     [invoice.invoice_number for invoice in invoices]
                 )
+
+                invoices_list = [{"amount": invoice.amount} for invoice in invoices]
 
                 template_data = {
                     "account_name": account.name if account else "",
                     "payment_order_id": str(po.order_number),
                     "payment_order_date": po.order_date,
                     "supplier_name": po.supplier.name if po.supplier else "",
-                    "invoice_amount": invoice_total,
+                    "invoices": invoices_list,
                     "detail": po.detail.value if po.detail else "",
                     "withholding_amount": po.withholding_amount,
                     "payment_order_total": po.amount,

@@ -40,6 +40,7 @@ def create_payment_order_page(session_factory: Callable[[], Session]):
     issue_date_input = None
     due_date_input = None
     print_checkbox = None
+    invoice_counter_label = None
 
     def load_accounts():
         """Load all accounts from database"""
@@ -157,7 +158,11 @@ def create_payment_order_page(session_factory: Callable[[], Session]):
 
     def add_invoice(invoice_number: str, amount: str):
         """Add an invoice to the list"""
-        nonlocal invoice_table, add_invoice_dialog
+        nonlocal invoice_table, add_invoice_dialog, invoice_counter_label
+
+        if len(invoice_rows) >= 5:
+            ui.notify("No se pueden agregar más de 5 facturas", type="negative")
+            return
 
         if not invoice_number or not amount:
             ui.notify("Por favor complete todos los campos", type="negative")
@@ -183,6 +188,9 @@ def create_payment_order_page(session_factory: Callable[[], Session]):
 
             calculate_totals()
 
+            if invoice_counter_label:
+                invoice_counter_label.text = f"{len(invoice_rows)}/5"
+
             if add_invoice_dialog:
                 add_invoice_dialog.close()
 
@@ -193,7 +201,7 @@ def create_payment_order_page(session_factory: Callable[[], Session]):
 
     def delete_invoice(row_data):
         """Delete an invoice from the list"""
-        nonlocal invoice_table
+        nonlocal invoice_table, invoice_counter_label
 
         try:
             invoice_rows[:] = [
@@ -205,6 +213,9 @@ def create_payment_order_page(session_factory: Callable[[], Session]):
                 invoice_table.update()
 
             calculate_totals()
+
+            if invoice_counter_label:
+                invoice_counter_label.text = f"{len(invoice_rows)}/5"
 
             ui.notify("Factura eliminada exitosamente", type="positive")
 
@@ -358,21 +369,23 @@ def create_payment_order_page(session_factory: Callable[[], Session]):
                 try:
                     account = session.query(Account).filter_by(id=account_id).first()
 
-                    invoice_total = sum(
-                        parse_currency(row.get("importe", "0")) for row in invoice_rows
-                    )
-
                     # Format invoice numbers (concatenate if multiple)
                     invoice_numbers = ", ".join(
                         [row["factura"] for row in invoice_rows]
                     )
+
+                    # Prepare invoices list for template
+                    invoices_list = [
+                        {"amount": parse_currency(row.get("importe", "0"))}
+                        for row in invoice_rows
+                    ]
 
                     template_data = {
                         "account_name": account_name,
                         "payment_order_id": str(op),
                         "payment_order_date": order_date,
                         "supplier_name": supplier_name,
-                        "invoice_amount": invoice_total,
+                        "invoices": invoices_list,
                         "detail": detail_value,
                         "withholding_amount": withholding_amount,
                         "payment_order_total": total_amount,
@@ -417,6 +430,9 @@ def create_payment_order_page(session_factory: Callable[[], Session]):
 
             if total_op_label:
                 total_op_label.text = "$0.00"
+
+            if invoice_counter_label:
+                invoice_counter_label.text = "0/5"
 
         except Exception as e:
             session.rollback()
@@ -469,7 +485,9 @@ def create_payment_order_page(session_factory: Callable[[], Session]):
                 with ui.row().classes(
                     "w-full max-w-2xl justify-between items-center mb-2"
                 ):
-                    ui.label("Facturas").classes("text-lg font-semibold text-gray-700")
+                    with ui.row().classes("items-center gap-2"):
+                        ui.label("Facturas").classes("text-lg font-semibold text-gray-700")
+                        invoice_counter_label = ui.label("0/5").classes("text-sm text-gray-500")
                     primary_button(
                         "Agregar Factura", icon="add", on_click=show_add_invoice_dialog
                     )
