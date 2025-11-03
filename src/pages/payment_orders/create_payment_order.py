@@ -12,9 +12,9 @@ from src.components import (
     secondary_button,
     text_input,
 )
-from src.models import Account, PaymentOrder, Supplier, Detail
+from src.models import Account, PaymentOrder, Supplier, Detail, Invoice
 from src.services.pdf_generator import generate_pdf
-from src.utils import format_currency, parse_currency, format_check_number
+from src.utils import format_currency, parse_currency, format_check_number, format_date
 
 
 def create_payment_order_page(session_factory: Callable[[], Session]):
@@ -41,6 +41,7 @@ def create_payment_order_page(session_factory: Callable[[], Session]):
     due_date_input = None
     print_checkbox = None
     invoice_counter_label = None
+    add_invoice_button = None
 
     def load_accounts():
         """Load all accounts from database"""
@@ -134,6 +135,12 @@ def create_payment_order_page(session_factory: Callable[[], Session]):
         finally:
             session.close()
 
+    def on_supplier_change(e):
+        """Handle supplier selection change"""
+        nonlocal add_invoice_button
+        if add_invoice_button:
+            add_invoice_button.enabled = bool(e.value)
+
     def calculate_totals():
         """Calculate and update invoice total and total OP"""
         nonlocal total_op_label, retenciones_input, invoice_table
@@ -168,7 +175,43 @@ def create_payment_order_page(session_factory: Callable[[], Session]):
             ui.notify("Por favor complete todos los campos", type="negative")
             return
 
+        if any(row.get("factura") == invoice_number for row in invoice_rows):
+            ui.notify(
+                f"La factura {invoice_number} ya fue agregada a esta orden de pago",
+                type="negative",
+            )
+            return
+
+        supplier_name = supplier_select.value if supplier_select else ""
+        if not supplier_name:
+            ui.notify("Por favor seleccione un proveedor primero", type="negative")
+            return
+
+        supplier_id = get_supplier_id_by_name(supplier_name)
+        if not supplier_id:
+            ui.notify("Error al obtener datos del proveedor", type="negative")
+            return
+
+        session = session_factory()
         try:
+            existing_invoice = (
+                session.query(Invoice)
+                .filter_by(invoice_number=invoice_number, supplier_id=supplier_id)
+                .first()
+            )
+
+            if existing_invoice:
+                payment_order = existing_invoice.payment_order
+                error_msg = (
+                    f"La factura {invoice_number} ya fue procesada en la "
+                    f"orden de pago #{payment_order.order_number}, "
+                    f"cuenta {payment_order.account.name}, "
+                    f"cheque {format_check_number(payment_order.check_number)}, "
+                    f"fecha {format_date(payment_order.order_date)}"
+                )
+                ui.notify(error_msg, type="negative")
+                return
+
             parsed_amount = parse_currency(amount)
             if parsed_amount <= 0:
                 ui.notify("El importe debe ser mayor a 0", type="negative")
@@ -198,6 +241,8 @@ def create_payment_order_page(session_factory: Callable[[], Session]):
 
         except Exception as e:
             ui.notify(f"Error al agregar factura: {str(e)}", type="negative")
+        finally:
+            session.close()
 
     def delete_invoice(row_data):
         """Delete an invoice from the list"""
@@ -396,7 +441,7 @@ def create_payment_order_page(session_factory: Callable[[], Session]):
                         "due_date": due_date,
                     }
 
-                    output_path = f"orden_pago_{op}.pdf"
+                    output_path = f"orden_pago_{op}_{account_name}.pdf"
                     pdf_path = generate_pdf(
                         "payment_order", [template_data], output_path
                     )
@@ -433,6 +478,9 @@ def create_payment_order_page(session_factory: Callable[[], Session]):
 
             if invoice_counter_label:
                 invoice_counter_label.text = "0/5"
+
+            if add_invoice_button:
+                add_invoice_button.enabled = False
 
         except Exception as e:
             session.rollback()
@@ -476,7 +524,9 @@ def create_payment_order_page(session_factory: Callable[[], Session]):
                     due_date_input = date_input_with_calendar("Vence")
 
             with ui.column().classes("w-full mb-4"):
-                supplier_select = searchable_select(suppliers_data, label="Proveedor")
+                supplier_select = searchable_select(
+                    suppliers_data, label="Proveedor", on_change=on_supplier_change
+                )
 
             with ui.column().classes("w-full mb-6"):
                 detail_select = searchable_select(details_data, label="Detalle")
@@ -488,9 +538,10 @@ def create_payment_order_page(session_factory: Callable[[], Session]):
                     with ui.row().classes("items-center gap-2"):
                         ui.label("Facturas").classes("text-lg font-semibold text-gray-700")
                         invoice_counter_label = ui.label("0/5").classes("text-sm text-gray-500")
-                    primary_button(
+                    add_invoice_button = primary_button(
                         "Agregar Factura", icon="add", on_click=show_add_invoice_dialog
                     )
+                    add_invoice_button.enabled = False
 
                 columns = [
                     {
