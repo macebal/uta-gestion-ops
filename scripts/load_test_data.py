@@ -230,12 +230,30 @@ def load_test_data():
         
         print(f"  Created total {invoice_count} invoices")
         
+        print("\nUpdating account sequences based on loaded data...")
+        for account_number, account in accounts_map.items():
+            account_payment_orders = [
+                po for po in payment_orders_map.values() 
+                if po.account_id == account.id
+            ]
+            
+            if account_payment_orders:
+                max_order = max(po.order_number for po in account_payment_orders)
+                max_check = max(po.check_number for po in account_payment_orders)
+                
+                account.account_sequence.last_order_number = max_order
+                account.account_sequence.last_check_number = max_check
+                
+                print(f"  Updated {account.name}: order={max_order}, check={max_check}")
+            else:
+                print(f"  No payment orders for {account.name}, keeping sequence at order={account.account_sequence.last_order_number}, check={account.account_sequence.last_check_number}")
+        
         session.commit()
         
         print("\n" + "=" * 60)
         print("SUCCESS! Test data loaded successfully")
         print("=" * 60)
-        print(f"\nSummary:")
+        print("\nSummary:")
         print(f"  Accounts:        {len(accounts_map)}")
         print(f"  Sequences:       {len(accounts_map)}")
         print(f"  Providers:       {len(providers_map)}")
@@ -244,7 +262,6 @@ def load_test_data():
         print(f"  Invoices:        {invoice_count}")
         print(f"\nDatabase: {DATABASE_URL}")
         print("\nYou can now run the application with: make run")
-        print("Or generate a check list with: python generate_check_list.py")
         print()
         
     except FileNotFoundError as e:
