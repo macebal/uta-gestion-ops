@@ -274,7 +274,7 @@ def print_payment_orders_page(session_factory: Callable[[], Session]):
                     "supplier_name": po.supplier.name if po.supplier else "",
                     "invoice_amount": invoice_total,
                     "detail": po.detail.value if po.detail else "",
-                    "witholding_amount": po.withholding_amount,
+                    "withholding_amount": po.withholding_amount,
                     "payment_order_total": po.amount,
                     "invoice_number": invoice_numbers,
                     "account_number": account.number if account else "",

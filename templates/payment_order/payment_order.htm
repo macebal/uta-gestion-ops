@@ -54,30 +54,30 @@
         <tr class="row-6">
           <td colspan="3" class="detail-label">DETALLE:</td>
           <td colspan="2"></td>
-          <td class="invoice-value">{{ invoice_amount|format_currency }}</td>
+          <td class="invoice-value">{{ invoices[0].amount|format_currency }}</td>
         </tr>
         <tr class="row-7">
           <td colspan="3" rowspan="5" class="detail-value">
             {{ detail }}
           </td>
           <td colspan="2"></td>
-          <td class="invoice-value"></td>
+          <td class="invoice-value">{{ invoices[1].amount|format_currency if invoices|length > 1 else '' }}</td>
         </tr>
         <tr class="row-8">
           <td colspan="2"></td>
-          <td class="invoice-value"></td>
+          <td class="invoice-value">{{ invoices[2].amount|format_currency if invoices|length > 2 else '' }}</td>
         </tr>
         <tr class="row-9">
           <td colspan="2"></td>
-          <td class="invoice-value"></td>
+          <td class="invoice-value">{{ invoices[3].amount|format_currency if invoices|length > 3 else '' }}</td>
         </tr>
         <tr class="row-10">
           <td colspan="2"></td>
-          <td class="invoice-value"></td>
+          <td class="invoice-value">{{ invoices[4].amount|format_currency if invoices|length > 4 else '' }}</td>
         </tr>
         <tr class="row-11">
-          <td colspan="2" class="witholding-label">R E T E N C I O N E S</td>
-          <td class="witholding-value">{{ withholding_amount|format_currency }}</td>
+          <td colspan="2" class="withholding-label">R E T E N C I O N E S</td>
+          <td class="withholding-value">{{ withholding_amount|format_currency }}</td>
         </tr>
         <tr class="row-12">
           <td colspan="5" class="total-amount-label">TOTAL DE GASTOS:</td>

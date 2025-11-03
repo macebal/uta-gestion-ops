@@ -374,7 +374,7 @@ def create_payment_order_page(session_factory: Callable[[], Session]):
                         "supplier_name": supplier_name,
                         "invoice_amount": invoice_total,
                         "detail": detail_value,
-                        "witholding_amount": withholding_amount,
+                        "withholding_amount": withholding_amount,
                         "payment_order_total": total_amount,
                         "invoice_number": invoice_numbers,
                         "account_number": account.number if account else "",
