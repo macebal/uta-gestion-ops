@@ -4,15 +4,21 @@ body {
   padding: 0;
 }
 
-table {
+td {
+  border: 1px solid black;
+}
+
+table#form-table {
   border-collapse: collapse;
   table-layout: fixed;
   width: 470pt;
   border: 2pt solid black;
 }
 
-td {
-  border: 1px solid black;
+table#check-box-table {
+  border-collapse: collapse;
+  table-layout: fixed;
+  width: 470pt;
 }
 
 .header {
@@ -35,4 +41,178 @@ td {
 
 td.logo {
   border-left: none;
+}
+
+.payment-order-number-label {
+  border-right: none;
+  text-align: center;
+}
+
+.payment-order-number {
+  border-left: none;
+}
+
+.payment-order-date-label {
+  text-align: right;
+  border-right: none;
+  padding-right: 2pt;
+}
+
+.payment-order-date {
+  text-align: left;
+  border-left: none;
+  padding-left: 2pt;
+}
+
+.supplier-name-label {
+  border-right: none;
+  text-align: center;
+}
+
+.supplier-name {
+  border-left: none;
+  text-align: left;
+}
+
+.imputacion-contable-label {
+  text-align: center;
+}
+
+.denomination-account-label {
+  text-align: center;
+}
+
+.code-account-label {
+  text-align: center;
+}
+
+.amount-label {
+  text-align: center;
+}
+
+.detail-label {
+  text-align: left;
+  text-decoration: underline;
+  border-bottom: none;
+}
+
+.detail-value {
+  text-align: left;
+  vertical-align: top;
+  border-top: none;
+  text-wrap: wrap;
+}
+
+.invoice-value {
+  text-align: left;
+  padding-left: 2pt;
+}
+.witholding-label {
+  text-align: center;
+}
+
+.witholding-value {
+  text-align: left;
+  padding-left: 2pt;
+}
+
+.total-amount-label {
+  text-align: right;
+  padding-right: 2pt;
+}
+
+.total-amount-value {
+  text-align: left;
+  padding-left: 2pt;
+}
+
+.bonos-label {
+  text-align: left;
+}
+
+.invoice-number-label {
+  text-align: right;
+}
+
+.invoice-number-value {
+  text-align: center;
+}
+
+.bank-label {
+  text-align: left;
+}
+
+.account-number-label {
+  text-align: center;
+}
+
+.account-number-value {
+  text-align: center;
+}
+
+.check-number-label {
+  text-align: center;
+}
+
+.check-number-value {
+  text-align: center;
+}
+
+.issue-date-label {
+  text-align: right;
+}
+
+.issue-date-value {
+  text-align: center;
+}
+
+.due-date-label {
+  text-align: right;
+}
+
+.due-date-value {
+  text-align: center;
+}
+
+.check-clarification-label {
+  text-align: center;
+  border-right: none;
+}
+
+.check-clarification-value {
+  text-align: center;
+  border-left: none;
+}
+
+.created-by-label {
+  text-align: center;
+}
+
+.authorizations-label {
+  text-align: center;
+}
+
+.created-by-value {
+  text-align: center;
+  vertical-align: center;
+}
+
+.signee-label {
+  text-align: center;
+  text-wrap: wrap;
+  border-left: none;
+  border-right: none;
+}
+
+.central-accounting-label {
+  text-align: center;
+}
+
+.control-label {
+  text-align: center;
+}
+
+.check-box-label {
+  border: none;
+  text-align: left;
 }

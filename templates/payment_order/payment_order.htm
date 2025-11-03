@@ -7,8 +7,8 @@
     <link rel="stylesheet" href="payment_order.css" />
   </head>
   <body>
-    <div id="payment_order" align="center">
-      <table>
+    <div align="center">
+      <table id="form-table">
         <tr>
           <td colspan="5" class="header header-top" style="border-bottom: none">
             UNION TRANVIARIOS AUTOMOTOR
@@ -27,121 +27,123 @@
           </td>
         </tr>
         <tr>
-          <td colspan="2">ORDEN DE PAGO</td>
-          <td>182</td>
+          <td colspan="2" class="payment-order-number-label">ORDEN DE PAGO</td>
+          <td class="payment-order-number">182</td>
           <td></td>
-          <td>FECHA:</td>
-          <td>11/03/2025</td>
+          <td class="payment-order-date-label">FECHA:</td>
+          <td class="payment-order-date">11/03/2025</td>
         </tr>
         <tr>
-          <td colspan="2">Paguese a:</td>
-          <td colspan="4">CONFLUENCIA</td>
+          <td colspan="2" class="supplier-name-label">Paguese a:</td>
+          <td colspan="4" class="supplier-name">CONFLUENCIA</td>
         </tr>
         <tr>
-          <td colspan="6">IMPUTACION CONTABLE</td>
+          <td colspan="6" class="imputacion-contable-label">IMPUTACION CONTABLE</td>
         </tr>
         <tr>
-          <td colspan="3">DENOMINACION CUENTA</td>
-          <td colspan="2">CODIGO CONTABLE</td>
-          <td>IMPORTE</td>
+          <td colspan="3" class="denomination-account-label">DENOMINACION CUENTA</td>
+          <td colspan="2" class="code-account-label">CODIGO CONTABLE</td>
+          <td class="amount-label">IMPORTE</td>
         </tr>
         <tr>
-          <td colspan="3">DETALLE:</td>
+          <td colspan="3" class="detail-label">DETALLE:</td>
           <td colspan="2"></td>
-          <td>$15,000,000.00</td>
+          <td class="invoice-value">$15,000,000.00</td>
         </tr>
         <tr>
-          <td colspan="3" rowspan="5">
+          <td colspan="3" rowspan="5" class="detail-value">
             Servicios de mantenimiento y reparación de unidades correspondientes
             al mes de octubre 2025
           </td>
           <td colspan="2"></td>
-          <td></td>
+          <td class="invoice-value"></td>
         </tr>
         <tr>
           <td colspan="2"></td>
-          <td></td>
+          <td class="invoice-value"></td>
         </tr>
         <tr>
           <td colspan="2"></td>
-          <td></td>
+          <td class="invoice-value"></td>
         </tr>
         <tr>
           <td colspan="2"></td>
-          <td></td>
+          <td class="invoice-value"></td>
         </tr>
         <tr>
-          <td colspan="2">R E T E N C I O N E S</td>
-          <td>$25,000.00</td>
+          <td colspan="2" class="witholding-label">R E T E N C I O N E S</td>
+          <td class="witholding-value">$25,000.00</td>
         </tr>
         <tr>
-          <td colspan="5">TOTAL DE GASTOS:</td>
-          <td>$14,975,000.00</td>
+          <td colspan="5" class="total-amount-label">TOTAL DE GASTOS:</td>
+          <td class="total-amount-value">$14,975,000.00</td>
         </tr>
         <tr>
-          <td colspan="6">BONOS PROVINCIALES Y/O NACIONALES</td>
+          <td colspan="6" class="bonds-label">BONOS PROVINCIALES Y/O NACIONALES</td>
         </tr>
         <tr>
-          <td colspan="2">FACTURA N°</td>
-          <td colspan="2">0</td>
+          <td colspan="2" class="invoice-number-label">FACTURA N°</td>
+          <td colspan="2" class="invoice-number-value">0</td>
           <td colspan="2"></td>
         </tr>
         <tr>
-          <td colspan="3">BANCO DE LA NACION ARGENTINA</td>
-          <td colspan="2">NUMERO DE CUENTA</td>
-          <td colspan="1">1300564/23</td>
+          <td colspan="3" class="bank-label">BANCO DE LA NACION ARGENTINA</td>
+          <td colspan="2" class="account-number-label">NUMERO DE CUENTA</td>
+          <td colspan="1" class="account-number-value">1300564/23</td>
         </tr>
         <tr>
-          <td colspan="1">CHEQUE N°</td>
-          <td colspan="1">00148685</td>
-          <td colspan="1">EMISION:</td>
-          <td colspan="1">11/03/2025</td>
-          <td colspan="1">VENCE:</td>
-          <td colspan="1">11/03/2025</td>
+          <td colspan="1" class="check-number-label">CHEQUE N°</td>
+          <td colspan="1" class="check-number-value">00148685</td>
+          <td colspan="1" class="issue-date-label">EMISION:</td>
+          <td colspan="1" class="issue-date-value">11/03/2025</td>
+          <td colspan="1" class="due-date-label">VENCE:</td>
+          <td colspan="1" class="due-date-value">11/03/2025</td>
         </tr>
         <tr>
-          <td colspan="3">ACLARACION DE CHEQUE:</td>
-          <td colspan="3">Cheque Propio</td>
+          <td colspan="3" class="check-clarification-label">ACLARACION DE CHEQUE:</td>
+          <td colspan="3" class="check-clarification-value">Cheque Propio</td>
         </tr>
         <tr>
           <td colspan="6"></td>
         </tr>
         <tr>
-          <td colspan="1">CONFECCIONO</td>
-          <td colspan="5">FIRMAS DE AUTORIZACION</td>
+          <td colspan="1" class="created-by-label">CONFECCIONO</td>
+          <td colspan="5" class="authorizations-label">FIRMAS DE AUTORIZACION</td>
         </tr>
         <tr>
-          <td colspan="1" rowspan="2">BRAVO<br />SERGIO<br />PABLO</td>
+          <td colspan="1" rowspan="2" class="created-by-value">BRAVO<br />SERGIO<br />PABLO</td>
           <td colspan="5"></td>
         </tr>
         <tr>
-          <td colspan="2">SECRETARIO DE FINANZAS</td>
-          <td colspan="1">SECRETARIO GENERAL ADJUNTO</td>
-          <td colspan="2">SECRETARIO GENERAL</td>
+          <td colspan="2" class="signee-label">SECRETARIO DE FINANZAS</td>
+          <td colspan="1" class="signee-label">SECRETARIO GENERAL ADJUNTO</td>
+          <td colspan="2" class="signee-label">SECRETARIO GENERAL</td>
         </tr>
         <tr>
           <td colspan="6"></td>
         </tr>
         <tr>
-          <td colspan="6">USO CONTADURIA CENTRAL</td>
+          <td colspan="6" class="central-accounting-label">USO CONTADURIA CENTRAL</td>
         </tr>
         <tr>
-          <td colspan="2">N° DE REGISTRO</td>
-          <td colspan="2">CONTABILIZO</td>
-          <td colspan="2">CONTROLO</td>
+          <td colspan="2" class="control-label">N° DE REGISTRO</td>
+          <td colspan="2" class="control-label">CONTABILIZO</td>
+          <td colspan="2" class="control-label">CONTROLO</td>
         </tr>
+        </table>
+        <table id="check-box-table">
         <tr>
-          <td colspan="6">
+          <td colspan="6" class="check-box-label">
             (&nbsp;&nbsp;&nbsp;&nbsp;) ACLARAR DE QUE TIPO DE BONO SE TRATA
           </td>
         </tr>
         <tr>
-          <td colspan="6">
+          <td colspan="6" class="check-box-label">
             (&nbsp;&nbsp;&nbsp;&nbsp;) ACLARAR EL TIPO DE VALOR
           </td>
         </tr>
         <tr>
-          <td colspan="6">
+          <td colspan="6" class="check-box-label">
             (&nbsp;&nbsp;&nbsp;&nbsp;) ACLARAR SI EL CHEQUE ES PROPIO O DE
             TERCEROS
           </td>
