@@ -1,5 +1,6 @@
 body {
-  font-family: Calibri, sans-serif;
+  font-family: Arial, sans-serif;
+  font-size: 11pt;
   margin: 0;
   padding: 0;
 }
@@ -56,12 +57,14 @@ td.logo {
   text-align: right;
   border-right: none;
   padding-right: 2pt;
+  font-family: Calibri, Arial, sans-serif;
 }
 
 .payment-order-date {
   text-align: left;
   border-left: none;
   padding-left: 2pt;
+  font-family: Calibri, Arial, sans-serif;
 }
 
 .supplier-name-label {
@@ -76,18 +79,22 @@ td.logo {
 
 .imputacion-contable-label {
   text-align: center;
+  font-size: 14pt;
 }
 
 .denomination-account-label {
   text-align: center;
+  font-size: 10pt;
 }
 
 .code-account-label {
   text-align: center;
+  font-family: Calibri, Arial, sans-serif;
 }
 
 .amount-label {
   text-align: center;
+  font-family: Calibri, Arial, sans-serif;
 }
 
 .detail-label {
@@ -106,36 +113,45 @@ td.logo {
 .invoice-value {
   text-align: left;
   padding-left: 2pt;
+  font-size: 10pt;
 }
+
 .witholding-label {
   text-align: center;
+  font-family: Calibri, Arial, sans-serif;
 }
 
 .witholding-value {
   text-align: left;
   padding-left: 2pt;
+  font-family: Calibri, Arial, sans-serif;
 }
 
 .total-amount-label {
   text-align: right;
   padding-right: 2pt;
+  font-size: 10pt;
 }
 
 .total-amount-value {
   text-align: left;
   padding-left: 2pt;
+  font-family: Calibri, Arial, sans-serif;
 }
 
-.bonos-label {
+.bonds-label {
   text-align: left;
+  font-size: 8pt;
 }
 
 .invoice-number-label {
   text-align: right;
+  font-size: 10pt;
 }
 
 .invoice-number-value {
   text-align: center;
+  font-size: 10pt;
 }
 
 .bank-label {
@@ -144,10 +160,14 @@ td.logo {
 
 .account-number-label {
   text-align: center;
+  font-size: 14pt;
+  font-family: Calibri, Arial, sans-serif;
 }
 
 .account-number-value {
   text-align: center;
+  font-size: 13pt;
+  font-family: Calibri, Arial, sans-serif;
 }
 
 .check-number-label {
@@ -156,45 +176,60 @@ td.logo {
 
 .check-number-value {
   text-align: center;
+  font-size: 12pt;
+  font-family: Calibri, Arial, sans-serif;
 }
 
 .issue-date-label {
   text-align: right;
+  font-size: 12pt;
+  font-family: Calibri, Arial, sans-serif;
 }
 
 .issue-date-value {
   text-align: center;
+  font-family: Calibri, Arial, sans-serif;
 }
 
 .due-date-label {
   text-align: right;
+  font-size: 12pt;
+  font-family: Calibri, Arial, sans-serif;
 }
 
 .due-date-value {
   text-align: center;
+  font-family: Calibri, Arial, sans-serif;
 }
 
 .check-clarification-label {
   text-align: center;
   border-right: none;
+  font-size: 10pt;
 }
 
 .check-clarification-value {
   text-align: center;
   border-left: none;
+  font-size: 11pt;
+  font-family: Calibri, Arial, sans-serif;
 }
 
 .created-by-label {
   text-align: center;
+  font-size: 8pt;
 }
 
 .authorizations-label {
   text-align: center;
+  font-size: 8pt;
 }
 
 .created-by-value {
   text-align: center;
   vertical-align: center;
+  font-size: 12pt;
+  font-family: Calibri, Arial, sans-serif;
 }
 
 .signee-label {
@@ -202,17 +237,22 @@ td.logo {
   text-wrap: wrap;
   border-left: none;
   border-right: none;
+  font-size: 8pt;
+  font-family: Calibri, Arial, sans-serif;
 }
 
 .central-accounting-label {
   text-align: center;
+  font-size: 10pt;
 }
 
 .control-label {
   text-align: center;
+  font-size: 8pt;
 }
 
 .check-box-label {
   border: none;
   text-align: left;
+  font-size: 8pt;
 }
