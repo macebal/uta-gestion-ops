@@ -1,6 +1,8 @@
 body {
   font-family: Arial, sans-serif;
   font-size: 11pt;
+  font-weight: bold;
+  color: black;
   margin: 0;
   padding: 0;
 }
@@ -22,9 +24,14 @@ table#check-box-table {
   width: 470pt;
 }
 
+col.col-1 { width: 68pt; }
+col.col-2 { width: 67pt; }
+col.col-3 { width: 79pt; }
+col.col-4 { width: 79pt; }
+col.col-5 { width: 79pt; }
+col.col-6 { width: 98pt; }
+
 .header {
-  font-weight: bold;
-  color: black;
   font-size: 15pt;
   text-align: center;
   border-right: none;
@@ -108,12 +115,14 @@ td.logo {
   vertical-align: top;
   border-top: none;
   text-wrap: wrap;
+  font-weight: normal;
 }
 
 .invoice-value {
   text-align: left;
   padding-left: 2pt;
   font-size: 10pt;
+  font-weight: normal;
 }
 
 .witholding-label {
@@ -142,6 +151,7 @@ td.logo {
 .bonds-label {
   text-align: left;
   font-size: 8pt;
+  font-weight: normal;
 }
 
 .invoice-number-label {
@@ -249,10 +259,12 @@ td.logo {
 .control-label {
   text-align: center;
   font-size: 8pt;
+  font-weight: normal;
 }
 
 .check-box-label {
   border: none;
   text-align: left;
   font-size: 8pt;
+  font-weight: normal;
 }
