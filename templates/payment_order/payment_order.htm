@@ -98,7 +98,7 @@
         </tr>
         <tr class="row-16">
           <td colspan="1" class="check-number-label">CHEQUE N°</td>
-          <td colspan="1" class="check-number-value">{{ check_number }}</td>
+          <td colspan="1" class="check-number-value">{{ check_number|format_check_number }}</td>
           <td colspan="1" class="issue-date-label">EMISION:</td>
           <td colspan="1" class="issue-date-value">{{ issue_date|format_date_short }}</td>
           <td colspan="1" class="due-date-label">VENCE:</td>
