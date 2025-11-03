@@ -31,6 +31,62 @@ col.col-4 { width: 79pt; }
 col.col-5 { width: 79pt; }
 col.col-6 { width: 98pt; }
 
+tr.row-2 td, tr.row-3 td {
+  height: 22.5pt;
+}
+
+tr.row-4 td, tr.row-5 td {
+  height: 19.5pt;
+}
+
+tr.row-6 td, tr.row-7 td, tr.row-8 td, tr.row-9 td, tr.row-10 td, tr.row-11 td {
+  height: 16.5pt;
+}
+
+tr.row-12 td {
+  height: 17.25pt;
+}
+
+tr.row-13 td, tr.row-14 td {
+  height: 18pt;
+}
+
+tr.row-15 td {
+  height: 30pt;
+}
+
+tr.row-16 td {
+  height: 21pt;
+}
+
+tr.row-17 td {
+  height: 18.75pt;
+}
+
+tr.separator td {
+height: 5.25pt;
+}
+
+tr.row-18 td {
+  height: 15.75pt;
+}
+
+tr.row-19 td {
+  height: 62.25pt;
+}
+
+tr.row-20 td {
+  height: 15pt;
+}
+
+tr.row-21 td {
+  height: 15.75pt;
+}
+
+tr.checkbox-row td {
+  height: 15pt;
+}
+
 .header {
   font-size: 15pt;
   text-align: center;
@@ -244,6 +300,7 @@ td.logo {
 
 .signee-label {
   text-align: center;
+  vertical-align: bottom;
   text-wrap: wrap;
   border-left: none;
   border-right: none;
