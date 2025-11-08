@@ -155,9 +155,25 @@ def payment_order_form(
         if add_invoice_button:
             add_invoice_button.enabled = bool(e.value)
 
-    def calculate_totals():
-        """Calculate and update invoice total and total OP"""
-        nonlocal total_op_label, retenciones_input, invoice_table
+    def update_invoice_total_display():
+        """Update the invoice total display in the UI"""
+        nonlocal invoice_table
+
+        if invoice_table:
+            invoice_total = sum(parse_currency(row.get("importe", "0")) for row in invoice_rows)
+            formatted_total = format_currency(invoice_total)
+            element_id = "edit-total-facturas" if is_edit_mode else "total-facturas"
+            ui.timer(
+                0.1,
+                lambda: ui.run_javascript(
+                    f'const el = document.getElementById("{element_id}"); if (el) el.innerText = "{formatted_total}";'
+                ),
+                once=True,
+            )
+
+    def calculate_total_op():
+        """Calculate and update total OP based on invoices and withholdings"""
+        nonlocal total_op_label, retenciones_input
 
         invoice_total = sum(parse_currency(row.get("importe", "0")) for row in invoice_rows)
 
@@ -169,17 +185,6 @@ def payment_order_form(
 
         if total_op_label:
             total_op_label.text = format_currency(total_op)
-
-        if invoice_table:
-            formatted_total = format_currency(invoice_total)
-            element_id = "edit-total-facturas" if is_edit_mode else "total-facturas"
-            ui.timer(
-                0.1,
-                lambda: ui.run_javascript(
-                    f'const el = document.getElementById("{element_id}"); if (el) el.innerText = "{formatted_total}";'
-                ),
-                once=True,
-            )
 
     def add_invoice(invoice_number: str, amount: str):
         """Add an invoice to the list"""
@@ -251,7 +256,8 @@ def payment_order_form(
                 invoice_table.rows = invoice_rows
                 invoice_table.update()
 
-            calculate_totals()
+            update_invoice_total_display()
+            calculate_total_op()
 
             if invoice_counter_label:
                 invoice_counter_label.text = f"{len(invoice_rows)}/5"
@@ -287,7 +293,8 @@ def payment_order_form(
                 invoice_table.rows = invoice_rows
                 invoice_table.update()
 
-            calculate_totals()
+            update_invoice_total_display()
+            calculate_total_op()
 
             ui.notify("Importe actualizado exitosamente", type="positive")
 
@@ -305,7 +312,8 @@ def payment_order_form(
                 invoice_table.rows = invoice_rows
                 invoice_table.update()
 
-            calculate_totals()
+            update_invoice_total_display()
+            calculate_total_op()
 
             if invoice_counter_label:
                 invoice_counter_label.text = f"{len(invoice_rows)}/5"
@@ -867,7 +875,7 @@ def payment_order_form(
             initial_withholding = "$0.00"
             if is_edit_mode and payment_order_data:
                 initial_withholding = format_currency(payment_order_data["withholding_amount"])
-            retenciones_input = text_input("Retenciones", value=initial_withholding, on_change=calculate_totals)
+            retenciones_input = text_input("Retenciones", value=initial_withholding, on_change=calculate_total_op)
 
         with ui.card().classes("flex-1 p-4 bg-gray-50 items-center justify-center"):
             ui.label("Total OP").classes("text-xs text-gray-500 mb-1")
@@ -891,4 +899,5 @@ def payment_order_form(
             primary_button(button_text, on_click=save_payment_order)
 
     if is_edit_mode:
-        calculate_totals()
+        update_invoice_total_display()
+        calculate_total_op()
