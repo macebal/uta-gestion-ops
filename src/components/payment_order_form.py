@@ -155,21 +155,15 @@ def payment_order_form(
         if add_invoice_button:
             add_invoice_button.enabled = bool(e.value)
 
-    def update_invoice_total_display():
-        """Update the invoice total display in the UI"""
-        nonlocal invoice_table
+    def compute_invoice_total():
+        """Compute total from current invoice rows"""
+        return format_currency(sum(parse_currency(row.get("importe", "0")) for row in invoice_rows))
 
-        if invoice_table:
-            invoice_total = sum(parse_currency(row.get("importe", "0")) for row in invoice_rows)
-            formatted_total = format_currency(invoice_total)
-            element_id = "edit-total-facturas" if is_edit_mode else "total-facturas"
-            ui.timer(
-                0.1,
-                lambda: ui.run_javascript(
-                    f'const el = document.getElementById("{element_id}"); if (el) el.innerText = "{formatted_total}";'
-                ),
-                once=True,
-            )
+    def update_invoice_total_display():
+        """Update the invoice total display"""
+        element_id = "edit-total-facturas" if is_edit_mode else "total-facturas"
+        total = compute_invoice_total()
+        ui.run_javascript(f'const el = document.getElementById("{element_id}"); if (el) el.innerText = "{total}";')
 
     def calculate_total_op():
         """Calculate and update total OP based on invoices and withholdings"""
@@ -856,14 +850,16 @@ def payment_order_form(
                 """,
         )
 
+        initial_invoice_total = compute_invoice_total()
         element_id = "edit-total-facturas" if is_edit_mode else "total-facturas"
+
         invoice_table.add_slot(
             "bottom-row",
             f"""
                 <q-tr class="bg-gray-50">
                     <q-td class="text-left font-bold">Total</q-td>
                     <q-td class="text-right">
-                        <div id="{element_id}" class="text-lg font-semibold text-gray-800">$0.00</div>
+                        <div id="{element_id}" class="text-lg font-semibold text-gray-800">{initial_invoice_total}</div>
                     </q-td>
                     <q-td></q-td>
                 </q-tr>
