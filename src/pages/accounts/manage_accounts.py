@@ -1,4 +1,5 @@
-from typing import Callable, Dict, Any
+from collections.abc import Callable
+from typing import Any
 
 from nicegui import ui
 from sqlalchemy.orm import Session
@@ -10,8 +11,8 @@ from src.models import Account, AccountSequence
 def manage_accounts_page(session_factory: Callable[[], Session]):
     """Create the account management page with CRUD operations"""
 
-    accounts_data: list[Dict[str, Any]] = []
-    filtered_accounts_data: list[Dict[str, Any]] = []
+    accounts_data: list[dict[str, Any]] = []
+    filtered_accounts_data: list[dict[str, Any]] = []
     table = None
     edit_dialog = None
     delete_dialog = None
@@ -50,17 +51,12 @@ def manage_accounts_page(session_factory: Callable[[], Session]):
     def filter_accounts():
         """Filter accounts based on search query"""
         nonlocal filtered_accounts_data, table
-        search_query = (
-            search_input.value.lower() if search_input and search_input.value else ""
-        )
+        search_query = search_input.value.lower() if search_input and search_input.value else ""
 
         if search_query:
             filtered_accounts_data.clear()
             for account in accounts_data:
-                if (
-                    search_query in account["name"].lower()
-                    or search_query in account["number"].lower()
-                ):
+                if search_query in account["name"].lower() or search_query in account["number"].lower():
                     filtered_accounts_data.append(account)
         else:
             filtered_accounts_data = accounts_data.copy()
@@ -69,9 +65,7 @@ def manage_accounts_page(session_factory: Callable[[], Session]):
             table.rows = filtered_accounts_data
             table.update()
 
-    def create_account(
-        name: str, number: str, last_order_number: int, last_check_number: int
-    ):
+    def create_account(name: str, number: str, last_order_number: int, last_check_number: int):
         """Create a new account"""
         if not name or not number:
             ui.notify("Por favor complete todos los campos", type="negative")
@@ -125,11 +119,7 @@ def manage_accounts_page(session_factory: Callable[[], Session]):
         session = session_factory()
         try:
             # Check if another account has the same number
-            existing = (
-                session.query(Account)
-                .filter(Account.number == number, Account.id != account_id)
-                .first()
-            )
+            existing = session.query(Account).filter(Account.number == number, Account.id != account_id).first()
             if existing:
                 ui.notify("Ya existe otra cuenta con este número", type="negative")
                 return
@@ -208,12 +198,8 @@ def manage_accounts_page(session_factory: Callable[[], Session]):
             edit_dialog = dialog
             ui.label("Editar Cuenta").classes("text-xl font-semibold mb-4")
 
-            edit_name_input = text_input(
-                "Nombre de la Cuenta", value=account_data["name"]
-            )
-            edit_number_input = text_input(
-                "Número de Cuenta", value=account_data["number"]
-            )
+            edit_name_input = text_input("Nombre de la Cuenta", value=account_data["name"])
+            edit_number_input = text_input("Número de Cuenta", value=account_data["number"])
 
             with ui.row().classes("w-full gap-4"):
                 with ui.column().classes("flex-1"):
@@ -270,9 +256,7 @@ def manage_accounts_page(session_factory: Callable[[], Session]):
         with ui.dialog() as dialog, ui.card().classes("p-6 min-w-96"):
             delete_dialog = dialog
             ui.label("Confirmar Eliminación").classes("text-xl font-semibold mb-4")
-            ui.label(
-                f"¿Está seguro que desea eliminar la cuenta '{account_data['name']}'?"
-            ).classes("mb-4")
+            ui.label(f"¿Está seguro que desea eliminar la cuenta '{account_data['name']}'?").classes("mb-4")
 
             with ui.row().classes("w-full gap-4 mt-6 justify-end"):
                 secondary_button(
@@ -287,134 +271,127 @@ def manage_accounts_page(session_factory: Callable[[], Session]):
 
         dialog.open()
 
-    with ui.column().classes("w-full p-6"):
-        with ui.card().classes("w-full max-w-6xl mx-auto p-6 shadow-lg"):
-            ui.label("Gestión de Cuentas Bancarias").classes(
-                "text-2xl font-normal text-gray-700 mb-6"
-            )
+    with ui.column().classes("w-full p-6"), ui.card().classes("w-full max-w-6xl mx-auto p-6 shadow-lg"):
+        ui.label("Gestión de Cuentas Bancarias").classes("text-2xl font-normal text-gray-700 mb-6")
 
-            with ui.card().classes("w-full p-4 bg-gray-50 mb-6"):
-                ui.label("Nueva Cuenta").classes(
-                    "text-lg font-semibold text-gray-700 mb-4"
-                )
+        with ui.card().classes("w-full p-4 bg-gray-50 mb-6"):
+            ui.label("Nueva Cuenta").classes("text-lg font-semibold text-gray-700 mb-4")
 
-                with ui.row().classes("w-full gap-4"):
-                    with ui.column().classes("flex-1"):
-                        name_input = text_input("Nombre de la Cuenta")
+            with ui.row().classes("w-full gap-4"):
+                with ui.column().classes("flex-1"):
+                    name_input = text_input("Nombre de la Cuenta")
 
-                    with ui.column().classes("flex-1"):
-                        number_input = text_input("Número de Cuenta")
+                with ui.column().classes("flex-1"):
+                    number_input = text_input("Número de Cuenta")
 
-                with ui.row().classes("w-full gap-4 items-end mt-4"):
-                    with ui.column().classes("flex-1"):
-                        order_number_input = (
-                            ui.number(
-                                label="Último Número de OP",
-                                value=0,
-                                min=0,
-                                step=1,
-                            )
-                            .props("outlined")
-                            .classes("w-full")
+            with ui.row().classes("w-full gap-4 items-end mt-4"):
+                with ui.column().classes("flex-1"):
+                    order_number_input = (
+                        ui.number(
+                            label="Último Número de OP",
+                            value=0,
+                            min=0,
+                            step=1,
                         )
-
-                    with ui.column().classes("flex-1"):
-                        check_number_input = (
-                            ui.number(
-                                label="Último Número de Cheque",
-                                value=0,
-                                min=0,
-                                step=1,
-                            )
-                            .props("outlined")
-                            .classes("w-full")
-                        )
-
-                    primary_button(
-                        "Agregar",
-                        icon="add",
-                        on_click=lambda: create_account(
-                            name_input.value,
-                            number_input.value,
-                            int(order_number_input.value or 0),
-                            int(check_number_input.value or 0),
-                        ),
+                        .props("outlined")
+                        .classes("w-full")
                     )
 
-            ui.label("Cuentas Existentes").classes(
-                "text-lg font-semibold text-gray-700 mb-4"
-            )
-
-            with ui.row().classes("w-full mb-4"):
-                search_input = (
-                    ui.input(
-                        label="Buscar cuenta",
-                        value="",
-                        on_change=lambda e: filter_accounts(),
+                with ui.column().classes("flex-1"):
+                    check_number_input = (
+                        ui.number(
+                            label="Último Número de Cheque",
+                            value=0,
+                            min=0,
+                            step=1,
+                        )
+                        .props("outlined")
+                        .classes("w-full")
                     )
-                    .classes("w-full")
-                    .props("outlined prepend-icon=search clearable")
+
+                primary_button(
+                    "Agregar",
+                    icon="add",
+                    on_click=lambda: create_account(
+                        name_input.value,
+                        number_input.value,
+                        int(order_number_input.value or 0),
+                        int(check_number_input.value or 0),
+                    ),
                 )
 
-            columns = [
-                {
-                    "name": "name",
-                    "label": "Nombre de la Cuenta",
-                    "field": "name",
-                    "align": "left",
-                    "sortable": True,
-                },
-                {
-                    "name": "number",
-                    "label": "Número de Cuenta",
-                    "field": "number",
-                    "align": "left",
-                    "sortable": True,
-                },
-                {
-                    "name": "last_order_number",
-                    "label": "Último N° OP",
-                    "field": "last_order_number",
-                    "align": "center",
-                    "sortable": True,
-                },
-                {
-                    "name": "last_check_number",
-                    "label": "Último N° Cheque",
-                    "field": "last_check_number",
-                    "align": "center",
-                    "sortable": True,
-                },
-                {
-                    "name": "actions",
-                    "label": "Acciones",
-                    "field": "actions",
-                    "align": "center",
-                },
-            ]
+        ui.label("Cuentas Existentes").classes("text-lg font-semibold text-gray-700 mb-4")
 
-            table = ui.table(
-                columns=columns,
-                rows=filtered_accounts_data,
-                row_key="id",
-                pagination={
-                    "rowsPerPage": 10,
-                    "sortBy": "name",
-                    "descending": False,
-                },
-            ).classes("w-full")
+        with ui.row().classes("w-full mb-4"):
+            search_input = (
+                ui.input(
+                    label="Buscar cuenta",
+                    value="",
+                    on_change=lambda e: filter_accounts(),
+                )
+                .classes("w-full")
+                .props("outlined prepend-icon=search clearable")
+            )
 
-            table.props(
-                """
+        columns = [
+            {
+                "name": "name",
+                "label": "Nombre de la Cuenta",
+                "field": "name",
+                "align": "left",
+                "sortable": True,
+            },
+            {
+                "name": "number",
+                "label": "Número de Cuenta",
+                "field": "number",
+                "align": "left",
+                "sortable": True,
+            },
+            {
+                "name": "last_order_number",
+                "label": "Último N° OP",
+                "field": "last_order_number",
+                "align": "center",
+                "sortable": True,
+            },
+            {
+                "name": "last_check_number",
+                "label": "Último N° Cheque",
+                "field": "last_check_number",
+                "align": "center",
+                "sortable": True,
+            },
+            {
+                "name": "actions",
+                "label": "Acciones",
+                "field": "actions",
+                "align": "center",
+            },
+        ]
+
+        table = ui.table(
+            columns=columns,
+            rows=filtered_accounts_data,
+            row_key="id",
+            pagination={
+                "rowsPerPage": 10,
+                "sortBy": "name",
+                "descending": False,
+            },
+        ).classes("w-full")
+
+        table.props(
+            """
                 :rows-per-page-options="[10, 20, 50, 0]"
                 :rows-per-page-label="'Filas por página:'"
                 :pagination-label="(first, last, total) => `${first}-${last} de ${total}`"
             """
-            )
+        )
 
-            table.add_slot(
-                "body-cell-actions",
-                r"""
+        table.add_slot(
+            "body-cell-actions",
+            r"""
                 <q-td key="actions" :props="props">
                     <q-btn
                         flat
@@ -438,9 +415,9 @@ def manage_accounts_page(session_factory: Callable[[], Session]):
                     </q-btn>
                 </q-td>
                 """,
-            )
+        )
 
-            table.on("edit_row", lambda e: show_edit_dialog(e.args["id"]))
-            table.on("delete_row", lambda e: show_delete_dialog(e.args["id"]))
+        table.on("edit_row", lambda e: show_edit_dialog(e.args["id"]))
+        table.on("delete_row", lambda e: show_delete_dialog(e.args["id"]))
 
     load_accounts()

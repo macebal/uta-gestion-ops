@@ -1,4 +1,4 @@
-from typing import Callable
+from collections.abc import Callable
 from datetime import datetime
 from pathlib import Path
 
@@ -15,8 +15,19 @@ from src.utils import open_file
 
 
 MONTH_NAMES = [
-    '', 'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
-    'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'
+    "",
+    "Enero",
+    "Febrero",
+    "Marzo",
+    "Abril",
+    "Mayo",
+    "Junio",
+    "Julio",
+    "Agosto",
+    "Septiembre",
+    "Octubre",
+    "Noviembre",
+    "Diciembre",
 ]
 
 ROWS_PER_PAGE = 48
@@ -26,7 +37,7 @@ def print_check_list_page(session_factory: Callable[[], Session]):
     """Create the print check list page"""
 
     accounts_data: list[str] = []
-    
+
     account_select = None
     month_select = None
     year_select = None
@@ -57,17 +68,17 @@ def print_check_list_page(session_factory: Callable[[], Session]):
         """Split payment orders into pages"""
         pages = []
         for i in range(0, len(payment_orders), rows_per_page):
-            pages.append(payment_orders[i:i + rows_per_page])
+            pages.append(payment_orders[i : i + rows_per_page])
         return pages
 
     def prepare_page_data(payment_orders, account_name, month_name, year, show_header=True):
         """Prepare data for a single page"""
         return {
-            'account_name': account_name,
-            'month': month_name,
-            'year': year,
-            'show_header': show_header,
-            'payment_orders': payment_orders,
+            "account_name": account_name,
+            "month": month_name,
+            "year": year,
+            "show_header": show_header,
+            "payment_orders": payment_orders,
         }
 
     def generate_check_list():
@@ -95,34 +106,37 @@ def print_check_list_page(session_factory: Callable[[], Session]):
         session = session_factory()
         try:
             start_date = datetime(year, month_num, 1).date()
-            
+
             # Filter is done with half open interval, [start_date, end_date)
             # to avoid having to get last day of month
-            if month_num < 12:
-                end_date = datetime(year, month_num + 1, 1).date()
-            else:
-                end_date = datetime(year + 1, 1, 1).date()
 
-            payment_orders = session.query(PaymentOrder).options(
-                joinedload(PaymentOrder.supplier),
-                joinedload(PaymentOrder.invoices),
-                joinedload(PaymentOrder.account),
-                joinedload(PaymentOrder.detail)
-            ).filter(
-                PaymentOrder.account_id == account.id,
-                PaymentOrder.issue_date >= start_date,
-                PaymentOrder.issue_date < end_date
-            ).order_by(PaymentOrder.check_number).all()
+            end_date = datetime(year, month_num + 1, 1).date() if month_num < 12 else datetime(year + 1, 1, 1).date()
+
+            payment_orders = (
+                session.query(PaymentOrder)
+                .options(
+                    joinedload(PaymentOrder.supplier),
+                    joinedload(PaymentOrder.invoices),
+                    joinedload(PaymentOrder.account),
+                    joinedload(PaymentOrder.detail),
+                )
+                .filter(
+                    PaymentOrder.account_id == account.id,
+                    PaymentOrder.issue_date >= start_date,
+                    PaymentOrder.issue_date < end_date,
+                )
+                .order_by(PaymentOrder.check_number)
+                .all()
+            )
 
             if not payment_orders:
                 ui.notify(
-                    f"No se encontraron órdenes de pago para {account_name} en {month_str} {year}",
-                    type="warning"
+                    f"No se encontraron órdenes de pago para {account_name} en {month_str} {year}", type="warning"
                 )
                 return
 
             pages = split_into_pages(payment_orders, ROWS_PER_PAGE)
-            
+
             pages_data = []
             for i, page_orders in enumerate(pages):
                 page_data = prepare_page_data(
@@ -135,17 +149,13 @@ def print_check_list_page(session_factory: Callable[[], Session]):
                 pages_data.append(page_data)
 
             output_path = f"lista_cheques_{account_name.lower()}_{month_str.lower()}_{year}.pdf"
-            pdf_path = generate_pdf(
-                template_name='check_list',
-                pages_data=pages_data,
-                output_path=output_path
-            )
-            
+            pdf_path = generate_pdf(template_name="check_list", pages_data=pages_data, output_path=output_path)
+
             ui.notify(
                 f"PDF generado: {Path(pdf_path).name} ({len(payment_orders)} órdenes en {len(pages)} página(s))",
-                type="positive"
+                type="positive",
             )
-            
+
             open_file(pdf_path)
 
         except Exception as e:
@@ -160,37 +170,21 @@ def print_check_list_page(session_factory: Callable[[], Session]):
     years = [str(year) for year in range(current_year, current_year - 5, -1)]
     months = MONTH_NAMES[1:]
 
-    with ui.column().classes("w-full p-6"):
-        with ui.card().classes("w-full max-w-4xl mx-auto p-6 shadow-lg"):
-            ui.label("Generar PDF de Lista de Cheques").classes(
-                "text-2xl font-normal text-gray-700 mb-6"
+    with ui.column().classes("w-full p-6"), ui.card().classes("w-full max-w-4xl mx-auto p-6 shadow-lg"):
+        ui.label("Generar PDF de Lista de Cheques").classes("text-2xl font-normal text-gray-700 mb-6")
+
+        with ui.column().classes("w-full gap-4 mb-6"):
+            account_select = searchable_select(
+                accounts_data,
+                label="Cuenta",
             )
 
-            with ui.column().classes("w-full gap-4 mb-6"):
-                account_select = searchable_select(
-                    accounts_data,
-                    label="Cuenta",
-                )
+            with ui.row().classes("w-full gap-4"):
+                with ui.column().classes("flex-1"):
+                    month_select = ui.select(months, label="Mes", value=MONTH_NAMES[current_month]).classes("w-full")
 
-                with ui.row().classes("w-full gap-4"):
-                    with ui.column().classes("flex-1"):
-                        month_select = ui.select(
-                            months,
-                            label="Mes",
-                            value=MONTH_NAMES[current_month]
-                        ).classes("w-full")
+                with ui.column().classes("flex-1"):
+                    year_select = ui.select(years, label="Año", value=str(current_year)).classes("w-full")
 
-                    with ui.column().classes("flex-1"):
-                        year_select = ui.select(
-                            years,
-                            label="Año",
-                            value=str(current_year)
-                        ).classes("w-full")
-
-            with ui.row().classes("w-full justify-end mt-6"):
-                primary_button(
-                    "Generar PDF",
-                    icon="picture_as_pdf",
-                    on_click=generate_check_list
-                )
-
+        with ui.row().classes("w-full justify-end mt-6"):
+            primary_button("Generar PDF", icon="picture_as_pdf", on_click=generate_check_list)

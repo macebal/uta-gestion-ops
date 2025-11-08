@@ -13,6 +13,7 @@ from .inputs import (
 from .menu import create_menu
 from .tables import create_invoice_table, scrollable_table, simple_table
 
+
 __all__ = [
     # Buttons
     "primary_button",

@@ -1,4 +1,4 @@
-.PHONY: sync run package clean create-test-data
+.PHONY: sync run package clean create-test-data pretty
 
 sync:
 	uv sync --all-groups
@@ -14,4 +14,8 @@ clean:
 
 create-test-data: sync
 	uv run python scripts/load_test_data.py
+
+pretty: sync
+	uv run ruff check --fix .
+	uv run ruff format .
 

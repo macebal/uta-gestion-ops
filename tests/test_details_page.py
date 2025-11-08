@@ -1,10 +1,10 @@
 from nicegui import ui
 from nicegui.testing import User
 from sqlalchemy.orm import sessionmaker
+from tests.conftest import SAMPLE_DETAILS, db_session_ctx
 
 from src.models import Detail
 from src.pages.manage_details import manage_details_page
-from tests.conftest import SAMPLE_DETAILS, db_session_ctx
 
 
 async def test_page_loads_correctly(user: User, test_db_session_factory):
@@ -16,9 +16,7 @@ async def test_page_loads_correctly(user: User, test_db_session_factory):
     await user.should_see("Agregar")
 
 
-async def test_page_loads_existing_items(
-    user: User, test_db_session_factory: sessionmaker
-):
+async def test_page_loads_existing_items(user: User, test_db_session_factory: sessionmaker):
     @ui.page("/test-details")
     def test_page():
         manage_details_page(test_db_session_factory)
@@ -50,7 +48,7 @@ async def test_create_detail_success(user: User, test_db_session_factory: sessio
 
     table = user.find(ui.table).elements.pop()
     assert len(table.rows) == len(SAMPLE_DETAILS) + 1
-    assert any("New Detail" == elem["value"] for elem in table.rows)
+    assert any(elem["value"] == "New Detail" for elem in table.rows)
 
 
 async def test_delete_detail(user: User, test_db_session_factory: sessionmaker):

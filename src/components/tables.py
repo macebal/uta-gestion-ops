@@ -1,5 +1,3 @@
-from typing import Optional
-
 from nicegui import ui
 
 
@@ -7,8 +5,8 @@ def scrollable_table(
     columns: list,
     rows: list,
     height: str = "200px",
-    footer_row_html: Optional[str] = None,
-    custom_slots: Optional[dict] = None,
+    footer_row_html: str | None = None,
+    custom_slots: dict | None = None,
     **kwargs,
 ):
     """
@@ -46,9 +44,7 @@ def scrollable_table(
     return table
 
 
-def create_invoice_table(
-    rows: list, total: str, on_add_click=None, on_delete_click=None
-):
+def create_invoice_table(rows: list, total: str, on_add_click=None, on_delete_click=None):
     """
     Specialized table for invoices with total and add button in footer
 
