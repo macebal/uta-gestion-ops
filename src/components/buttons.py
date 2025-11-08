@@ -1,9 +1,8 @@
-from typing import Optional
 
 from nicegui import ui
 
 
-def primary_button(text: str, on_click=None, icon: Optional[str] = None, **kwargs):
+def primary_button(text: str, on_click=None, icon: str | None = None, **kwargs):
     """
     Standardized primary button with blue background
 
@@ -22,7 +21,7 @@ def primary_button(text: str, on_click=None, icon: Optional[str] = None, **kwarg
     return btn
 
 
-def secondary_button(text: str, on_click=None, icon: Optional[str] = None, **kwargs):
+def secondary_button(text: str, on_click=None, icon: str | None = None, **kwargs):
     """
     Standardized secondary button with gray background
 
@@ -41,7 +40,7 @@ def secondary_button(text: str, on_click=None, icon: Optional[str] = None, **kwa
     return btn
 
 
-def small_button(text: str, on_click=None, icon: Optional[str] = None, **kwargs):
+def small_button(text: str, on_click=None, icon: str | None = None, **kwargs):
     """
     Standardized small button with blue background
 

@@ -1,4 +1,4 @@
-from typing import Callable
+from collections.abc import Callable
 from datetime import date
 
 from nicegui import ui
@@ -31,7 +31,8 @@ def home_page(session_factory: Callable[[], Session]):
                 with (
                     ui.card()
                     .classes(
-                        "flex-1 p-8 cursor-pointer hover:shadow-xl transition-shadow bg-gradient-to-br from-blue-500 to-blue-600"
+                        "flex-1 p-8 cursor-pointer hover:shadow-xl transition-shadow "
+                        "bg-gradient-to-br from-blue-500 to-blue-600"
                     )
                     .style("min-height: 280px")
                     .on("click", lambda: ui.navigate.to("/payment-orders/create"))
@@ -51,7 +52,8 @@ def home_page(session_factory: Callable[[], Session]):
                 with (
                     ui.card()
                     .classes(
-                        "flex-1 p-8 cursor-pointer hover:shadow-xl transition-shadow bg-gradient-to-br from-green-500 to-green-600"
+                        "flex-1 p-8 cursor-pointer hover:shadow-xl transition-shadow "
+                        "bg-gradient-to-br from-green-500 to-green-600"
                     )
                     .style("min-height: 280px")
                     .on("click", lambda: ui.navigate.to("/payment-orders/print"))
@@ -71,7 +73,8 @@ def home_page(session_factory: Callable[[], Session]):
                 with (
                     ui.card()
                     .classes(
-                        "flex-1 p-8 cursor-pointer hover:shadow-xl transition-shadow bg-gradient-to-br from-teal-500 to-teal-600"
+                        "flex-1 p-8 cursor-pointer hover:shadow-xl transition-shadow "
+                        "bg-gradient-to-br from-teal-500 to-teal-600"
                     )
                     .style("min-height: 280px")
                     .on("click", lambda: ui.navigate.to("/checks/print"))
@@ -98,17 +101,16 @@ def home_page(session_factory: Callable[[], Session]):
                     .classes(
                         "flex-1 p-6 cursor-pointer hover:shadow-lg transition-shadow"
                     )
-                    .on("click", lambda: ui.navigate.to("/suppliers/manage"))
+                    .on("click", lambda: ui.navigate.to("/suppliers/manage")), ui.row().classes("items-center gap-4")
                 ):
-                    with ui.row().classes("items-center gap-4"):
-                        ui.icon("business", size="2.5rem").classes("text-purple-600")
-                        with ui.column().classes("gap-1"):
-                            ui.label("Proveedores").classes(
-                                "text-xl font-semibold text-gray-800"
-                            )
-                            ui.label("Administrar proveedores").classes(
-                                "text-sm text-gray-500"
-                            )
+                    ui.icon("business", size="2.5rem").classes("text-purple-600")
+                    with ui.column().classes("gap-1"):
+                        ui.label("Proveedores").classes(
+                            "text-xl font-semibold text-gray-800"
+                        )
+                        ui.label("Administrar proveedores").classes(
+                            "text-sm text-gray-500"
+                        )
 
                 # Accounts management
                 with (
@@ -116,19 +118,18 @@ def home_page(session_factory: Callable[[], Session]):
                     .classes(
                         "flex-1 p-6 cursor-pointer hover:shadow-lg transition-shadow"
                     )
-                    .on("click", lambda: ui.navigate.to("/accounts/manage"))
+                    .on("click", lambda: ui.navigate.to("/accounts/manage")), ui.row().classes("items-center gap-4")
                 ):
-                    with ui.row().classes("items-center gap-4"):
-                        ui.icon("account_balance", size="2.5rem").classes(
-                            "text-orange-600"
+                    ui.icon("account_balance", size="2.5rem").classes(
+                        "text-orange-600"
+                    )
+                    with ui.column().classes("gap-1"):
+                        ui.label("Cuentas").classes(
+                            "text-xl font-semibold text-gray-800"
                         )
-                        with ui.column().classes("gap-1"):
-                            ui.label("Cuentas").classes(
-                                "text-xl font-semibold text-gray-800"
-                            )
-                            ui.label("Gestionar cuentas").classes(
-                                "text-sm text-gray-500"
-                            )
+                        ui.label("Gestionar cuentas").classes(
+                            "text-sm text-gray-500"
+                        )
 
                 # Details management
                 with (
@@ -136,21 +137,20 @@ def home_page(session_factory: Callable[[], Session]):
                     .classes(
                         "flex-1 p-6 cursor-pointer hover:shadow-lg transition-shadow"
                     )
-                    .on("click", lambda: ui.navigate.to("/details/manage"))
+                    .on("click", lambda: ui.navigate.to("/details/manage")), ui.row().classes("items-center gap-4")
                 ):
-                    with ui.row().classes("items-center gap-4"):
-                        ui.icon("list_alt", size="2.5rem").classes("text-teal-600")
-                        with ui.column().classes("gap-1"):
-                            ui.label("Detalles").classes(
-                                "text-xl font-semibold text-gray-800"
-                            )
-                            ui.label("Gestionar detalles de pago").classes(
-                                "text-sm text-gray-500"
-                            )
+                    ui.icon("list_alt", size="2.5rem").classes("text-teal-600")
+                    with ui.column().classes("gap-1"):
+                        ui.label("Detalles").classes(
+                            "text-xl font-semibold text-gray-800"
+                        )
+                        ui.label("Gestionar detalles de pago").classes(
+                            "text-sm text-gray-500"
+                        )
 
         def check_and_show_reminder():
             """Check if reminder should be shown and return visibility state
-            
+
             If the reminder has been dismissed for the current month, it will not be shown.
             If the reminder has not been dismissed for the current month, it will be shown.
             """
@@ -194,10 +194,11 @@ def home_page(session_factory: Callable[[], Session]):
 
     reminder_container = ui.column().classes("fixed bottom-0 left-0 right-0 z-50 px-4 pb-4")
     reminder_container.visible = show_reminder
-    
+
     with reminder_container:
         with ui.card().classes(
-            "w-full max-w-6xl mx-auto p-6 bg-gradient-to-r from-amber-50 to-orange-50 border-l-4 border-orange-400 shadow-2xl"
+            "w-full max-w-6xl mx-auto p-6 bg-gradient-to-r from-amber-50 to-orange-50 "
+            "border-l-4 border-orange-400 shadow-2xl"
         ):
             with ui.row().classes("items-center gap-4 w-full"):
                 ui.icon("account_balance", size="2.5rem").classes("text-orange-600")
@@ -209,8 +210,9 @@ def home_page(session_factory: Callable[[], Session]):
                         "Revise y actualice los números de cheque y orden de pago de las cuentas"
                     ).classes("text-gray-700")
                 with ui.row().classes("gap-3"):
-                    # clicking on the button will hide the reminder container and it will be 
-                    # shown again next time the user opens the app if the reminder has not been dismissed for the current month
+                    # clicking on the button will hide the reminder container and it will be shown
+                    # again next time the user opens the app if the reminder has not been
+                    # dismissed for the current month
                     ui.button("Posponer", on_click=lambda: reminder_container.set_visibility(False)).props(
                         "outline color=orange-7"
                     ).classes("px-4")

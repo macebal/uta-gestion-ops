@@ -1,4 +1,5 @@
-from typing import Callable, Dict, Any
+from collections.abc import Callable
+from typing import Any
 
 from nicegui import ui
 from sqlalchemy.orm import Session
@@ -10,8 +11,8 @@ from src.models import Supplier
 def manage_suppliers_page(session_factory: Callable[[], Session]):
     """Create the supplier management page with CRUD operations"""
 
-    suppliers_data: list[Dict[str, Any]] = []
-    filtered_suppliers_data: list[Dict[str, Any]] = []
+    suppliers_data: list[dict[str, Any]] = []
+    filtered_suppliers_data: list[dict[str, Any]] = []
     table = None
     edit_dialog = None
     delete_dialog = None
@@ -238,116 +239,115 @@ def manage_suppliers_page(session_factory: Callable[[], Session]):
 
         dialog.open()
 
-    with ui.column().classes("w-full p-6"):
-        with ui.card().classes("w-full max-w-6xl mx-auto p-6 shadow-lg"):
-            ui.label("Gestión de Proveedores").classes(
-                "text-2xl font-normal text-gray-700 mb-6"
-            )
+    with ui.column().classes("w-full p-6"), ui.card().classes("w-full max-w-6xl mx-auto p-6 shadow-lg"):
+        ui.label("Gestión de Proveedores").classes(
+            "text-2xl font-normal text-gray-700 mb-6"
+        )
 
-            with ui.card().classes("w-full p-4 bg-gray-50 mb-6"):
-                ui.label("Nuevo Proveedor").classes(
-                    "text-lg font-semibold text-gray-700 mb-4"
-                )
-
-                with ui.column().classes("w-full gap-4"):
-                    with ui.row().classes("w-full gap-4"):
-                        with ui.column().classes("flex-1"):
-                            name_input = text_input("Nombre del Proveedor")
-                        with ui.column().classes("flex-1"):
-                            cuit_input = text_input("CUIT")
-                    
-                    with ui.row().classes("w-full gap-4"):
-                        with ui.column().classes("flex-1"):
-                            phone_input = text_input("Teléfono")
-                        with ui.column().classes("flex-1"):
-                            email_input = text_input("Email")
-                    
-                    with ui.row().classes("w-full justify-end"):
-                        primary_button(
-                            "Agregar",
-                            icon="add",
-                            on_click=lambda: create_supplier(
-                                name_input.value,
-                                cuit_input.value,
-                                phone_input.value,
-                                email_input.value,
-                            ),
-                        )
-
-            ui.label("Proveedores Existentes").classes(
+        with ui.card().classes("w-full p-4 bg-gray-50 mb-6"):
+            ui.label("Nuevo Proveedor").classes(
                 "text-lg font-semibold text-gray-700 mb-4"
             )
 
-            with ui.row().classes("w-full mb-4"):
-                search_input = (
-                    ui.input(
-                        label="Buscar proveedor",
-                        value="",
-                        on_change=lambda e: filter_suppliers(),
+            with ui.column().classes("w-full gap-4"):
+                with ui.row().classes("w-full gap-4"):
+                    with ui.column().classes("flex-1"):
+                        name_input = text_input("Nombre del Proveedor")
+                    with ui.column().classes("flex-1"):
+                        cuit_input = text_input("CUIT")
+
+                with ui.row().classes("w-full gap-4"):
+                    with ui.column().classes("flex-1"):
+                        phone_input = text_input("Teléfono")
+                    with ui.column().classes("flex-1"):
+                        email_input = text_input("Email")
+
+                with ui.row().classes("w-full justify-end"):
+                    primary_button(
+                        "Agregar",
+                        icon="add",
+                        on_click=lambda: create_supplier(
+                            name_input.value,
+                            cuit_input.value,
+                            phone_input.value,
+                            email_input.value,
+                        ),
                     )
-                    .classes("w-full")
-                    .props("outlined prepend-icon=search clearable")
+
+        ui.label("Proveedores Existentes").classes(
+            "text-lg font-semibold text-gray-700 mb-4"
+        )
+
+        with ui.row().classes("w-full mb-4"):
+            search_input = (
+                ui.input(
+                    label="Buscar proveedor",
+                    value="",
+                    on_change=lambda e: filter_suppliers(),
                 )
+                .classes("w-full")
+                .props("outlined prepend-icon=search clearable")
+            )
 
-            columns = [
-                {
-                    "name": "name",
-                    "label": "Nombre del Proveedor",
-                    "field": "name",
-                    "align": "left",
-                    "sortable": True,
-                },
-                {
-                    "name": "cuit",
-                    "label": "CUIT",
-                    "field": "cuit",
-                    "align": "left",
-                    "sortable": True,
-                },
-                {
-                    "name": "phone",
-                    "label": "Teléfono",
-                    "field": "phone",
-                    "align": "left",
-                    "sortable": True,
-                },
-                {
-                    "name": "email",
-                    "label": "Email",
-                    "field": "email",
-                    "align": "left",
-                    "sortable": True,
-                },
-                {
-                    "name": "actions",
-                    "label": "Acciones",
-                    "field": "actions",
-                    "align": "center",
-                },
-            ]
+        columns = [
+            {
+                "name": "name",
+                "label": "Nombre del Proveedor",
+                "field": "name",
+                "align": "left",
+                "sortable": True,
+            },
+            {
+                "name": "cuit",
+                "label": "CUIT",
+                "field": "cuit",
+                "align": "left",
+                "sortable": True,
+            },
+            {
+                "name": "phone",
+                "label": "Teléfono",
+                "field": "phone",
+                "align": "left",
+                "sortable": True,
+            },
+            {
+                "name": "email",
+                "label": "Email",
+                "field": "email",
+                "align": "left",
+                "sortable": True,
+            },
+            {
+                "name": "actions",
+                "label": "Acciones",
+                "field": "actions",
+                "align": "center",
+            },
+        ]
 
-            table = ui.table(
-                columns=columns,
-                rows=filtered_suppliers_data,
-                row_key="id",
-                pagination={
-                    "rowsPerPage": 10,
-                    "sortBy": "name",
-                    "descending": False,
-                },
-            ).classes("w-full")
+        table = ui.table(
+            columns=columns,
+            rows=filtered_suppliers_data,
+            row_key="id",
+            pagination={
+                "rowsPerPage": 10,
+                "sortBy": "name",
+                "descending": False,
+            },
+        ).classes("w-full")
 
-            table.props(
-                """
+        table.props(
+            """
                 :rows-per-page-options="[10, 20, 50, 0]"
                 :rows-per-page-label="'Filas por página:'"
                 :pagination-label="(first, last, total) => `${first}-${last} de ${total}`"
             """
-            )
+        )
 
-            table.add_slot(
-                "body-cell-actions",
-                r"""
+        table.add_slot(
+            "body-cell-actions",
+            r"""
                 <q-td key="actions" :props="props">
                     <q-btn
                         flat
@@ -371,9 +371,9 @@ def manage_suppliers_page(session_factory: Callable[[], Session]):
                     </q-btn>
                 </q-td>
                 """,
-            )
+        )
 
-            table.on("edit_row", lambda e: show_edit_dialog(e.args["id"]))
-            table.on("delete_row", lambda e: show_delete_dialog(e.args["id"]))
+        table.on("edit_row", lambda e: show_edit_dialog(e.args["id"]))
+        table.on("delete_row", lambda e: show_delete_dialog(e.args["id"]))
 
     load_suppliers()

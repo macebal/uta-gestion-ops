@@ -1,4 +1,5 @@
-from typing import Callable
+from collections.abc import Callable
+
 from nicegui import ui
 
 
@@ -129,12 +130,11 @@ def date_input_with_calendar(label: str, value: str = "", **kwargs):
         if value:
             date_input.value = value
 
-        with date_input:
-            with ui.menu().props("no-parent-event") as date_menu:
-                with ui.date().props("mask=DD/MM/YYYY") as date_picker:
-                    date_picker.bind_value(date_input)
-                    with ui.row().classes("justify-end q-pa-sm"):
-                        ui.button("Cerrar", on_click=date_menu.close).props("flat")
+        with date_input, ui.menu().props("no-parent-event") as date_menu:
+            with ui.date().props("mask=DD/MM/YYYY") as date_picker:
+                date_picker.bind_value(date_input)
+                with ui.row().classes("justify-end q-pa-sm"):
+                    ui.button("Cerrar", on_click=date_menu.close).props("flat")
 
         with date_input.add_slot("append"):
             ui.icon("event").on("click", date_menu.open).classes("cursor-pointer")

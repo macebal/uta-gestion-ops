@@ -1,9 +1,9 @@
-from typing import Callable
+from collections.abc import Callable
 from datetime import datetime
 
 from nicegui import ui
-from sqlalchemy.orm import Session
 from sqlalchemy import and_
+from sqlalchemy.orm import Session
 
 from src.components import (
     primary_button,
@@ -13,7 +13,7 @@ from src.components import (
 )
 from src.models import Account, PaymentOrder
 from src.services.pdf_generator import generate_pdf
-from src.utils import format_currency, format_date, format_check_number, open_file
+from src.utils import format_check_number, format_currency, format_date, open_file
 
 
 def print_payment_orders_page(session_factory: Callable[[], Session]):
@@ -301,7 +301,7 @@ def print_payment_orders_page(session_factory: Callable[[], Session]):
             pdf_path = generate_pdf("payment_order", payment_orders_data, output_path)
 
             ui.notify(f"PDF generado exitosamente: {output_path}", type="positive")
-            
+
             open_file(pdf_path)
 
         except Exception as e:
@@ -311,116 +311,114 @@ def print_payment_orders_page(session_factory: Callable[[], Session]):
 
     load_accounts()
 
-    with ui.column().classes("w-full p-6"):
-        with ui.card().classes("w-full max-w-6xl mx-auto p-6 shadow-lg"):
-            ui.label("Generar PDFs de Órdenes de Pago").classes(
-                "text-2xl font-normal text-gray-700 mb-6"
-            )
+    with ui.column().classes("w-full p-6"), ui.card().classes("w-full max-w-6xl mx-auto p-6 shadow-lg"):
+        ui.label("Generar PDFs de Órdenes de Pago").classes(
+            "text-2xl font-normal text-gray-700 mb-6"
+        )
 
-            with ui.column().classes("w-full gap-4 mb-6"):
-                with ui.row().classes("w-full gap-4"):
-                    with ui.column().classes("flex-1"):
-                        account_select = searchable_select(
-                            accounts_data,
-                            label="Cuenta",
-                            on_change=lambda: apply_filters(),
-                        )
-
-                with ui.row().classes("w-full items-center justify-between mt-4"):
-                    ui.label("Filtros").classes("text-lg font-semibold text-gray-700")
-                    primary_button(
-                        "Agregar Filtro", icon="add", on_click=show_add_filter_dialog
-                    )
-
-                filters_container = ui.column().classes("w-full min-h-8 py-2")
-                render_filters()
-
-            ui.separator().classes("my-6")
-
-            ui.label("Resultados").classes("text-lg font-semibold text-gray-700 mb-4")
-
-            columns = [
-                {
-                    "name": "order_number",
-                    "label": "OP",
-                    "field": "order_number",
-                    "align": "left",
-                    "sortable": True,
-                },
-                {
-                    "name": "check_number",
-                    "label": "Cheque",
-                    "field": "check_number",
-                    "align": "left",
-                    "sortable": True,
-                },
-                {
-                    "name": "supplier_name",
-                    "label": "Proveedor",
-                    "field": "supplier_name",
-                    "align": "left",
-                    "sortable": True,
-                },
-                {
-                    "name": "detail",
-                    "label": "Detalle",
-                    "field": "detail",
-                    "align": "left",
-                    "sortable": True,
-                },
-                {
-                    "name": "amount",
-                    "label": "Importe",
-                    "field": "amount",
-                    "align": "right",
-                    "sortable": True,
-                },
-                {
-                    "name": "withholding",
-                    "label": "Retenciones",
-                    "field": "withholding",
-                    "align": "right",
-                    "sortable": True,
-                },
-                {
-                    "name": "total",
-                    "label": "Total",
-                    "field": "total",
-                    "align": "right",
-                    "sortable": True,
-                },
-                {
-                    "name": "order_date",
-                    "label": "Fecha OP",
-                    "field": "order_date",
-                    "align": "center",
-                    "sortable": True,
-                },
-                {
-                    "name": "issue_date",
-                    "label": "Emisión",
-                    "field": "issue_date",
-                    "align": "center",
-                    "sortable": True,
-                },
-                {
-                    "name": "due_date",
-                    "label": "Vencimiento",
-                    "field": "due_date",
-                    "align": "center",
-                    "sortable": True,
-                },
-            ]
-
-            results_table = (
-                ui.table(
-                    columns=columns,
-                    rows=filtered_orders,
-                    row_key="id",
-                    pagination={"rowsPerPage": 10, "sortBy": "order_number"},
+        with ui.column().classes("w-full gap-4 mb-6"):
+            with ui.row().classes("w-full gap-4"), ui.column().classes("flex-1"):
+                account_select = searchable_select(
+                    accounts_data,
+                    label="Cuenta",
+                    on_change=lambda: apply_filters(),
                 )
-                .classes("w-full")
-                .props("flat bordered")
-            )
 
-            print_button_container = ui.row().classes("w-full justify-end mt-6")
+            with ui.row().classes("w-full items-center justify-between mt-4"):
+                ui.label("Filtros").classes("text-lg font-semibold text-gray-700")
+                primary_button(
+                    "Agregar Filtro", icon="add", on_click=show_add_filter_dialog
+                )
+
+            filters_container = ui.column().classes("w-full min-h-8 py-2")
+            render_filters()
+
+        ui.separator().classes("my-6")
+
+        ui.label("Resultados").classes("text-lg font-semibold text-gray-700 mb-4")
+
+        columns = [
+            {
+                "name": "order_number",
+                "label": "OP",
+                "field": "order_number",
+                "align": "left",
+                "sortable": True,
+            },
+            {
+                "name": "check_number",
+                "label": "Cheque",
+                "field": "check_number",
+                "align": "left",
+                "sortable": True,
+            },
+            {
+                "name": "supplier_name",
+                "label": "Proveedor",
+                "field": "supplier_name",
+                "align": "left",
+                "sortable": True,
+            },
+            {
+                "name": "detail",
+                "label": "Detalle",
+                "field": "detail",
+                "align": "left",
+                "sortable": True,
+            },
+            {
+                "name": "amount",
+                "label": "Importe",
+                "field": "amount",
+                "align": "right",
+                "sortable": True,
+            },
+            {
+                "name": "withholding",
+                "label": "Retenciones",
+                "field": "withholding",
+                "align": "right",
+                "sortable": True,
+            },
+            {
+                "name": "total",
+                "label": "Total",
+                "field": "total",
+                "align": "right",
+                "sortable": True,
+            },
+            {
+                "name": "order_date",
+                "label": "Fecha OP",
+                "field": "order_date",
+                "align": "center",
+                "sortable": True,
+            },
+            {
+                "name": "issue_date",
+                "label": "Emisión",
+                "field": "issue_date",
+                "align": "center",
+                "sortable": True,
+            },
+            {
+                "name": "due_date",
+                "label": "Vencimiento",
+                "field": "due_date",
+                "align": "center",
+                "sortable": True,
+            },
+        ]
+
+        results_table = (
+            ui.table(
+                columns=columns,
+                rows=filtered_orders,
+                row_key="id",
+                pagination={"rowsPerPage": 10, "sortBy": "order_number"},
+            )
+            .classes("w-full")
+            .props("flat bordered")
+        )
+
+        print_button_container = ui.row().classes("w-full justify-end mt-6")

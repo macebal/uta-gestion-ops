@@ -1,14 +1,14 @@
 from datetime import date, datetime
 from decimal import Decimal
-from typing import List, Optional
+from typing import Optional
 
 from sqlalchemy import (
-    Integer,
-    String,
     Date,
-    Numeric,
-    ForeignKey,
     DateTime,
+    ForeignKey,
+    Integer,
+    Numeric,
+    String,
 )
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
 from sqlalchemy.sql import func
@@ -26,13 +26,16 @@ class AppState(Base):
     __tablename__ = "app_state"
 
     id: Mapped[int] = mapped_column(primary_key=True)
-    last_opened_date: Mapped[Optional[date]] = mapped_column(Date, nullable=True)
-    reminder_dismissed_month: Mapped[Optional[str]] = mapped_column(
+    last_opened_date: Mapped[date | None] = mapped_column(Date, nullable=True)
+    reminder_dismissed_month: Mapped[str | None] = mapped_column(
         String, nullable=True
     )
 
     def __repr__(self):
-        return f"<AppState(id={self.id}, last_opened={self.last_opened_date}, dismissed={self.reminder_dismissed_month})>"
+        return (
+            f"<AppState(id={self.id}, last_opened={self.last_opened_date}, "
+            f"dismissed={self.reminder_dismissed_month})>"
+        )
 
 
 class Account(Base):
@@ -45,7 +48,7 @@ class Account(Base):
     number: Mapped[str] = mapped_column(String, nullable=False)
 
     # Relationships
-    payment_orders: Mapped[List["PaymentOrder"]] = relationship(
+    payment_orders: Mapped[list["PaymentOrder"]] = relationship(
         back_populates="account", cascade="all, delete-orphan"
     )
     account_sequence: Mapped[Optional["AccountSequence"]] = relationship(
@@ -83,15 +86,15 @@ class Supplier(Base):
 
     id: Mapped[int] = mapped_column(primary_key=True)
     name: Mapped[str] = mapped_column(String, nullable=False)
-    cuit: Mapped[Optional[str]] = mapped_column(String, nullable=True)
-    phone: Mapped[Optional[str]] = mapped_column(String, nullable=True)
-    email: Mapped[Optional[str]] = mapped_column(String, nullable=True)
+    cuit: Mapped[str | None] = mapped_column(String, nullable=True)
+    phone: Mapped[str | None] = mapped_column(String, nullable=True)
+    email: Mapped[str | None] = mapped_column(String, nullable=True)
 
     # Relationships
-    payment_orders: Mapped[List["PaymentOrder"]] = relationship(
+    payment_orders: Mapped[list["PaymentOrder"]] = relationship(
         back_populates="supplier", cascade="all, delete-orphan"
     )
-    invoices: Mapped[List["Invoice"]] = relationship(
+    invoices: Mapped[list["Invoice"]] = relationship(
         back_populates="supplier", cascade="all, delete-orphan"
     )
 
@@ -108,7 +111,7 @@ class Detail(Base):
     value: Mapped[str] = mapped_column(String, nullable=False)
 
     # Relationships
-    payment_orders: Mapped[List["PaymentOrder"]] = relationship(
+    payment_orders: Mapped[list["PaymentOrder"]] = relationship(
         back_populates="detail", cascade="all, delete-orphan"
     )
 
@@ -148,7 +151,7 @@ class PaymentOrder(Base):
     account: Mapped["Account"] = relationship(back_populates="payment_orders")
     supplier: Mapped["Supplier"] = relationship(back_populates="payment_orders")
     detail: Mapped["Detail"] = relationship(back_populates="payment_orders")
-    invoices: Mapped[List["Invoice"]] = relationship(
+    invoices: Mapped[list["Invoice"]] = relationship(
         back_populates="payment_order", cascade="all, delete-orphan"
     )
 

@@ -1,4 +1,4 @@
-from typing import Callable
+from collections.abc import Callable
 from datetime import datetime
 from pathlib import Path
 
@@ -26,7 +26,7 @@ def print_check_list_page(session_factory: Callable[[], Session]):
     """Create the print check list page"""
 
     accounts_data: list[str] = []
-    
+
     account_select = None
     month_select = None
     year_select = None
@@ -95,13 +95,11 @@ def print_check_list_page(session_factory: Callable[[], Session]):
         session = session_factory()
         try:
             start_date = datetime(year, month_num, 1).date()
-            
+
             # Filter is done with half open interval, [start_date, end_date)
             # to avoid having to get last day of month
-            if month_num < 12:
-                end_date = datetime(year, month_num + 1, 1).date()
-            else:
-                end_date = datetime(year + 1, 1, 1).date()
+
+            end_date = datetime(year, month_num + 1, 1).date() if month_num < 12 else datetime(year + 1, 1, 1).date()
 
             payment_orders = session.query(PaymentOrder).options(
                 joinedload(PaymentOrder.supplier),
@@ -122,7 +120,7 @@ def print_check_list_page(session_factory: Callable[[], Session]):
                 return
 
             pages = split_into_pages(payment_orders, ROWS_PER_PAGE)
-            
+
             pages_data = []
             for i, page_orders in enumerate(pages):
                 page_data = prepare_page_data(
@@ -140,12 +138,12 @@ def print_check_list_page(session_factory: Callable[[], Session]):
                 pages_data=pages_data,
                 output_path=output_path
             )
-            
+
             ui.notify(
                 f"PDF generado: {Path(pdf_path).name} ({len(payment_orders)} órdenes en {len(pages)} página(s))",
                 type="positive"
             )
-            
+
             open_file(pdf_path)
 
         except Exception as e:
@@ -160,37 +158,36 @@ def print_check_list_page(session_factory: Callable[[], Session]):
     years = [str(year) for year in range(current_year, current_year - 5, -1)]
     months = MONTH_NAMES[1:]
 
-    with ui.column().classes("w-full p-6"):
-        with ui.card().classes("w-full max-w-4xl mx-auto p-6 shadow-lg"):
-            ui.label("Generar PDF de Lista de Cheques").classes(
-                "text-2xl font-normal text-gray-700 mb-6"
+    with ui.column().classes("w-full p-6"), ui.card().classes("w-full max-w-4xl mx-auto p-6 shadow-lg"):
+        ui.label("Generar PDF de Lista de Cheques").classes(
+            "text-2xl font-normal text-gray-700 mb-6"
+        )
+
+        with ui.column().classes("w-full gap-4 mb-6"):
+            account_select = searchable_select(
+                accounts_data,
+                label="Cuenta",
             )
 
-            with ui.column().classes("w-full gap-4 mb-6"):
-                account_select = searchable_select(
-                    accounts_data,
-                    label="Cuenta",
-                )
+            with ui.row().classes("w-full gap-4"):
+                with ui.column().classes("flex-1"):
+                    month_select = ui.select(
+                        months,
+                        label="Mes",
+                        value=MONTH_NAMES[current_month]
+                    ).classes("w-full")
 
-                with ui.row().classes("w-full gap-4"):
-                    with ui.column().classes("flex-1"):
-                        month_select = ui.select(
-                            months,
-                            label="Mes",
-                            value=MONTH_NAMES[current_month]
-                        ).classes("w-full")
+                with ui.column().classes("flex-1"):
+                    year_select = ui.select(
+                        years,
+                        label="Año",
+                        value=str(current_year)
+                    ).classes("w-full")
 
-                    with ui.column().classes("flex-1"):
-                        year_select = ui.select(
-                            years,
-                            label="Año",
-                            value=str(current_year)
-                        ).classes("w-full")
-
-            with ui.row().classes("w-full justify-end mt-6"):
-                primary_button(
-                    "Generar PDF",
-                    icon="picture_as_pdf",
-                    on_click=generate_check_list
-                )
+        with ui.row().classes("w-full justify-end mt-6"):
+            primary_button(
+                "Generar PDF",
+                icon="picture_as_pdf",
+                on_click=generate_check_list
+            )
 

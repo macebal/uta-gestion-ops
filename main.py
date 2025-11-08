@@ -2,15 +2,15 @@ from nicegui import native, ui
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
+from src.components.menu import create_menu
 from src.models import Base
+from src.pages.accounts.manage_accounts import manage_accounts_page
+from src.pages.checks.print_check_list import print_check_list_page
+from src.pages.details.manage_details import manage_details_page
 from src.pages.home import home_page
 from src.pages.payment_orders.create_payment_order import create_payment_order_page
 from src.pages.payment_orders.print_payment_orders import print_payment_orders_page
-from src.pages.checks.print_check_list import print_check_list_page
-from src.pages.accounts.manage_accounts import manage_accounts_page
 from src.pages.suppliers.manage_suppliers import manage_suppliers_page
-from src.pages.details.manage_details import manage_details_page
-from src.components.menu import create_menu
 
 
 DATABASE_URL = "sqlite:///gestion_ops.db"

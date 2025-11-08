@@ -16,12 +16,13 @@ from datetime import datetime
 from decimal import Decimal
 from pathlib import Path
 
+
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
-from src.models import Base, Account, AccountSequence, Supplier, Detail, PaymentOrder, Invoice
+from src.models import Account, AccountSequence, Base, Detail, Invoice, PaymentOrder, Supplier
 
 
 DATABASE_URL = "sqlite:///gestion_ops.db"
@@ -33,8 +34,8 @@ def load_csv(filename):
     filepath = DATA_DIR / filename
     if not filepath.exists():
         raise FileNotFoundError(f"CSV file not found: {filepath}")
-    
-    with open(filepath, 'r', encoding='utf-8') as f:
+
+    with open(filepath, encoding='utf-8') as f:
         reader = csv.DictReader(f)
         return list(reader)
 
@@ -44,7 +45,7 @@ def check_database_status(session):
     existing_orders = session.query(PaymentOrder).count()
     existing_accounts = session.query(Account).count()
     existing_providers = session.query(Supplier).count()
-    
+
     if existing_orders > 0 or existing_accounts > 0 or existing_providers > 0:
         print("\nWARNING: Database already contains data!")
         print(f"   - Accounts: {existing_accounts}")
@@ -55,7 +56,7 @@ def check_database_status(session):
         print("  - Duplicate entries")
         print("  - Sequence number conflicts")
         print("  - Data inconsistencies")
-        
+
         response = input("\nDo you want to continue anyway? (yes/no): ").strip().lower()
         if response not in ['yes', 'y']:
             print("\nAborted by user.")
@@ -68,33 +69,33 @@ def load_test_data():
     print("=" * 60)
     print("Loading Test Data from CSV files")
     print("=" * 60)
-    
+
     db_path = Path("gestion_ops.db")
     db_exists = db_path.exists()
-    
+
     if not db_exists:
         print("\nDatabase does not exist. Creating new database...")
     else:
         print(f"\nUsing existing database: {db_path}")
-    
+
     engine = create_engine(DATABASE_URL, echo=False)
-    
+
     print("Ensuring all tables exist...")
     Base.metadata.create_all(engine)
-    
+
     if not db_exists:
         print("Database and tables created successfully!")
-    
+
     SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
     session = SessionLocal()
-    
+
     try:
         check_database_status(session)
-        
+
         print("\nLoading accounts...")
         accounts_data = load_csv("accounts.csv")
         accounts_map = {}
-        
+
         for row in accounts_data:
             account = Account(
                 name=row['name'],
@@ -104,22 +105,16 @@ def load_test_data():
             session.flush()
             accounts_map[row['number']] = account
             print(f"  Created account: {account.name} ({account.number})")
-        
+
         print("\nCreating account sequences...")
-        for account_number, account in accounts_map.items():
-            if "Sindical" in account.name:
-                last_order = 1000
-                last_check = 5000
-            elif "Obra Social" in account.name:
-                last_order = 1000
-                last_check = 5000
-            elif "Promocion" in account.name:
+        for _ , account in accounts_map.items():
+            if "Sindical" in account.name or "Obra Social" in account.name or "Promocion" in account.name:
                 last_order = 1000
                 last_check = 5000
             else:
                 last_order = 0
                 last_check = 0
-            
+
             seq = AccountSequence(
                 account_id=account.id,
                 last_order_number=last_order,
@@ -127,13 +122,13 @@ def load_test_data():
             )
             session.add(seq)
             print(f"  Created sequence for {account.name}: order={last_order}, check={last_check}")
-        
+
         session.flush()
-        
+
         print("\nLoading providers...")
         providers_data = load_csv("providers.csv")
         providers_map = {}
-        
+
         for row in providers_data:
             supplier = Supplier(
                 name=row['name'],
@@ -145,27 +140,27 @@ def load_test_data():
             session.flush()
             providers_map[row['name']] = supplier
             print(f"  Created provider: {supplier.name} ({supplier.cuit})")
-        
+
         print("\nLoading payment details...")
         details_data = load_csv("details.csv")
         details_map = {}
-        
+
         for row in details_data:
             detail = Detail(value=row['value'])
             session.add(detail)
             session.flush()
             details_map[row['value']] = detail
             print(f"  Created detail: {detail.value}")
-        
+
         print("\nLoading payment orders...")
         payment_orders_data = load_csv("payment_orders.csv")
         payment_orders_map = {}
-        
+
         for row in payment_orders_data:
             account = accounts_map.get(row['account_number'])
             supplier = providers_map.get(row['supplier_name'])
             detail = details_map.get(row['detail_value'])
-            
+
             if not account:
                 print(f"  Warning: Account {row['account_number']} not found, skipping order {row['order_number']}")
                 continue
@@ -175,11 +170,11 @@ def load_test_data():
             if not detail:
                 print(f"  Warning: Detail '{row['detail_value']}' not found, skipping order {row['order_number']}")
                 continue
-            
+
             order_date = datetime.strptime(row['order_date'], '%Y-%m-%d').date()
             issue_date = datetime.strptime(row['issue_date'], '%Y-%m-%d').date()
             due_date = datetime.strptime(row['due_date'], '%Y-%m-%d').date()
-            
+
             payment_order = PaymentOrder(
                 order_number=int(row['order_number']),
                 check_number=int(row['check_number']),
@@ -195,27 +190,33 @@ def load_test_data():
             session.add(payment_order)
             session.flush()
             payment_orders_map[int(row['order_number'])] = payment_order
-            
+
             if int(row['order_number']) % 10 == 0:
                 print(f"  Created {len(payment_orders_map)} payment orders...")
-        
+
         print(f"  Created total {len(payment_orders_map)} payment orders")
-        
+
         print("\nLoading invoices...")
         invoices_data = load_csv("invoices.csv")
         invoice_count = 0
-        
+
         for row in invoices_data:
             payment_order = payment_orders_map.get(int(row['payment_order_number']))
             supplier = providers_map.get(row['supplier_name'])
-            
+
             if not payment_order:
-                print(f"  Warning: Payment order {row['payment_order_number']} not found, skipping invoice {row['invoice_number']}")
+                print(
+                    f"  Warning: Payment order {row['payment_order_number']} not found, "
+                    f"skipping invoice {row['invoice_number']}"
+                )
                 continue
             if not supplier:
-                print(f"  Warning: Supplier '{row['supplier_name']}' not found, skipping invoice {row['invoice_number']}")
+                print(
+                    f"  Warning: Supplier '{row['supplier_name']}' not found, "
+                    f"skipping invoice {row['invoice_number']}"
+                )
                 continue
-            
+
             invoice = Invoice(
                 payment_order_id=payment_order.id,
                 invoice_number=row['invoice_number'],
@@ -224,32 +225,36 @@ def load_test_data():
             )
             session.add(invoice)
             invoice_count += 1
-            
+
             if invoice_count % 20 == 0:
                 print(f"  Created {invoice_count} invoices...")
-        
+
         print(f"  Created total {invoice_count} invoices")
-        
+
         print("\nUpdating account sequences based on loaded data...")
-        for account_number, account in accounts_map.items():
+        for _, account in accounts_map.items():
             account_payment_orders = [
-                po for po in payment_orders_map.values() 
+                po for po in payment_orders_map.values()
                 if po.account_id == account.id
             ]
-            
+
             if account_payment_orders:
                 max_order = max(po.order_number for po in account_payment_orders)
                 max_check = max(po.check_number for po in account_payment_orders)
-                
+
                 account.account_sequence.last_order_number = max_order
                 account.account_sequence.last_check_number = max_check
-                
+
                 print(f"  Updated {account.name}: order={max_order}, check={max_check}")
             else:
-                print(f"  No payment orders for {account.name}, keeping sequence at order={account.account_sequence.last_order_number}, check={account.account_sequence.last_check_number}")
-        
+                print(
+                    f"  No payment orders for {account.name}, keeping sequence at "
+                    f"order={account.account_sequence.last_order_number}, "
+                    f"check={account.account_sequence.last_check_number}"
+                )
+
         session.commit()
-        
+
         print("\n" + "=" * 60)
         print("SUCCESS! Test data loaded successfully")
         print("=" * 60)
@@ -263,21 +268,21 @@ def load_test_data():
         print(f"\nDatabase: {DATABASE_URL}")
         print("\nYou can now run the application with: make run")
         print()
-        
+
     except FileNotFoundError as e:
         session.rollback()
         print(f"\nERROR: {e}")
         print("\nMake sure you're running this from the project root directory")
         print("and that all CSV files exist in tests/data/")
         sys.exit(1)
-    
+
     except Exception as e:
         session.rollback()
         print(f"\nERROR loading test data: {e}")
         import traceback
         traceback.print_exc()
         sys.exit(1)
-    
+
     finally:
         session.close()
 
