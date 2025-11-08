@@ -331,7 +331,7 @@ def filtered_table(
                     with ui.row().classes("gap-2 flex-wrap"):
                         for filter_item in active_filters:
                             label = get_filter_label(filter_item)
-                            with ui.chip(label, removable=True).classes("bg-blue-100") as chip:
+                            with ui.chip(label, removable=True).classes("bg-blue-600 text-white") as chip:
                                 chip.on("remove", lambda f=filter_item: remove_filter(f))
 
     def add_filter(column_name: str, operation: str, value: str, value2: str = ""):
@@ -375,7 +375,6 @@ def filtered_table(
         active_filters.remove(filter_config)
         render_filters()
         apply_all_filters()
-        ui.notify("Filtro eliminado", type="positive")
 
     def show_add_filter_dialog():
         """Show dialog to add a new filter"""
