@@ -1,4 +1,5 @@
 from collections.abc import Callable
+from datetime import datetime
 from decimal import Decimal
 from pathlib import Path
 
@@ -764,7 +765,8 @@ def payment_order_form(
                 op_input = text_input("OP")
 
             with ui.column().classes("flex-1"):
-                order_date_input = date_input_with_calendar("Fecha")
+                today = datetime.now().strftime("%d/%m/%Y")
+                order_date_input = date_input_with_calendar("Fecha", value=today)
 
         with ui.row().classes("w-full gap-4 mb-4"):
             with ui.column().classes("flex-1"):
