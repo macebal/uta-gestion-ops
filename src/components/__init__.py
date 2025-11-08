@@ -11,6 +11,7 @@ from .inputs import (
     text_input,
 )
 from .menu import create_menu
+from .payment_order_form import payment_order_form
 from .tables import ColumnConfig, FilterConfig, create_invoice_table, filtered_table, scrollable_table, simple_table
 
 
@@ -28,6 +29,8 @@ __all__ = [
     "date_input_with_calendar",
     "number_input",
     "searchable_select",
+    # Forms
+    "payment_order_form",
     # Tables
     "scrollable_table",
     "simple_table",
