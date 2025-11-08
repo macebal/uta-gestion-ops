@@ -52,6 +52,8 @@ def payment_order_form(
     export_checkbox = None
     invoice_counter_label = None
     add_invoice_button = None
+    supplier_add_button = None
+    detail_add_button = None
 
     payment_order_data = None
 
@@ -87,6 +89,109 @@ def payment_order_form(
             details_data.extend([detail.value for detail in details])
         finally:
             session.close()
+
+    def show_create_supplier_dialog():
+        """Show dialog to create a new supplier"""
+        with ui.dialog() as dialog, ui.card().classes("p-6 min-w-96"):
+            ui.label("Nuevo Proveedor").classes("text-xl font-semibold mb-4")
+
+            name_input = text_input("Nombre del Proveedor")
+            cuit_input = text_input("CUIT")
+            phone_input = text_input("Teléfono")
+            email_input = text_input("Email")
+
+            def create_supplier():
+                name = name_input.value
+                cuit = cuit_input.value
+                phone = phone_input.value
+                email = email_input.value
+
+                if not name:
+                    ui.notify("Por favor ingrese el nombre del proveedor", type="negative")
+                    return
+
+                session = session_factory()
+                try:
+                    existing = session.query(Supplier).filter_by(name=name).first()
+                    if existing:
+                        ui.notify("Ya existe un proveedor con este nombre", type="negative")
+                        return
+
+                    new_supplier = Supplier(
+                        name=name,
+                        cuit=cuit if cuit else None,
+                        phone=phone if phone else None,
+                        email=email if email else None,
+                    )
+                    session.add(new_supplier)
+                    session.commit()
+
+                    ui.notify("Proveedor creado exitosamente", type="positive")
+                    load_suppliers()
+
+                    if supplier_select:
+                        supplier_select.set_options(suppliers_data)
+                        supplier_select.value = name
+                        if add_invoice_button:
+                            add_invoice_button.enabled = True
+
+                    dialog.close()
+                except Exception as e:
+                    session.rollback()
+                    ui.notify(f"Error al crear proveedor: {str(e)}", type="negative")
+                finally:
+                    session.close()
+
+            with ui.row().classes("w-full gap-4 mt-6 justify-end"):
+                secondary_button("Cancelar", on_click=lambda: dialog.close())
+                primary_button("Crear", on_click=create_supplier)
+
+        dialog.open()
+
+    def show_create_detail_dialog():
+        """Show dialog to create a new detail"""
+        with ui.dialog() as dialog, ui.card().classes("p-6 min-w-96"):
+            ui.label("Nuevo Detalle").classes("text-xl font-semibold mb-4")
+
+            value_input = text_input("Detalle")
+
+            def create_detail():
+                value = value_input.value
+
+                if not value:
+                    ui.notify("Por favor ingrese el detalle", type="negative")
+                    return
+
+                session = session_factory()
+                try:
+                    existing = session.query(Detail).filter_by(value=value).first()
+                    if existing:
+                        ui.notify("Ya existe un detalle con este texto", type="negative")
+                        return
+
+                    new_detail = Detail(value=value)
+                    session.add(new_detail)
+                    session.commit()
+
+                    ui.notify("Detalle creado exitosamente", type="positive")
+                    load_details()
+
+                    if detail_select:
+                        detail_select.set_options(details_data)
+                        detail_select.value = value
+
+                    dialog.close()
+                except Exception as e:
+                    session.rollback()
+                    ui.notify(f"Error al crear detalle: {str(e)}", type="negative")
+                finally:
+                    session.close()
+
+            with ui.row().classes("w-full gap-4 mt-6 justify-end"):
+                secondary_button("Cancelar", on_click=lambda: dialog.close())
+                primary_button("Crear", on_click=create_detail)
+
+        dialog.open()
 
     def get_account_id_by_name(account_name: str) -> int | None:
         """Get account ID by name"""
@@ -778,13 +883,25 @@ def payment_order_form(
             with ui.column().classes("flex-1"):
                 due_date_input = date_input_with_calendar("Vence")
 
-        with ui.column().classes("w-full mb-4"):
-            supplier_select = searchable_select(suppliers_data, label="Proveedor", on_change=on_supplier_change)
+        with ui.row().classes("w-full mb-4 gap-2 items-end"):
+            with ui.column().classes("flex-1"):
+                supplier_select = searchable_select(suppliers_data, label="Proveedor", on_change=on_supplier_change)
 
-    with ui.column().classes("w-full mb-6"):
-        detail_select = searchable_select(details_data, label="Detalle")
-        if is_edit_mode and payment_order_data:
-            detail_select.value = payment_order_data["detail"]
+            supplier_add_button = ui.button(icon="add").props("round flat color=primary").classes("mb-1")
+            supplier_add_button.on("click", show_create_supplier_dialog)
+            supplier_add_button.tooltip("Crear nuevo proveedor")
+            if is_edit_mode:
+                supplier_add_button.disable()
+
+    with ui.row().classes("w-full mb-6 gap-2 items-end"):
+        with ui.column().classes("flex-1"):
+            detail_select = searchable_select(details_data, label="Detalle")
+            if is_edit_mode and payment_order_data:
+                detail_select.value = payment_order_data["detail"]
+
+        detail_add_button = ui.button(icon="add").props("round flat color=primary").classes("mb-1")
+        detail_add_button.on("click", show_create_detail_dialog)
+        detail_add_button.tooltip("Crear nuevo detalle")
 
     with ui.column().classes("w-full items-center"):
         max_width_class = "max-w-4xl" if is_edit_mode else "max-w-2xl"
