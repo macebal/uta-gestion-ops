@@ -35,13 +35,13 @@ def create_menu():
                 on_click=lambda: ui.navigate.to("/details/manage"),
             )
 
-        # Print menu
-        with ui.button("Imprimir", icon="print").props("flat color=grey-8"), ui.menu():
+        # Export menu
+        with ui.button("Exportar a PDF", icon="picture_as_pdf").props("flat color=grey-8"), ui.menu():
             ui.menu_item(
                 "Órdenes de Pago",
-                on_click=lambda: ui.navigate.to("/payment-orders/print"),
+                on_click=lambda: ui.navigate.to("/payment-orders/export"),
             )
             ui.menu_item(
                 "Lista de Cheques",
-                on_click=lambda: ui.navigate.to("/checks/print"),
+                on_click=lambda: ui.navigate.to("/checks/export"),
             )

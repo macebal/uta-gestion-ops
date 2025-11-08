@@ -5,12 +5,12 @@ from sqlalchemy.orm import sessionmaker
 from src.components.menu import create_menu
 from src.models import Base
 from src.pages.accounts.manage_accounts import manage_accounts_page
-from src.pages.checks.print_check_list import print_check_list_page
+from src.pages.checks.export_check_list import export_check_list_page
 from src.pages.details.manage_details import manage_details_page
 from src.pages.home import home_page
 from src.pages.payment_orders.create_payment_order import create_payment_order_page
+from src.pages.payment_orders.export_payment_orders import export_payment_orders_page
 from src.pages.payment_orders.manage_payment_orders import manage_payment_orders_page
-from src.pages.payment_orders.print_payment_orders import print_payment_orders_page
 from src.pages.suppliers.manage_suppliers import manage_suppliers_page
 
 
@@ -43,18 +43,18 @@ def manage_orders_page():
     manage_payment_orders_page(SessionLocal)
 
 
-@ui.page("/payment-orders/print")
-def print_orders_page():
-    ui.page_title("Imprimir Órdenes de Pago")
+@ui.page("/payment-orders/export")
+def export_orders_page():
+    ui.page_title("Exportar Órdenes de Pago a PDF")
     create_menu()
-    print_payment_orders_page(SessionLocal)
+    export_payment_orders_page(SessionLocal)
 
 
-@ui.page("/checks/print")
-def print_checks_page():
-    ui.page_title("Imprimir Lista de Cheques")
+@ui.page("/checks/export")
+def export_checks_page():
+    ui.page_title("Exportar Lista de Cheques a PDF")
     create_menu()
-    print_check_list_page(SessionLocal)
+    export_check_list_page(SessionLocal)
 
 
 @ui.page("/accounts/manage")

@@ -5,19 +5,14 @@ from nicegui import ui
 from sqlalchemy import and_
 from sqlalchemy.orm import Session
 
-from src.components import (
-    primary_button,
-    searchable_select,
-    secondary_button,
-    text_input,
-)
+from src.components import primary_button, searchable_select, secondary_button, text_input
 from src.models import Account, PaymentOrder
 from src.services.pdf_generator import generate_pdf
 from src.utils import format_check_number, format_currency, format_date, open_file
 
 
-def print_payment_orders_page(session_factory: Callable[[], Session]):
-    """Create the print payment orders page"""
+def export_payment_orders_page(session_factory: Callable[[], Session]):
+    """Create the export payment orders page"""
 
     accounts_data: list[str] = []
     filtered_orders: list[dict] = []

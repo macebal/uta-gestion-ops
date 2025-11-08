@@ -5,10 +5,7 @@ from pathlib import Path
 from nicegui import ui
 from sqlalchemy.orm import Session, joinedload
 
-from src.components import (
-    primary_button,
-    searchable_select,
-)
+from src.components import primary_button, searchable_select
 from src.models import Account, PaymentOrder
 from src.services.pdf_generator import generate_pdf
 from src.utils import open_file
@@ -33,8 +30,8 @@ MONTH_NAMES = [
 ROWS_PER_PAGE = 48
 
 
-def print_check_list_page(session_factory: Callable[[], Session]):
-    """Create the print check list page"""
+def export_check_list_page(session_factory: Callable[[], Session]):
+    """Create the export check list page"""
 
     accounts_data: list[str] = []
 
