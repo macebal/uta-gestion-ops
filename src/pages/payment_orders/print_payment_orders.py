@@ -13,7 +13,7 @@ from src.components import (
 )
 from src.models import Account, PaymentOrder
 from src.services.pdf_generator import generate_pdf
-from src.utils import format_currency, format_date, format_check_number
+from src.utils import format_currency, format_date, format_check_number, open_file
 
 
 def print_payment_orders_page(session_factory: Callable[[], Session]):
@@ -298,9 +298,11 @@ def print_payment_orders_page(session_factory: Callable[[], Session]):
 
             timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
             output_path = f"ordenes_pago_{timestamp}.pdf"
-            generate_pdf("payment_order", payment_orders_data, output_path)
+            pdf_path = generate_pdf("payment_order", payment_orders_data, output_path)
 
             ui.notify(f"PDF generado exitosamente: {output_path}", type="positive")
+            
+            open_file(pdf_path)
 
         except Exception as e:
             ui.notify(f"Error al generar PDF: {str(e)}", type="negative")

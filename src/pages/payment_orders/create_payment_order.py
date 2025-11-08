@@ -14,7 +14,7 @@ from src.components import (
 )
 from src.models import Account, PaymentOrder, Supplier, Detail, Invoice
 from src.services.pdf_generator import generate_pdf
-from src.utils import format_currency, parse_currency, format_check_number, format_date
+from src.utils import format_currency, parse_currency, format_check_number, format_date, open_file
 
 
 def create_payment_order_page(session_factory: Callable[[], Session]):
@@ -446,6 +446,8 @@ def create_payment_order_page(session_factory: Callable[[], Session]):
                         "payment_order", [template_data], output_path
                     )
                     ui.notify(f"PDF generado: {Path(pdf_path).name}", type="positive")
+                    
+                    open_file(pdf_path)
                 except Exception as e:
                     ui.notify(f"Error al generar PDF: {str(e)}", type="warning")
 
