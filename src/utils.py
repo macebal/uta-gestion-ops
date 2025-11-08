@@ -8,11 +8,11 @@ from decimal import Decimal
 def format_currency(amount: float | Decimal | str | None) -> str:
     """
     Format a number as currency with space after $ sign.
-    Uses dots for thousands separator and comma for decimal separator.
+    Uses commas for thousands separator and dot for decimal separator.
 
     Examples:
-        123456.78 -> "$ 123.456,78"
-        1234.5 -> "$ 1.234,50"
+        123456.78 -> "$ 123,456.78"
+        1234.5 -> "$ 1,234.50"
         0 -> ""
         None -> ""
 
@@ -27,7 +27,7 @@ def format_currency(amount: float | Decimal | str | None) -> str:
 
     # Convert string to float if needed
     if isinstance(amount, str):
-        clean_str = amount.replace("$", "").replace(".", "").replace(",", ".").strip()
+        clean_str = amount.replace("$", "").replace(",", "").strip()
         try:
             amount = float(clean_str)
         except ValueError:
@@ -42,21 +42,21 @@ def format_currency(amount: float | Decimal | str | None) -> str:
     # Split integer and decimal parts
     integer_part, decimal_part = amount_str.split(".")
 
-    # Add thousands separators (dots) to integer part
-    integer_with_dots = ""
+    # Add thousands separators (commas) to integer part
+    integer_with_commas = ""
     for i, digit in enumerate(reversed(integer_part)):
         if i > 0 and i % 3 == 0:
-            integer_with_dots = "." + integer_with_dots
-        integer_with_dots = digit + integer_with_dots
+            integer_with_commas = "," + integer_with_commas
+        integer_with_commas = digit + integer_with_commas
 
-    # Format with space after $ and comma for decimal separator
-    return f"$ {integer_with_dots},{decimal_part}"
+    # Format with space after $ and dot for decimal separator
+    return f"$ {integer_with_commas}.{decimal_part}"
 
 
 def parse_currency(currency_str: str) -> Decimal:
     """
     Parse a currency string to Decimal.
-    Handles various formats including those with $ sign, dots, and commas.
+    Handles various formats including those with $ sign and commas (thousand separator).
 
     Args:
         currency_str: String representation of currency
@@ -67,8 +67,8 @@ def parse_currency(currency_str: str) -> Decimal:
     if not currency_str:
         return Decimal("0.00")
 
-    # Remove $ sign, dots (thousands separator), and replace comma with period
-    clean_str = currency_str.replace("$", "").replace(".", "").replace(",", ".").strip()
+    # Remove $ sign and commas (thousands separator), keep dot as decimal separator
+    clean_str = currency_str.replace("$", "").replace(",", "").strip()
 
     try:
         return Decimal(clean_str)
