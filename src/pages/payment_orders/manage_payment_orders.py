@@ -115,22 +115,6 @@ def manage_payment_orders_page(session_factory: Callable[[], Session]):
                 "type": "string",
             },
             {
-                "name": "issue_date",
-                "label": "Emisión",
-                "field": "issue_date",
-                "align": "left",
-                "sortable": True,
-                "type": "string",
-            },
-            {
-                "name": "due_date",
-                "label": "Vencimiento",
-                "field": "due_date",
-                "align": "left",
-                "sortable": True,
-                "type": "string",
-            },
-            {
                 "name": "detail",
                 "label": "Detalle",
                 "field": "detail",
