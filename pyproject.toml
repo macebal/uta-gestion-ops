@@ -38,6 +38,12 @@ select = [
     "C4",  # flake8-comprehensions
     "SIM", # flake8-simplify
 ]
+extend-safe-fixes = [
+    "W293", #Blank line contains whitespace
+]
+ignore = [
+    "SIM117", # combining with statements does not makes sense in this particular case
+]
 
 [tool.ruff.lint.isort]
 known-first-party = ["src"]
