@@ -11,7 +11,7 @@ from .inputs import (
     text_input,
 )
 from .menu import create_menu
-from .tables import create_invoice_table, scrollable_table, simple_table
+from .tables import ColumnConfig, FilterConfig, create_invoice_table, filtered_table, scrollable_table, simple_table
 
 
 __all__ = [
@@ -32,6 +32,9 @@ __all__ = [
     "scrollable_table",
     "simple_table",
     "create_invoice_table",
+    "filtered_table",
+    "ColumnConfig",
+    "FilterConfig",
     # Menu
     "create_menu",
 ]
