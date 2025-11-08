@@ -41,9 +41,7 @@ def manage_details_page(session_factory: Callable[[], Session]):
     def filter_details():
         """Filter details based on search query"""
         nonlocal filtered_details_data, table
-        search_query = (
-            search_input.value.lower() if search_input and search_input.value else ""
-        )
+        search_query = search_input.value.lower() if search_input and search_input.value else ""
 
         if search_query:
             filtered_details_data.clear()
@@ -91,11 +89,7 @@ def manage_details_page(session_factory: Callable[[], Session]):
 
         session = session_factory()
         try:
-            existing = (
-                session.query(Detail)
-                .filter(Detail.value == value, Detail.id != detail_id)
-                .first()
-            )
+            existing = session.query(Detail).filter(Detail.value == value, Detail.id != detail_id).first()
             if existing:
                 ui.notify("Ya existe otro detalle con este texto", type="negative")
                 return
@@ -183,9 +177,7 @@ def manage_details_page(session_factory: Callable[[], Session]):
         with ui.dialog() as dialog, ui.card().classes("p-6 min-w-96"):
             delete_dialog = dialog
             ui.label("Confirmar Eliminación").classes("text-xl font-semibold mb-4")
-            ui.label(
-                f"¿Está seguro que desea eliminar el detalle '{detail_data['value']}'?"
-            ).classes("mb-4")
+            ui.label(f"¿Está seguro que desea eliminar el detalle '{detail_data['value']}'?").classes("mb-4")
 
             with ui.row().classes("w-full gap-4 mt-6 justify-end"):
                 secondary_button(
@@ -201,14 +193,10 @@ def manage_details_page(session_factory: Callable[[], Session]):
         dialog.open()
 
     with ui.column().classes("w-full p-6"), ui.card().classes("w-full max-w-6xl mx-auto p-6 shadow-lg"):
-        ui.label("Gestión de Detalles de Pago").classes(
-            "text-2xl font-normal text-gray-700 mb-6"
-        )
+        ui.label("Gestión de Detalles de Pago").classes("text-2xl font-normal text-gray-700 mb-6")
 
         with ui.card().classes("w-full p-4 bg-gray-50 mb-6"):
-            ui.label("Nuevo Detalle").classes(
-                "text-lg font-semibold text-gray-700 mb-4"
-            )
+            ui.label("Nuevo Detalle").classes("text-lg font-semibold text-gray-700 mb-4")
 
             with ui.row().classes("w-full gap-4 items-end"):
                 with ui.column().classes("flex-1"):
@@ -220,9 +208,7 @@ def manage_details_page(session_factory: Callable[[], Session]):
                     on_click=lambda: create_detail(value_input.value),
                 )
 
-        ui.label("Detalles Existentes").classes(
-            "text-lg font-semibold text-gray-700 mb-4"
-        )
+        ui.label("Detalles Existentes").classes("text-lg font-semibold text-gray-700 mb-4")
 
         with ui.row().classes("w-full mb-4"):
             search_input = (

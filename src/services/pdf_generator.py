@@ -48,9 +48,9 @@ def render_template_html(template_name: str, template_data: dict) -> tuple[str, 
     )
 
     # Add custom filters
-    env.filters['format_date_short'] = format_date
-    env.filters['format_currency'] = format_currency
-    env.filters['format_check_number'] = format_check_number
+    env.filters["format_date_short"] = format_date
+    env.filters["format_currency"] = format_currency
+    env.filters["format_check_number"] = format_check_number
 
     # Load and render the template
     template = env.get_template(f"{template_name}.htm")

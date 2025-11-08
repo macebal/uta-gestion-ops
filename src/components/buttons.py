@@ -1,4 +1,3 @@
-
 from nicegui import ui
 
 
@@ -12,9 +11,7 @@ def primary_button(text: str, on_click=None, icon: str | None = None, **kwargs):
         icon: Optional icon name
         **kwargs: Additional arguments (e.g., classes)
     """
-    classes = kwargs.pop(
-        "classes", "bg-blue-500 text-white px-6 py-2 rounded-lg text-base"
-    )
+    classes = kwargs.pop("classes", "bg-blue-500 text-white px-6 py-2 rounded-lg text-base")
     btn = ui.button(text, icon=icon).classes(classes)
     if on_click:
         btn.on("click", on_click)
@@ -31,9 +28,7 @@ def secondary_button(text: str, on_click=None, icon: str | None = None, **kwargs
         icon: Optional icon name
         **kwargs: Additional arguments (e.g., classes)
     """
-    classes = kwargs.pop(
-        "classes", "bg-gray-500 text-white px-6 py-2 rounded-lg text-base"
-    )
+    classes = kwargs.pop("classes", "bg-gray-500 text-white px-6 py-2 rounded-lg text-base")
     btn = ui.button(text, icon=icon).classes(classes)
     if on_click:
         btn.on("click", on_click)

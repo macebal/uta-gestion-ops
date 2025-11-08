@@ -64,18 +64,12 @@ def print_payment_orders_page(session_factory: Callable[[], Session]):
                         for filter_item in active_filters:
                             filter_type = filter_item["type"]
                             if filter_type == "order_range":
-                                label = (
-                                    f"OP: {filter_item['from']} - {filter_item['to']}"
-                                )
+                                label = f"OP: {filter_item['from']} - {filter_item['to']}"
                             elif filter_type == "check_range":
                                 label = f"Cheque: {filter_item['from']} - {filter_item['to']}"
 
-                            with ui.chip(label, removable=True).classes(
-                                "bg-blue-100"
-                            ) as chip:
-                                chip.on(
-                                    "remove", lambda f=filter_item: remove_filter(f)
-                                )
+                            with ui.chip(label, removable=True).classes("bg-blue-100") as chip:
+                                chip.on("remove", lambda f=filter_item: remove_filter(f))
 
     def add_filter(filter_type: str, from_value: str, to_value: str):
         """Add a new filter"""
@@ -157,9 +151,7 @@ def print_payment_orders_page(session_factory: Callable[[], Session]):
                 )
                 primary_button(
                     "Agregar",
-                    on_click=lambda: add_filter(
-                        filter_type_select.value, from_input.value, to_input.value
-                    ),
+                    on_click=lambda: add_filter(filter_type_select.value, from_input.value, to_input.value),
                 )
 
         dialog.open()
@@ -181,9 +173,7 @@ def print_payment_orders_page(session_factory: Callable[[], Session]):
 
         session = session_factory()
         try:
-            query = session.query(PaymentOrder).filter(
-                PaymentOrder.account_id == account_id
-            )
+            query = session.query(PaymentOrder).filter(PaymentOrder.account_id == account_id)
 
             for filter_item in active_filters:
                 if filter_item["type"] == "order_range":
@@ -229,9 +219,7 @@ def print_payment_orders_page(session_factory: Callable[[], Session]):
                 print_button_container.clear()
                 if filtered_orders:
                     with print_button_container:
-                        primary_button(
-                            "Generar PDF", icon="picture_as_pdf", on_click=handle_generate_pdf
-                        )
+                        primary_button("Generar PDF", icon="picture_as_pdf", on_click=handle_generate_pdf)
 
             if active_filters:
                 ui.notify(
@@ -262,9 +250,7 @@ def print_payment_orders_page(session_factory: Callable[[], Session]):
                 account = po.account
                 invoices = po.invoices
 
-                invoice_numbers = ", ".join(
-                    [invoice.invoice_number for invoice in invoices]
-                )
+                invoice_numbers = ", ".join([invoice.invoice_number for invoice in invoices])
 
                 invoices_list = [{"amount": invoice.amount} for invoice in invoices]
 
@@ -287,14 +273,10 @@ def print_payment_orders_page(session_factory: Callable[[], Session]):
                 payment_orders_data.append(template_data)
 
             if not payment_orders_data:
-                ui.notify(
-                    "No se pudieron cargar los datos de las órdenes", type="negative"
-                )
+                ui.notify("No se pudieron cargar los datos de las órdenes", type="negative")
                 return
 
-            ui.notify(
-                f"Generando PDF con {len(payment_orders_data)} órdenes...", type="info"
-            )
+            ui.notify(f"Generando PDF con {len(payment_orders_data)} órdenes...", type="info")
 
             timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
             output_path = f"ordenes_pago_{timestamp}.pdf"
@@ -312,9 +294,7 @@ def print_payment_orders_page(session_factory: Callable[[], Session]):
     load_accounts()
 
     with ui.column().classes("w-full p-6"), ui.card().classes("w-full max-w-6xl mx-auto p-6 shadow-lg"):
-        ui.label("Generar PDFs de Órdenes de Pago").classes(
-            "text-2xl font-normal text-gray-700 mb-6"
-        )
+        ui.label("Generar PDFs de Órdenes de Pago").classes("text-2xl font-normal text-gray-700 mb-6")
 
         with ui.column().classes("w-full gap-4 mb-6"):
             with ui.row().classes("w-full gap-4"), ui.column().classes("flex-1"):
@@ -326,9 +306,7 @@ def print_payment_orders_page(session_factory: Callable[[], Session]):
 
             with ui.row().classes("w-full items-center justify-between mt-4"):
                 ui.label("Filtros").classes("text-lg font-semibold text-gray-700")
-                primary_button(
-                    "Agregar Filtro", icon="add", on_click=show_add_filter_dialog
-                )
+                primary_button("Agregar Filtro", icon="add", on_click=show_add_filter_dialog)
 
             filters_container = ui.column().classes("w-full min-h-8 py-2")
             render_filters()

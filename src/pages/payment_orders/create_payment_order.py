@@ -145,9 +145,7 @@ def create_payment_order_page(session_factory: Callable[[], Session]):
         """Calculate and update invoice total and total OP"""
         nonlocal total_op_label, retenciones_input, invoice_table
 
-        invoice_total = sum(
-            parse_currency(row.get("importe", "0")) for row in invoice_rows
-        )
+        invoice_total = sum(parse_currency(row.get("importe", "0")) for row in invoice_rows)
 
         withholdings = Decimal("0.00")
         if retenciones_input and retenciones_input.value:
@@ -195,9 +193,7 @@ def create_payment_order_page(session_factory: Callable[[], Session]):
         session = session_factory()
         try:
             existing_invoice = (
-                session.query(Invoice)
-                .filter_by(invoice_number=invoice_number, supplier_id=supplier_id)
-                .first()
+                session.query(Invoice).filter_by(invoice_number=invoice_number, supplier_id=supplier_id).first()
             )
 
             if existing_invoice:
@@ -249,9 +245,7 @@ def create_payment_order_page(session_factory: Callable[[], Session]):
         nonlocal invoice_table, invoice_counter_label
 
         try:
-            invoice_rows[:] = [
-                row for row in invoice_rows if row.get("id") != row_data.get("id")
-            ]
+            invoice_rows[:] = [row for row in invoice_rows if row.get("id") != row_data.get("id")]
 
             if invoice_table:
                 invoice_table.rows = invoice_rows
@@ -285,9 +279,7 @@ def create_payment_order_page(session_factory: Callable[[], Session]):
                 )
                 primary_button(
                     "Agregar",
-                    on_click=lambda: add_invoice(
-                        invoice_number_input.value, amount_input.value
-                    ),
+                    on_click=lambda: add_invoice(invoice_number_input.value, amount_input.value),
                 )
 
         dialog.open()
@@ -313,9 +305,7 @@ def create_payment_order_page(session_factory: Callable[[], Session]):
                 session.commit()
         except Exception as e:
             session.rollback()
-            ui.notify(
-                f"Error al actualizar secuencia de cuenta: {str(e)}", type="negative"
-            )
+            ui.notify(f"Error al actualizar secuencia de cuenta: {str(e)}", type="negative")
         finally:
             session.close()
 
@@ -343,9 +333,7 @@ def create_payment_order_page(session_factory: Callable[[], Session]):
                 due_date_str,
             ]
         ):
-            ui.notify(
-                "Por favor complete todos los campos obligatorios", type="negative"
-            )
+            ui.notify("Por favor complete todos los campos obligatorios", type="negative")
             return
 
         if not invoice_rows:
@@ -371,9 +359,7 @@ def create_payment_order_page(session_factory: Callable[[], Session]):
             return
 
         withholding_amount = parse_currency(retenciones)
-        total_amount = parse_currency(
-            total_op_label.text if total_op_label else "$0.00"
-        )
+        total_amount = parse_currency(total_op_label.text if total_op_label else "$0.00")
 
         session = session_factory()
         try:
@@ -415,15 +401,10 @@ def create_payment_order_page(session_factory: Callable[[], Session]):
                     account = session.query(Account).filter_by(id=account_id).first()
 
                     # Format invoice numbers (concatenate if multiple)
-                    invoice_numbers = ", ".join(
-                        [row["factura"] for row in invoice_rows]
-                    )
+                    invoice_numbers = ", ".join([row["factura"] for row in invoice_rows])
 
                     # Prepare invoices list for template
-                    invoices_list = [
-                        {"amount": parse_currency(row.get("importe", "0"))}
-                        for row in invoice_rows
-                    ]
+                    invoices_list = [{"amount": parse_currency(row.get("importe", "0"))} for row in invoice_rows]
 
                     template_data = {
                         "account_name": account_name,
@@ -443,9 +424,7 @@ def create_payment_order_page(session_factory: Callable[[], Session]):
 
                     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
                     output_path = f"orden_pago_{op}_{account_name.lower()}_{timestamp}.pdf"
-                    pdf_path = generate_pdf(
-                        "payment_order", [template_data], output_path
-                    )
+                    pdf_path = generate_pdf("payment_order", [template_data], output_path)
                     ui.notify(f"PDF generado: {Path(pdf_path).name}", type="positive")
 
                     open_file(pdf_path)
@@ -497,9 +476,7 @@ def create_payment_order_page(session_factory: Callable[[], Session]):
     load_details()
 
     with ui.column().classes("w-full p-6"), ui.card().classes("w-full max-w-4xl mx-auto p-6 shadow-lg"):
-        ui.label("Nueva Orden de Pago").classes(
-            "text-2xl font-normal text-gray-700 mb-6"
-        )
+        ui.label("Nueva Orden de Pago").classes("text-2xl font-normal text-gray-700 mb-6")
 
         with ui.row().classes("w-full gap-4 mb-4"):
             with ui.column().classes("flex-1"):
@@ -526,23 +503,17 @@ def create_payment_order_page(session_factory: Callable[[], Session]):
                 due_date_input = date_input_with_calendar("Vence")
 
         with ui.column().classes("w-full mb-4"):
-            supplier_select = searchable_select(
-                suppliers_data, label="Proveedor", on_change=on_supplier_change
-            )
+            supplier_select = searchable_select(suppliers_data, label="Proveedor", on_change=on_supplier_change)
 
         with ui.column().classes("w-full mb-6"):
             detail_select = searchable_select(details_data, label="Detalle")
 
         with ui.column().classes("w-full items-center"):
-            with ui.row().classes(
-                "w-full max-w-2xl justify-between items-center mb-2"
-            ):
+            with ui.row().classes("w-full max-w-2xl justify-between items-center mb-2"):
                 with ui.row().classes("items-center gap-2"):
                     ui.label("Facturas").classes("text-lg font-semibold text-gray-700")
                     invoice_counter_label = ui.label("0/5").classes("text-sm text-gray-500")
-                add_invoice_button = primary_button(
-                    "Agregar Factura", icon="add", on_click=show_add_invoice_dialog
-                )
+                add_invoice_button = primary_button("Agregar Factura", icon="add", on_click=show_add_invoice_dialog)
                 add_invoice_button.enabled = False
 
             columns = [
@@ -607,22 +578,14 @@ def create_payment_order_page(session_factory: Callable[[], Session]):
 
         with ui.row().classes("w-full gap-6 mt-6"):
             with ui.column().classes("flex-1"):
-                retenciones_input = text_input(
-                    "Retenciones", value="$0.00", on_change=calculate_totals
-                )
+                retenciones_input = text_input("Retenciones", value="$0.00", on_change=calculate_totals)
 
-            with ui.card().classes(
-                "flex-1 p-4 bg-gray-50 items-center justify-center"
-            ):
+            with ui.card().classes("flex-1 p-4 bg-gray-50 items-center justify-center"):
                 ui.label("Total OP").classes("text-xs text-gray-500 mb-1")
-                total_op_label = ui.label("$0.00").classes(
-                    "text-2xl font-bold text-gray-800"
-                )
+                total_op_label = ui.label("$0.00").classes("text-2xl font-bold text-gray-800")
 
         with ui.row().classes("w-full items-center justify-between mt-6"):
             with ui.row().classes("items-center gap-2"):
-                print_checkbox = ui.checkbox(
-                    "Generar PDF de orden de pago", value=True
-                ).classes("text-gray-700")
+                print_checkbox = ui.checkbox("Generar PDF de orden de pago", value=True).classes("text-gray-700")
 
             primary_button("Agregar OP", on_click=create_payment_order)

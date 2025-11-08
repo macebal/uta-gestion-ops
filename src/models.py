@@ -27,14 +27,11 @@ class AppState(Base):
 
     id: Mapped[int] = mapped_column(primary_key=True)
     last_opened_date: Mapped[date | None] = mapped_column(Date, nullable=True)
-    reminder_dismissed_month: Mapped[str | None] = mapped_column(
-        String, nullable=True
-    )
+    reminder_dismissed_month: Mapped[str | None] = mapped_column(String, nullable=True)
 
     def __repr__(self):
         return (
-            f"<AppState(id={self.id}, last_opened={self.last_opened_date}, "
-            f"dismissed={self.reminder_dismissed_month})>"
+            f"<AppState(id={self.id}, last_opened={self.last_opened_date}, dismissed={self.reminder_dismissed_month})>"
         )
 
 
@@ -48,9 +45,7 @@ class Account(Base):
     number: Mapped[str] = mapped_column(String, nullable=False)
 
     # Relationships
-    payment_orders: Mapped[list["PaymentOrder"]] = relationship(
-        back_populates="account", cascade="all, delete-orphan"
-    )
+    payment_orders: Mapped[list["PaymentOrder"]] = relationship(back_populates="account", cascade="all, delete-orphan")
     account_sequence: Mapped[Optional["AccountSequence"]] = relationship(
         back_populates="account", uselist=False, cascade="all, delete-orphan"
     )
@@ -65,9 +60,7 @@ class AccountSequence(Base):
     __tablename__ = "account_sequences"
 
     id: Mapped[int] = mapped_column(primary_key=True)
-    account_id: Mapped[int] = mapped_column(
-        Integer, ForeignKey("accounts.id"), unique=True, nullable=False
-    )
+    account_id: Mapped[int] = mapped_column(Integer, ForeignKey("accounts.id"), unique=True, nullable=False)
     last_order_number: Mapped[int] = mapped_column(Integer, default=0, nullable=False)
     last_check_number: Mapped[int] = mapped_column(Integer, default=0, nullable=False)
     updated_at: Mapped[date] = mapped_column(Date, default=date.today, nullable=False)
@@ -91,12 +84,8 @@ class Supplier(Base):
     email: Mapped[str | None] = mapped_column(String, nullable=True)
 
     # Relationships
-    payment_orders: Mapped[list["PaymentOrder"]] = relationship(
-        back_populates="supplier", cascade="all, delete-orphan"
-    )
-    invoices: Mapped[list["Invoice"]] = relationship(
-        back_populates="supplier", cascade="all, delete-orphan"
-    )
+    payment_orders: Mapped[list["PaymentOrder"]] = relationship(back_populates="supplier", cascade="all, delete-orphan")
+    invoices: Mapped[list["Invoice"]] = relationship(back_populates="supplier", cascade="all, delete-orphan")
 
     def __repr__(self):
         return f"<Supplier(id={self.id}, name='{self.name}')>"
@@ -111,9 +100,7 @@ class Detail(Base):
     value: Mapped[str] = mapped_column(String, nullable=False)
 
     # Relationships
-    payment_orders: Mapped[list["PaymentOrder"]] = relationship(
-        back_populates="detail", cascade="all, delete-orphan"
-    )
+    payment_orders: Mapped[list["PaymentOrder"]] = relationship(back_populates="detail", cascade="all, delete-orphan")
 
     def __repr__(self):
         return f"<Detail(id={self.id}, value='{self.value}')>"
@@ -127,33 +114,21 @@ class PaymentOrder(Base):
     id: Mapped[int] = mapped_column(primary_key=True)
     order_number: Mapped[int] = mapped_column(Integer, nullable=False)
     check_number: Mapped[int] = mapped_column(Integer, nullable=False)
-    account_id: Mapped[int] = mapped_column(
-        Integer, ForeignKey("accounts.id"), nullable=False
-    )
-    supplier_id: Mapped[int] = mapped_column(
-        Integer, ForeignKey("suppliers.id"), nullable=False
-    )
-    detail_id: Mapped[int] = mapped_column(
-        Integer, ForeignKey("details.id"), nullable=False
-    )
-    withholding_amount: Mapped[Decimal] = mapped_column(
-        Numeric(10, 2), default=Decimal("0.00"), nullable=False
-    )
+    account_id: Mapped[int] = mapped_column(Integer, ForeignKey("accounts.id"), nullable=False)
+    supplier_id: Mapped[int] = mapped_column(Integer, ForeignKey("suppliers.id"), nullable=False)
+    detail_id: Mapped[int] = mapped_column(Integer, ForeignKey("details.id"), nullable=False)
+    withholding_amount: Mapped[Decimal] = mapped_column(Numeric(10, 2), default=Decimal("0.00"), nullable=False)
     amount: Mapped[Decimal] = mapped_column(Numeric(10, 2), nullable=False)
     order_date: Mapped[date] = mapped_column(Date, nullable=False)
     issue_date: Mapped[date] = mapped_column(Date, nullable=False)
     due_date: Mapped[date] = mapped_column(Date, nullable=False)
-    created: Mapped[datetime] = mapped_column(
-        DateTime, default=func.now(), nullable=False
-    )
+    created: Mapped[datetime] = mapped_column(DateTime, default=func.now(), nullable=False)
 
     # Relationships
     account: Mapped["Account"] = relationship(back_populates="payment_orders")
     supplier: Mapped["Supplier"] = relationship(back_populates="payment_orders")
     detail: Mapped["Detail"] = relationship(back_populates="payment_orders")
-    invoices: Mapped[list["Invoice"]] = relationship(
-        back_populates="payment_order", cascade="all, delete-orphan"
-    )
+    invoices: Mapped[list["Invoice"]] = relationship(back_populates="payment_order", cascade="all, delete-orphan")
 
     def __repr__(self):
         return f"<PaymentOrder(id={self.id}, order_number={self.order_number}, amount={self.amount})>"
@@ -165,14 +140,10 @@ class Invoice(Base):
     __tablename__ = "invoices"
 
     id: Mapped[int] = mapped_column(primary_key=True)
-    payment_order_id: Mapped[int] = mapped_column(
-        Integer, ForeignKey("payment_orders.id"), nullable=False
-    )
+    payment_order_id: Mapped[int] = mapped_column(Integer, ForeignKey("payment_orders.id"), nullable=False)
     invoice_number: Mapped[str] = mapped_column(String, nullable=False)
     amount: Mapped[Decimal] = mapped_column(Numeric(10, 2), nullable=False)
-    supplier_id: Mapped[int] = mapped_column(
-        Integer, ForeignKey("suppliers.id"), nullable=False
-    )
+    supplier_id: Mapped[int] = mapped_column(Integer, ForeignKey("suppliers.id"), nullable=False)
 
     # Relationships
     payment_order: Mapped["PaymentOrder"] = relationship(back_populates="invoices")

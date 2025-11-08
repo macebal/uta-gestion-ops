@@ -13,18 +13,12 @@ def home_page(session_factory: Callable[[], Session]):
     with ui.column().classes("w-full items-center p-8"):
         # Header section
         with ui.column().classes("w-full max-w-6xl items-center mb-8"):
-            ui.label("Sistema de Gestión de Órdenes de Pago").classes(
-                "text-4xl font-bold text-gray-800 mb-2"
-            )
-            ui.label("UTA - Unión Tranviarios Automotor").classes(
-                "text-xl text-gray-500"
-            )
+            ui.label("Sistema de Gestión de Órdenes de Pago").classes("text-4xl font-bold text-gray-800 mb-2")
+            ui.label("UTA - Unión Tranviarios Automotor").classes("text-xl text-gray-500")
 
         # Main action buttons - most frequent
         with ui.column().classes("w-full max-w-6xl gap-6 mb-8"):
-            ui.label("Acciones Principales").classes(
-                "text-2xl font-semibold text-gray-700 mb-2"
-            )
+            ui.label("Acciones Principales").classes("text-2xl font-semibold text-gray-700 mb-2")
 
             with ui.row().classes("w-full gap-6"):
                 # New Payment Order button - large card
@@ -37,16 +31,10 @@ def home_page(session_factory: Callable[[], Session]):
                     .style("min-height: 280px")
                     .on("click", lambda: ui.navigate.to("/payment-orders/create"))
                 ):
-                    with ui.column().classes(
-                        "items-center justify-center gap-4 w-full h-full"
-                    ):
+                    with ui.column().classes("items-center justify-center gap-4 w-full h-full"):
                         ui.icon("add_circle", size="4rem").classes("text-white")
-                        ui.label("Nueva Orden de Pago").classes(
-                            "text-2xl font-bold text-white text-center"
-                        )
-                        ui.label("Crear una nueva OP para un proveedor").classes(
-                            "text-blue-100 text-center"
-                        )
+                        ui.label("Nueva Orden de Pago").classes("text-2xl font-bold text-white text-center")
+                        ui.label("Crear una nueva OP para un proveedor").classes("text-blue-100 text-center")
 
                 # Print Payment Orders button - large card
                 with (
@@ -58,16 +46,10 @@ def home_page(session_factory: Callable[[], Session]):
                     .style("min-height: 280px")
                     .on("click", lambda: ui.navigate.to("/payment-orders/print"))
                 ):
-                    with ui.column().classes(
-                        "items-center justify-center gap-4 w-full h-full"
-                    ):
+                    with ui.column().classes("items-center justify-center gap-4 w-full h-full"):
                         ui.icon("description", size="4rem").classes("text-white")
-                        ui.label("Imprimir Órdenes de Pago").classes(
-                            "text-2xl font-bold text-white text-center"
-                        )
-                        ui.label("Imprimir órdenes de pago individuales").classes(
-                            "text-green-100 text-center"
-                        )
+                        ui.label("Imprimir Órdenes de Pago").classes("text-2xl font-bold text-white text-center")
+                        ui.label("Imprimir órdenes de pago individuales").classes("text-green-100 text-center")
 
                 # Print Check List button - large card
                 with (
@@ -79,16 +61,10 @@ def home_page(session_factory: Callable[[], Session]):
                     .style("min-height: 280px")
                     .on("click", lambda: ui.navigate.to("/checks/print"))
                 ):
-                    with ui.column().classes(
-                        "items-center justify-center gap-4 w-full h-full"
-                    ):
+                    with ui.column().classes("items-center justify-center gap-4 w-full h-full"):
                         ui.icon("list", size="4rem").classes("text-white")
-                        ui.label("Imprimir Lista de Cheques").classes(
-                            "text-2xl font-bold text-white text-center"
-                        )
-                        ui.label("Generar lista de cheques por cuenta y mes").classes(
-                            "text-teal-100 text-center"
-                        )
+                        ui.label("Imprimir Lista de Cheques").classes("text-2xl font-bold text-white text-center")
+                        ui.label("Generar lista de cheques por cuenta y mes").classes("text-teal-100 text-center")
 
         # Management section - less frequent actions
         with ui.column().classes("w-full max-w-6xl gap-4"):
@@ -98,55 +74,38 @@ def home_page(session_factory: Callable[[], Session]):
                 # Suppliers management
                 with (
                     ui.card()
-                    .classes(
-                        "flex-1 p-6 cursor-pointer hover:shadow-lg transition-shadow"
-                    )
-                    .on("click", lambda: ui.navigate.to("/suppliers/manage")), ui.row().classes("items-center gap-4")
+                    .classes("flex-1 p-6 cursor-pointer hover:shadow-lg transition-shadow")
+                    .on("click", lambda: ui.navigate.to("/suppliers/manage")),
+                    ui.row().classes("items-center gap-4"),
                 ):
                     ui.icon("business", size="2.5rem").classes("text-purple-600")
                     with ui.column().classes("gap-1"):
-                        ui.label("Proveedores").classes(
-                            "text-xl font-semibold text-gray-800"
-                        )
-                        ui.label("Administrar proveedores").classes(
-                            "text-sm text-gray-500"
-                        )
+                        ui.label("Proveedores").classes("text-xl font-semibold text-gray-800")
+                        ui.label("Administrar proveedores").classes("text-sm text-gray-500")
 
                 # Accounts management
                 with (
                     ui.card()
-                    .classes(
-                        "flex-1 p-6 cursor-pointer hover:shadow-lg transition-shadow"
-                    )
-                    .on("click", lambda: ui.navigate.to("/accounts/manage")), ui.row().classes("items-center gap-4")
+                    .classes("flex-1 p-6 cursor-pointer hover:shadow-lg transition-shadow")
+                    .on("click", lambda: ui.navigate.to("/accounts/manage")),
+                    ui.row().classes("items-center gap-4"),
                 ):
-                    ui.icon("account_balance", size="2.5rem").classes(
-                        "text-orange-600"
-                    )
+                    ui.icon("account_balance", size="2.5rem").classes("text-orange-600")
                     with ui.column().classes("gap-1"):
-                        ui.label("Cuentas").classes(
-                            "text-xl font-semibold text-gray-800"
-                        )
-                        ui.label("Gestionar cuentas").classes(
-                            "text-sm text-gray-500"
-                        )
+                        ui.label("Cuentas").classes("text-xl font-semibold text-gray-800")
+                        ui.label("Gestionar cuentas").classes("text-sm text-gray-500")
 
                 # Details management
                 with (
                     ui.card()
-                    .classes(
-                        "flex-1 p-6 cursor-pointer hover:shadow-lg transition-shadow"
-                    )
-                    .on("click", lambda: ui.navigate.to("/details/manage")), ui.row().classes("items-center gap-4")
+                    .classes("flex-1 p-6 cursor-pointer hover:shadow-lg transition-shadow")
+                    .on("click", lambda: ui.navigate.to("/details/manage")),
+                    ui.row().classes("items-center gap-4"),
                 ):
                     ui.icon("list_alt", size="2.5rem").classes("text-teal-600")
                     with ui.column().classes("gap-1"):
-                        ui.label("Detalles").classes(
-                            "text-xl font-semibold text-gray-800"
-                        )
-                        ui.label("Gestionar detalles de pago").classes(
-                            "text-sm text-gray-500"
-                        )
+                        ui.label("Detalles").classes("text-xl font-semibold text-gray-800")
+                        ui.label("Gestionar detalles de pago").classes("text-sm text-gray-500")
 
         def check_and_show_reminder():
             """Check if reminder should be shown and return visibility state
@@ -161,9 +120,7 @@ def home_page(session_factory: Callable[[], Session]):
                 current_month_str = today.strftime("%Y-%m")
 
                 if not app_state:
-                    app_state = AppState(
-                        last_opened_date=today, reminder_dismissed_month=None
-                    )
+                    app_state = AppState(last_opened_date=today, reminder_dismissed_month=None)
                     session.add(app_state)
                     session.commit()
                     return True
@@ -203,12 +160,10 @@ def home_page(session_factory: Callable[[], Session]):
             with ui.row().classes("items-center gap-4 w-full"):
                 ui.icon("account_balance", size="2.5rem").classes("text-orange-600")
                 with ui.column().classes("flex-1 gap-2"):
-                    ui.label("Recordatorio Mensual").classes(
-                        "text-lg font-semibold text-gray-800"
+                    ui.label("Recordatorio Mensual").classes("text-lg font-semibold text-gray-800")
+                    ui.label("Revise y actualice los números de cheque y orden de pago de las cuentas").classes(
+                        "text-gray-700"
                     )
-                    ui.label(
-                        "Revise y actualice los números de cheque y orden de pago de las cuentas"
-                    ).classes("text-gray-700")
                 with ui.row().classes("gap-3"):
                     # clicking on the button will hide the reminder container and it will be shown
                     # again next time the user opens the app if the reminder has not been
@@ -216,6 +171,4 @@ def home_page(session_factory: Callable[[], Session]):
                     ui.button("Posponer", on_click=lambda: reminder_container.set_visibility(False)).props(
                         "outline color=orange-7"
                     ).classes("px-4")
-                    ui.button("Ir a Cuentas", on_click=dismiss_reminder_for_month).props(
-                        "color=orange"
-                    ).classes("px-4")
+                    ui.button("Ir a Cuentas", on_click=dismiss_reminder_for_month).props("color=orange").classes("px-4")

@@ -35,7 +35,7 @@ def load_csv(filename):
     if not filepath.exists():
         raise FileNotFoundError(f"CSV file not found: {filepath}")
 
-    with open(filepath, encoding='utf-8') as f:
+    with open(filepath, encoding="utf-8") as f:
         reader = csv.DictReader(f)
         return list(reader)
 
@@ -58,7 +58,7 @@ def check_database_status(session):
         print("  - Data inconsistencies")
 
         response = input("\nDo you want to continue anyway? (yes/no): ").strip().lower()
-        if response not in ['yes', 'y']:
+        if response not in ["yes", "y"]:
             print("\nAborted by user.")
             sys.exit(0)
         print()
@@ -97,17 +97,14 @@ def load_test_data():
         accounts_map = {}
 
         for row in accounts_data:
-            account = Account(
-                name=row['name'],
-                number=row['number']
-            )
+            account = Account(name=row["name"], number=row["number"])
             session.add(account)
             session.flush()
-            accounts_map[row['number']] = account
+            accounts_map[row["number"]] = account
             print(f"  Created account: {account.name} ({account.number})")
 
         print("\nCreating account sequences...")
-        for _ , account in accounts_map.items():
+        for _, account in accounts_map.items():
             if "Sindical" in account.name or "Obra Social" in account.name or "Promocion" in account.name:
                 last_order = 1000
                 last_check = 5000
@@ -115,11 +112,7 @@ def load_test_data():
                 last_order = 0
                 last_check = 0
 
-            seq = AccountSequence(
-                account_id=account.id,
-                last_order_number=last_order,
-                last_check_number=last_check
-            )
+            seq = AccountSequence(account_id=account.id, last_order_number=last_order, last_check_number=last_check)
             session.add(seq)
             print(f"  Created sequence for {account.name}: order={last_order}, check={last_check}")
 
@@ -130,15 +123,10 @@ def load_test_data():
         providers_map = {}
 
         for row in providers_data:
-            supplier = Supplier(
-                name=row['name'],
-                cuit=row['cuit'],
-                phone=row['phone'],
-                email=row['email']
-            )
+            supplier = Supplier(name=row["name"], cuit=row["cuit"], phone=row["phone"], email=row["email"])
             session.add(supplier)
             session.flush()
-            providers_map[row['name']] = supplier
+            providers_map[row["name"]] = supplier
             print(f"  Created provider: {supplier.name} ({supplier.cuit})")
 
         print("\nLoading payment details...")
@@ -146,10 +134,10 @@ def load_test_data():
         details_map = {}
 
         for row in details_data:
-            detail = Detail(value=row['value'])
+            detail = Detail(value=row["value"])
             session.add(detail)
             session.flush()
-            details_map[row['value']] = detail
+            details_map[row["value"]] = detail
             print(f"  Created detail: {detail.value}")
 
         print("\nLoading payment orders...")
@@ -157,9 +145,9 @@ def load_test_data():
         payment_orders_map = {}
 
         for row in payment_orders_data:
-            account = accounts_map.get(row['account_number'])
-            supplier = providers_map.get(row['supplier_name'])
-            detail = details_map.get(row['detail_value'])
+            account = accounts_map.get(row["account_number"])
+            supplier = providers_map.get(row["supplier_name"])
+            detail = details_map.get(row["detail_value"])
 
             if not account:
                 print(f"  Warning: Account {row['account_number']} not found, skipping order {row['order_number']}")
@@ -171,27 +159,27 @@ def load_test_data():
                 print(f"  Warning: Detail '{row['detail_value']}' not found, skipping order {row['order_number']}")
                 continue
 
-            order_date = datetime.strptime(row['order_date'], '%Y-%m-%d').date()
-            issue_date = datetime.strptime(row['issue_date'], '%Y-%m-%d').date()
-            due_date = datetime.strptime(row['due_date'], '%Y-%m-%d').date()
+            order_date = datetime.strptime(row["order_date"], "%Y-%m-%d").date()
+            issue_date = datetime.strptime(row["issue_date"], "%Y-%m-%d").date()
+            due_date = datetime.strptime(row["due_date"], "%Y-%m-%d").date()
 
             payment_order = PaymentOrder(
-                order_number=int(row['order_number']),
-                check_number=int(row['check_number']),
+                order_number=int(row["order_number"]),
+                check_number=int(row["check_number"]),
                 account_id=account.id,
                 supplier_id=supplier.id,
                 detail_id=detail.id,
-                withholding_amount=Decimal(row['withholding_amount']),
-                amount=Decimal(row['amount']),
+                withholding_amount=Decimal(row["withholding_amount"]),
+                amount=Decimal(row["amount"]),
                 order_date=order_date,
                 issue_date=issue_date,
-                due_date=due_date
+                due_date=due_date,
             )
             session.add(payment_order)
             session.flush()
-            payment_orders_map[int(row['order_number'])] = payment_order
+            payment_orders_map[int(row["order_number"])] = payment_order
 
-            if int(row['order_number']) % 10 == 0:
+            if int(row["order_number"]) % 10 == 0:
                 print(f"  Created {len(payment_orders_map)} payment orders...")
 
         print(f"  Created total {len(payment_orders_map)} payment orders")
@@ -201,8 +189,8 @@ def load_test_data():
         invoice_count = 0
 
         for row in invoices_data:
-            payment_order = payment_orders_map.get(int(row['payment_order_number']))
-            supplier = providers_map.get(row['supplier_name'])
+            payment_order = payment_orders_map.get(int(row["payment_order_number"]))
+            supplier = providers_map.get(row["supplier_name"])
 
             if not payment_order:
                 print(
@@ -212,16 +200,15 @@ def load_test_data():
                 continue
             if not supplier:
                 print(
-                    f"  Warning: Supplier '{row['supplier_name']}' not found, "
-                    f"skipping invoice {row['invoice_number']}"
+                    f"  Warning: Supplier '{row['supplier_name']}' not found, skipping invoice {row['invoice_number']}"
                 )
                 continue
 
             invoice = Invoice(
                 payment_order_id=payment_order.id,
-                invoice_number=row['invoice_number'],
-                amount=Decimal(row['amount']),
-                supplier_id=supplier.id
+                invoice_number=row["invoice_number"],
+                amount=Decimal(row["amount"]),
+                supplier_id=supplier.id,
             )
             session.add(invoice)
             invoice_count += 1
@@ -233,10 +220,7 @@ def load_test_data():
 
         print("\nUpdating account sequences based on loaded data...")
         for _, account in accounts_map.items():
-            account_payment_orders = [
-                po for po in payment_orders_map.values()
-                if po.account_id == account.id
-            ]
+            account_payment_orders = [po for po in payment_orders_map.values() if po.account_id == account.id]
 
             if account_payment_orders:
                 max_order = max(po.order_number for po in account_payment_orders)
@@ -280,6 +264,7 @@ def load_test_data():
         session.rollback()
         print(f"\nERROR loading test data: {e}")
         import traceback
+
         traceback.print_exc()
         sys.exit(1)
 
@@ -287,6 +272,5 @@ def load_test_data():
         session.close()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     load_test_data()
-

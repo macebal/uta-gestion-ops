@@ -23,7 +23,7 @@ def format_currency(amount: float | Decimal | str | None) -> str:
         Formatted currency string with space after $ sign
     """
     if not amount or (isinstance(amount, (int, float, Decimal)) and amount == 0):
-        return ''
+        return ""
 
     # Convert string to float if needed
     if isinstance(amount, str):
@@ -31,7 +31,7 @@ def format_currency(amount: float | Decimal | str | None) -> str:
         try:
             amount = float(clean_str)
         except ValueError:
-            return ''
+            return ""
 
     # Convert to float for formatting
     amount_float = float(amount)
@@ -40,13 +40,13 @@ def format_currency(amount: float | Decimal | str | None) -> str:
     amount_str = f"{amount_float:.2f}"
 
     # Split integer and decimal parts
-    integer_part, decimal_part = amount_str.split('.')
+    integer_part, decimal_part = amount_str.split(".")
 
     # Add thousands separators (dots) to integer part
-    integer_with_dots = ''
+    integer_with_dots = ""
     for i, digit in enumerate(reversed(integer_part)):
         if i > 0 and i % 3 == 0:
-            integer_with_dots = '.' + integer_with_dots
+            integer_with_dots = "." + integer_with_dots
         integer_with_dots = digit + integer_with_dots
 
     # Format with space after $ and comma for decimal separator
@@ -91,25 +91,25 @@ def format_date(date_obj: date | datetime | str | None) -> str:
         Formatted date string in DD/MM/YYYY format
     """
     if not date_obj:
-        return ''
+        return ""
 
     # If it's already a string, check if it's in the correct format
     if isinstance(date_obj, str):
         # If already in DD/MM/YYYY format, return as-is
-        if len(date_obj) == 10 and date_obj[2] == '/' and date_obj[5] == '/':
+        if len(date_obj) == 10 and date_obj[2] == "/" and date_obj[5] == "/":
             return date_obj
         # Otherwise try to parse it
         try:
             date_obj = datetime.strptime(date_obj, "%Y-%m-%d").date()
         except ValueError:
             # If parsing fails, return empty string
-            return ''
+            return ""
 
     # If it's a datetime, extract the date
     if isinstance(date_obj, datetime):
         date_obj = date_obj.date()
 
-    return date_obj.strftime('%d/%m/%Y')
+    return date_obj.strftime("%d/%m/%Y")
 
 
 def format_check_number(check_number: int | str) -> str:
@@ -148,14 +148,13 @@ def open_file(file_path: str) -> bool:
     try:
         system = platform.system()
 
-        if system == 'Windows':
+        if system == "Windows":
             os.startfile(file_path)
-        elif system == 'Darwin':
-            subprocess.run(['open', file_path], check=True)
+        elif system == "Darwin":
+            subprocess.run(["open", file_path], check=True)
         else:
-            subprocess.run(['xdg-open', file_path], check=True)
+            subprocess.run(["xdg-open", file_path], check=True)
 
         return True
     except Exception:
         return False
-

@@ -3,9 +3,7 @@ from collections.abc import Callable
 from nicegui import ui
 
 
-def text_input(
-    label: str, value: str = "", on_change: Callable | None = None, **kwargs
-):
+def text_input(label: str, value: str = "", on_change: Callable | None = None, **kwargs):
     """
     Standardized text input field with outlined style
 
@@ -15,11 +13,7 @@ def text_input(
         **kwargs: Additional arguments passed to ui.input (e.g., classes, on_change)
     """
     classes = kwargs.pop("classes", "w-full")
-    return (
-        ui.input(label=label, value=value, on_change=on_change)
-        .classes(classes)
-        .props("outlined", **kwargs)
-    )
+    return ui.input(label=label, value=value, on_change=on_change).classes(classes).props("outlined", **kwargs)
 
 
 def select_field(options: list, label: str, value=None, **kwargs):
@@ -33,11 +27,7 @@ def select_field(options: list, label: str, value=None, **kwargs):
         **kwargs: Additional arguments passed to ui.select (e.g., classes, on_change)
     """
     classes = kwargs.pop("classes", "w-full")
-    return (
-        ui.select(options, label=label, value=value)
-        .classes(classes)
-        .props("outlined", **kwargs)
-    )
+    return ui.select(options, label=label, value=value).classes(classes).props("outlined", **kwargs)
 
 
 def select_with_edit(options: list, label: str, value=None, on_edit=None, **kwargs):
@@ -53,9 +43,7 @@ def select_with_edit(options: list, label: str, value=None, on_edit=None, **kwar
     """
     with ui.row().classes("w-full gap-2 items-center"):
         classes = kwargs.pop("classes", "flex-1")
-        ui.select(options, label=label, value=value).classes(classes).props(
-            "outlined", **kwargs
-        )
+        ui.select(options, label=label, value=value).classes(classes).props("outlined", **kwargs)
         icon = ui.icon("edit").classes("text-yellow-500 cursor-pointer text-xl")
         if on_edit:
             icon.on("click", on_edit)
@@ -72,9 +60,7 @@ def date_input(label: str, value: str = "", **kwargs):
         **kwargs: Additional arguments passed to ui.input
     """
     classes = kwargs.pop("classes", "w-full")
-    return (
-        ui.input(label=label, value=value).classes(classes).props("outlined", **kwargs)
-    )
+    return ui.input(label=label, value=value).classes(classes).props("outlined", **kwargs)
 
 
 def number_input(label: str, value: str = "", **kwargs):
@@ -87,9 +73,7 @@ def number_input(label: str, value: str = "", **kwargs):
         **kwargs: Additional arguments passed to ui.input
     """
     classes = kwargs.pop("classes", "w-full")
-    return (
-        ui.input(label=label, value=value).classes(classes).props("outlined", **kwargs)
-    )
+    return ui.input(label=label, value=value).classes(classes).props("outlined", **kwargs)
 
 
 def searchable_select(options: list, label: str, value=None, on_change=None, **kwargs):
@@ -105,9 +89,7 @@ def searchable_select(options: list, label: str, value=None, on_change=None, **k
     """
     classes = kwargs.pop("classes", "w-full")
     select = (
-        ui.select(
-            options, label=label, value=value, with_input=True, on_change=on_change
-        )
+        ui.select(options, label=label, value=value, with_input=True, on_change=on_change)
         .classes(classes)
         .props("outlined use-input")
     )

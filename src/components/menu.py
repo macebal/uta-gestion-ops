@@ -5,9 +5,7 @@ def create_menu():
     """Create the top menu bar that is visible across all pages"""
     with ui.header().classes("bg-white shadow-sm"), ui.row().classes("w-full items-center gap-0"):
         # Home button
-        ui.button(icon="home").props("flat color=grey-8").on(
-            "click", lambda: ui.navigate.to("/")
-        ).tooltip("Inicio")
+        ui.button(icon="home").props("flat color=grey-8").on("click", lambda: ui.navigate.to("/")).tooltip("Inicio")
 
         # File menu
         with ui.button("Archivo", icon="folder").props("flat color=grey-8"), ui.menu():

@@ -44,9 +44,7 @@ def manage_suppliers_page(session_factory: Callable[[], Session]):
     def filter_suppliers():
         """Filter suppliers based on search query"""
         nonlocal filtered_suppliers_data, table
-        search_query = (
-            search_input.value.lower() if search_input and search_input.value else ""
-        )
+        search_query = search_input.value.lower() if search_input and search_input.value else ""
 
         if search_query:
             filtered_suppliers_data.clear()
@@ -103,11 +101,7 @@ def manage_suppliers_page(session_factory: Callable[[], Session]):
 
         session = session_factory()
         try:
-            existing = (
-                session.query(Supplier)
-                .filter(Supplier.name == name, Supplier.id != supplier_id)
-                .first()
-            )
+            existing = session.query(Supplier).filter(Supplier.name == name, Supplier.id != supplier_id).first()
             if existing:
                 ui.notify("Ya existe otro proveedor con este nombre", type="negative")
                 return
@@ -163,9 +157,7 @@ def manage_suppliers_page(session_factory: Callable[[], Session]):
         """Show dialog to edit a supplier"""
         nonlocal edit_dialog, selected_supplier
 
-        supplier_data = next(
-            (s for s in suppliers_data if s["id"] == supplier_id), None
-        )
+        supplier_data = next((s for s in suppliers_data if s["id"] == supplier_id), None)
         if not supplier_data:
             ui.notify("Proveedor no encontrado", type="negative")
             return
@@ -176,18 +168,10 @@ def manage_suppliers_page(session_factory: Callable[[], Session]):
             edit_dialog = dialog
             ui.label("Editar Proveedor").classes("text-xl font-semibold mb-4")
 
-            edit_name_input = text_input(
-                "Nombre del Proveedor", value=supplier_data["name"]
-            )
-            edit_cuit_input = text_input(
-                "CUIT", value=supplier_data["cuit"]
-            )
-            edit_phone_input = text_input(
-                "Teléfono", value=supplier_data["phone"]
-            )
-            edit_email_input = text_input(
-                "Email", value=supplier_data["email"]
-            )
+            edit_name_input = text_input("Nombre del Proveedor", value=supplier_data["name"])
+            edit_cuit_input = text_input("CUIT", value=supplier_data["cuit"])
+            edit_phone_input = text_input("Teléfono", value=supplier_data["phone"])
+            edit_email_input = text_input("Email", value=supplier_data["email"])
 
             with ui.row().classes("w-full gap-4 mt-6 justify-end"):
                 secondary_button(
@@ -212,9 +196,7 @@ def manage_suppliers_page(session_factory: Callable[[], Session]):
         nonlocal delete_dialog
 
         # Find the supplier in the data
-        supplier_data = next(
-            (s for s in suppliers_data if s["id"] == supplier_id), None
-        )
+        supplier_data = next((s for s in suppliers_data if s["id"] == supplier_id), None)
         if not supplier_data:
             ui.notify("Proveedor no encontrado", type="negative")
             return
@@ -222,9 +204,7 @@ def manage_suppliers_page(session_factory: Callable[[], Session]):
         with ui.dialog() as dialog, ui.card().classes("p-6 min-w-96"):
             delete_dialog = dialog
             ui.label("Confirmar Eliminación").classes("text-xl font-semibold mb-4")
-            ui.label(
-                f"¿Está seguro que desea eliminar el proveedor '{supplier_data['name']}'?"
-            ).classes("mb-4")
+            ui.label(f"¿Está seguro que desea eliminar el proveedor '{supplier_data['name']}'?").classes("mb-4")
 
             with ui.row().classes("w-full gap-4 mt-6 justify-end"):
                 secondary_button(
@@ -240,14 +220,10 @@ def manage_suppliers_page(session_factory: Callable[[], Session]):
         dialog.open()
 
     with ui.column().classes("w-full p-6"), ui.card().classes("w-full max-w-6xl mx-auto p-6 shadow-lg"):
-        ui.label("Gestión de Proveedores").classes(
-            "text-2xl font-normal text-gray-700 mb-6"
-        )
+        ui.label("Gestión de Proveedores").classes("text-2xl font-normal text-gray-700 mb-6")
 
         with ui.card().classes("w-full p-4 bg-gray-50 mb-6"):
-            ui.label("Nuevo Proveedor").classes(
-                "text-lg font-semibold text-gray-700 mb-4"
-            )
+            ui.label("Nuevo Proveedor").classes("text-lg font-semibold text-gray-700 mb-4")
 
             with ui.column().classes("w-full gap-4"):
                 with ui.row().classes("w-full gap-4"):
@@ -274,9 +250,7 @@ def manage_suppliers_page(session_factory: Callable[[], Session]):
                         ),
                     )
 
-        ui.label("Proveedores Existentes").classes(
-            "text-lg font-semibold text-gray-700 mb-4"
-        )
+        ui.label("Proveedores Existentes").classes("text-lg font-semibold text-gray-700 mb-4")
 
         with ui.row().classes("w-full mb-4"):
             search_input = (
