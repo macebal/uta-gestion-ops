@@ -4,7 +4,7 @@ from typing import Any
 from nicegui import ui
 from sqlalchemy.orm import Session
 
-from src.components import primary_button, secondary_button, text_input
+from src.components import filtered_table, primary_button, secondary_button, text_input
 from src.models import Detail
 
 
@@ -12,16 +12,14 @@ def manage_details_page(session_factory: Callable[[], Session]):
     """Create the payment details management page with CRUD operations"""
 
     details_data: list[dict[str, Any]] = []
-    filtered_details_data: list[dict[str, Any]] = []
     table = None
     edit_dialog = None
     delete_dialog = None
     selected_detail = None
-    search_input = None
 
     def load_details():
         """Load all details from database"""
-        nonlocal details_data, filtered_details_data, table
+        nonlocal details_data, table
         session = session_factory()
         try:
             details = session.query(Detail).order_by(Detail.value).all()
@@ -34,26 +32,10 @@ def manage_details_page(session_factory: Callable[[], Session]):
                         "actions": detail.id,
                     }
                 )
-            filter_details()
+            if table and hasattr(table, "refresh_data"):
+                table.refresh_data()
         finally:
             session.close()
-
-    def filter_details():
-        """Filter details based on search query"""
-        nonlocal filtered_details_data, table
-        search_query = search_input.value.lower() if search_input and search_input.value else ""
-
-        if search_query:
-            filtered_details_data.clear()
-            for detail in details_data:
-                if search_query in detail["value"].lower():
-                    filtered_details_data.append(detail)
-        else:
-            filtered_details_data = details_data.copy()
-
-        if table:
-            table.rows = filtered_details_data
-            table.update()
 
     def create_detail(value: str):
         """Create a new detail"""
@@ -143,7 +125,7 @@ def manage_details_page(session_factory: Callable[[], Session]):
         # Determine if we're in create or edit mode
         is_create_mode = detail_id is None
         detail_data = None
-        
+
         if not is_create_mode:
             detail_data = next((d for d in details_data if d["id"] == detail_id), None)
             if not detail_data:
@@ -153,11 +135,11 @@ def manage_details_page(session_factory: Callable[[], Session]):
 
         with ui.dialog() as dialog, ui.card().classes("p-6 min-w-96"):
             edit_dialog = dialog
-            
+
             # Set title and button text based on mode
             title = "Nuevo Detalle" if is_create_mode else "Editar Detalle"
             button_text = "Crear" if is_create_mode else "Guardar"
-            
+
             ui.label(title).classes("text-xl font-semibold mb-4")
 
             initial_value = "" if is_create_mode else detail_data["value"]
@@ -168,7 +150,7 @@ def manage_details_page(session_factory: Callable[[], Session]):
                     "Cancelar",
                     on_click=lambda: dialog.close(),
                 )
-                
+
                 if is_create_mode:
                     primary_button(
                         button_text,
@@ -210,26 +192,15 @@ def manage_details_page(session_factory: Callable[[], Session]):
         dialog.open()
 
     with ui.column().classes("w-full p-6"), ui.card().classes("w-full max-w-6xl mx-auto p-6 shadow-lg"):
-        with ui.row().classes("w-full justify-between items-center mb-6"):
+        with ui.row().classes("w-full justify-between items-center mb-4"):
             ui.label("Gestión de Detalles de Pago").classes("text-2xl font-normal text-gray-700")
             primary_button(
                 "Crear Detalle",
-                icon="add",
+                icon="add_circle",
                 on_click=lambda: show_detail_dialog(),
-            )
+            ).props("color=green")
 
-        ui.label("Detalles Existentes").classes("text-lg font-semibold text-gray-700 mb-4")
-
-        with ui.row().classes("w-full mb-4"):
-            search_input = (
-                ui.input(
-                    label="Buscar detalle",
-                    value="",
-                    on_change=lambda e: filter_details(),
-                )
-                .classes("w-full")
-                .props("outlined prepend-icon=search clearable")
-            )
+        ui.separator().classes("mb-6")
 
         columns = [
             {
@@ -238,6 +209,7 @@ def manage_details_page(session_factory: Callable[[], Session]):
                 "field": "value",
                 "align": "left",
                 "sortable": True,
+                "type": "string",
             },
             {
                 "name": "actions",
@@ -247,16 +219,16 @@ def manage_details_page(session_factory: Callable[[], Session]):
             },
         ]
 
-        table = ui.table(
+        table = filtered_table(
             columns=columns,
-            rows=filtered_details_data,
+            rows=details_data,
             row_key="id",
             pagination={
                 "rowsPerPage": 10,
                 "sortBy": "value",
                 "descending": False,
             },
-        ).classes("w-full")
+        )
 
         table.props(
             """
