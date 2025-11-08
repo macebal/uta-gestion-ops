@@ -36,7 +36,7 @@ def home_page(session_factory: Callable[[], Session]):
                         ui.label("Nueva Orden de Pago").classes("text-2xl font-bold text-white text-center")
                         ui.label("Crear una nueva OP para un proveedor").classes("text-blue-100 text-center")
 
-                # Print Payment Orders button - large card
+                # Export Payment Orders button - large card
                 with (
                     ui.card()
                     .classes(
@@ -44,14 +44,16 @@ def home_page(session_factory: Callable[[], Session]):
                         "bg-gradient-to-br from-green-500 to-green-600"
                     )
                     .style("min-height: 280px")
-                    .on("click", lambda: ui.navigate.to("/payment-orders/print"))
+                    .on("click", lambda: ui.navigate.to("/payment-orders/export"))
                 ):
                     with ui.column().classes("items-center justify-center gap-4 w-full h-full"):
                         ui.icon("description", size="4rem").classes("text-white")
-                        ui.label("Imprimir Órdenes de Pago").classes("text-2xl font-bold text-white text-center")
-                        ui.label("Imprimir órdenes de pago individuales").classes("text-green-100 text-center")
+                        ui.label("Exportar Órdenes de Pago").classes("text-2xl font-bold text-white text-center")
+                        ui.label("Exportar múltiples Órdenes de Pago en un solo PDF").classes(
+                            "text-green-100 text-center"
+                        )
 
-                # Print Check List button - large card
+                # Export Check List button - large card
                 with (
                     ui.card()
                     .classes(
@@ -59,12 +61,12 @@ def home_page(session_factory: Callable[[], Session]):
                         "bg-gradient-to-br from-teal-500 to-teal-600"
                     )
                     .style("min-height: 280px")
-                    .on("click", lambda: ui.navigate.to("/checks/print"))
+                    .on("click", lambda: ui.navigate.to("/checks/export"))
                 ):
                     with ui.column().classes("items-center justify-center gap-4 w-full h-full"):
                         ui.icon("list", size="4rem").classes("text-white")
-                        ui.label("Imprimir Lista de Cheques").classes("text-2xl font-bold text-white text-center")
-                        ui.label("Generar lista de cheques por cuenta y mes").classes("text-teal-100 text-center")
+                        ui.label("Exportar Lista de Cheques").classes("text-2xl font-bold text-white text-center")
+                        ui.label("Exportar lista de cheques por cuenta y mes").classes("text-teal-100 text-center")
 
         # Management section - less frequent actions
         with ui.column().classes("w-full max-w-6xl gap-4"):

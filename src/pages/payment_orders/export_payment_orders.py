@@ -5,19 +5,14 @@ from nicegui import ui
 from sqlalchemy import and_
 from sqlalchemy.orm import Session
 
-from src.components import (
-    primary_button,
-    searchable_select,
-    secondary_button,
-    text_input,
-)
+from src.components import primary_button, searchable_select, secondary_button, text_input
 from src.models import Account, PaymentOrder
 from src.services.pdf_generator import generate_pdf
 from src.utils import format_check_number, format_currency, format_date, open_file
 
 
-def print_payment_orders_page(session_factory: Callable[[], Session]):
-    """Create the print payment orders page"""
+def export_payment_orders_page(session_factory: Callable[[], Session]):
+    """Create the export payment orders page"""
 
     accounts_data: list[str] = []
     filtered_orders: list[dict] = []
@@ -25,7 +20,7 @@ def print_payment_orders_page(session_factory: Callable[[], Session]):
 
     account_select = None
     results_table = None
-    print_button_container = None
+    export_button_container = None
     filters_container = None
     add_filter_dialog = None
 
@@ -158,7 +153,7 @@ def print_payment_orders_page(session_factory: Callable[[], Session]):
 
     def apply_filters():
         """Apply all active filters and load payment orders"""
-        nonlocal filtered_orders, results_table, print_button_container
+        nonlocal filtered_orders, results_table, export_button_container
 
         account_name = account_select.value if account_select else ""
         if not account_name:
@@ -215,10 +210,10 @@ def print_payment_orders_page(session_factory: Callable[[], Session]):
                 results_table.rows = filtered_orders
                 results_table.update()
 
-            if print_button_container:
-                print_button_container.clear()
+            if export_button_container:
+                export_button_container.clear()
                 if filtered_orders:
-                    with print_button_container:
+                    with export_button_container:
                         primary_button("Generar PDF", icon="picture_as_pdf", on_click=handle_generate_pdf)
 
             if active_filters:
@@ -399,4 +394,4 @@ def print_payment_orders_page(session_factory: Callable[[], Session]):
             .props("flat bordered")
         )
 
-        print_button_container = ui.row().classes("w-full justify-end mt-6")
+        export_button_container = ui.row().classes("w-full justify-end mt-6")

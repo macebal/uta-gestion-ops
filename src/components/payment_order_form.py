@@ -49,7 +49,7 @@ def payment_order_form(
     order_date_input = None
     issue_date_input = None
     due_date_input = None
-    print_checkbox = None
+    export_checkbox = None
     invoice_counter_label = None
     add_invoice_button = None
 
@@ -480,7 +480,7 @@ def payment_order_form(
 
             ui.notify("Orden de pago creada exitosamente", type="positive")
 
-            if print_checkbox and print_checkbox.value:
+            if export_checkbox and export_checkbox.value:
                 try:
                     account = session.query(Account).filter_by(id=account_id).first()
 
@@ -532,7 +532,7 @@ def payment_order_form(
         """Update an existing payment order"""
         detail_value = detail_select.value if detail_select else ""
         withholding = retenciones_input.value if retenciones_input else "$0.00"
-        generate_pdf_flag = print_checkbox.value if print_checkbox else False
+        generate_pdf_flag = export_checkbox.value if export_checkbox else False
 
         if not detail_value:
             ui.notify("Por favor seleccione un detalle", type="negative")
@@ -888,7 +888,7 @@ def payment_order_form(
     with ui.row().classes("w-full items-center justify-between mt-6"):
         with ui.row().classes("items-center gap-2"):
             initial_checkbox_value = not is_edit_mode
-            print_checkbox = ui.checkbox("Generar PDF de orden de pago", value=initial_checkbox_value).classes(
+            export_checkbox = ui.checkbox("Generar PDF de orden de pago", value=initial_checkbox_value).classes(
                 "text-gray-700"
             )
 
