@@ -82,6 +82,6 @@ ui.run(
     reload=False,
     native=True,
     port=native.find_open_port(),
-    window_size=(1200, 700),
+    window_size=(1300, 800),
     title="UTA - Gestión de Órdenes de Pago",
 )
