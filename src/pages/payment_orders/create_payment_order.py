@@ -5,13 +5,7 @@ from pathlib import Path
 from nicegui import ui
 from sqlalchemy.orm import Session
 
-from src.components import (
-    date_input_with_calendar,
-    primary_button,
-    searchable_select,
-    secondary_button,
-    text_input,
-)
+from src.components import date_input_with_calendar, primary_button, searchable_select, secondary_button, text_input
 from src.models import Account, Detail, Invoice, PaymentOrder, Supplier
 from src.services.pdf_generator import generate_pdf
 from src.utils import format_check_number, format_currency, format_date, open_file, parse_currency
@@ -422,9 +416,14 @@ def create_payment_order_page(session_factory: Callable[[], Session]):
                         "due_date": due_date,
                     }
 
-                    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-                    output_path = f"orden_pago_{op}_{account_name.lower()}_{timestamp}.pdf"
-                    pdf_path = generate_pdf("payment_order", [template_data], output_path)
+                    base_dir = Path("ordenes de pago") / account_name.lower()
+                    base_dir.mkdir(parents=True, exist_ok=True)
+
+                    date_str = order_date.strftime("%Y%m%d")
+                    filename = f"orden_de_pago_{op}_{date_str}.pdf"
+                    output_path = base_dir / filename
+
+                    pdf_path = generate_pdf("payment_order", [template_data], str(output_path))
                     ui.notify(f"PDF generado: {Path(pdf_path).name}", type="positive")
 
                     open_file(pdf_path)
