@@ -20,7 +20,7 @@ def export_payment_orders_page(session_factory: Callable[[], Session]):
 
     account_select = None
     results_table = None
-    print_button_container = None
+    export_button_container = None
     filters_container = None
     add_filter_dialog = None
 
@@ -153,7 +153,7 @@ def export_payment_orders_page(session_factory: Callable[[], Session]):
 
     def apply_filters():
         """Apply all active filters and load payment orders"""
-        nonlocal filtered_orders, results_table, print_button_container
+        nonlocal filtered_orders, results_table, export_button_container
 
         account_name = account_select.value if account_select else ""
         if not account_name:
@@ -210,10 +210,10 @@ def export_payment_orders_page(session_factory: Callable[[], Session]):
                 results_table.rows = filtered_orders
                 results_table.update()
 
-            if print_button_container:
-                print_button_container.clear()
+            if export_button_container:
+                export_button_container.clear()
                 if filtered_orders:
-                    with print_button_container:
+                    with export_button_container:
                         primary_button("Generar PDF", icon="picture_as_pdf", on_click=handle_generate_pdf)
 
             if active_filters:
@@ -394,4 +394,4 @@ def export_payment_orders_page(session_factory: Callable[[], Session]):
             .props("flat bordered")
         )
 
-        print_button_container = ui.row().classes("w-full justify-end mt-6")
+        export_button_container = ui.row().classes("w-full justify-end mt-6")
