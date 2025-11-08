@@ -205,10 +205,13 @@ def payment_order_form(
             )
             return
 
-        supplier_name = supplier_select.value if supplier_select else ""
-        if not supplier_name:
-            ui.notify("Por favor seleccione un proveedor primero", type="negative")
-            return
+        if is_edit_mode and payment_order_data:
+            supplier_name = payment_order_data["supplier"]
+        else:
+            supplier_name = supplier_select.value if supplier_select else ""
+            if not supplier_name:
+                ui.notify("Por favor seleccione un proveedor primero", type="negative")
+                return
 
         supplier_id = get_supplier_id_by_name(supplier_name)
         if not supplier_id:
