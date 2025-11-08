@@ -1,3 +1,6 @@
+import os
+import platform
+import subprocess
 from decimal import Decimal
 from datetime import date, datetime
 
@@ -130,4 +133,29 @@ def format_check_number(check_number: int | str) -> str:
             return str(check_number).zfill(8)
     
     return str(check_number).zfill(8)
+
+
+def open_file(file_path: str) -> bool:
+    """
+    Open a file with the system's default application.
+    
+    Args:
+        file_path: Path to the file to open
+    
+    Returns:
+        True if the file was opened successfully, False otherwise
+    """
+    try:
+        system = platform.system()
+        
+        if system == 'Windows':
+            os.startfile(file_path)
+        elif system == 'Darwin':
+            subprocess.run(['open', file_path], check=True)
+        else:
+            subprocess.run(['xdg-open', file_path], check=True)
+        
+        return True
+    except Exception:
+        return False
 
