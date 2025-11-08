@@ -157,14 +157,7 @@ def manage_payment_orders_page(session_factory: Callable[[], Session]):
             },
         )
 
-        table.props(
-            """
-                :rows-per-page-options="[10, 20, 50, 0]"
-                :rows-per-page-label="'Filas por página:'"
-                :pagination-label="(first, last, total) => `${first}-${last} de ${total}`"
-            """
-        )
-
+        table.props(':rows-per-page-options="[10, 20, 50, 0]"')
         table.classes("horizontal-scroll")
         table.style("overflow-x: auto;")
 
