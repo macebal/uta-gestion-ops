@@ -74,7 +74,7 @@ def manage_details_page(session_factory: Callable[[], Session]):
 
             ui.notify("Detalle creado exitosamente", type="positive")
             load_details()
-            value_input.value = ""
+            edit_dialog.close()
         except Exception as e:
             session.rollback()
             ui.notify(f"Error al crear detalle: {str(e)}", type="negative")
@@ -136,32 +136,49 @@ def manage_details_page(session_factory: Callable[[], Session]):
         finally:
             session.close()
 
-    def show_edit_dialog(detail_id: int):
-        """Show dialog to edit a detail"""
+    def show_detail_dialog(detail_id: int | None = None):
+        """Show dialog to create or edit a detail"""
         nonlocal edit_dialog, selected_detail
 
-        detail_data = next((d for d in details_data if d["id"] == detail_id), None)
-        if not detail_data:
-            ui.notify("Detalle no encontrado", type="negative")
-            return
-
-        selected_detail = detail_data
+        # Determine if we're in create or edit mode
+        is_create_mode = detail_id is None
+        detail_data = None
+        
+        if not is_create_mode:
+            detail_data = next((d for d in details_data if d["id"] == detail_id), None)
+            if not detail_data:
+                ui.notify("Detalle no encontrado", type="negative")
+                return
+            selected_detail = detail_data
 
         with ui.dialog() as dialog, ui.card().classes("p-6 min-w-96"):
             edit_dialog = dialog
-            ui.label("Editar Detalle").classes("text-xl font-semibold mb-4")
+            
+            # Set title and button text based on mode
+            title = "Nuevo Detalle" if is_create_mode else "Editar Detalle"
+            button_text = "Crear" if is_create_mode else "Guardar"
+            
+            ui.label(title).classes("text-xl font-semibold mb-4")
 
-            edit_value_input = text_input("Detalle", value=detail_data["value"])
+            initial_value = "" if is_create_mode else detail_data["value"]
+            value_input = text_input("Detalle", value=initial_value)
 
             with ui.row().classes("w-full gap-4 mt-6 justify-end"):
                 secondary_button(
                     "Cancelar",
                     on_click=lambda: dialog.close(),
                 )
-                primary_button(
-                    "Guardar",
-                    on_click=lambda: update_detail(detail_id, edit_value_input.value),
-                )
+                
+                if is_create_mode:
+                    primary_button(
+                        button_text,
+                        on_click=lambda: create_detail(value_input.value),
+                    )
+                else:
+                    primary_button(
+                        button_text,
+                        on_click=lambda: update_detail(detail_id, value_input.value),
+                    )
 
         dialog.open()
 
@@ -193,20 +210,13 @@ def manage_details_page(session_factory: Callable[[], Session]):
         dialog.open()
 
     with ui.column().classes("w-full p-6"), ui.card().classes("w-full max-w-6xl mx-auto p-6 shadow-lg"):
-        ui.label("Gestión de Detalles de Pago").classes("text-2xl font-normal text-gray-700 mb-6")
-
-        with ui.card().classes("w-full p-4 bg-gray-50 mb-6"):
-            ui.label("Nuevo Detalle").classes("text-lg font-semibold text-gray-700 mb-4")
-
-            with ui.row().classes("w-full gap-4 items-end"):
-                with ui.column().classes("flex-1"):
-                    value_input = text_input("Detalle de Pago")
-
-                primary_button(
-                    "Agregar",
-                    icon="add",
-                    on_click=lambda: create_detail(value_input.value),
-                )
+        with ui.row().classes("w-full justify-between items-center mb-6"):
+            ui.label("Gestión de Detalles de Pago").classes("text-2xl font-normal text-gray-700")
+            primary_button(
+                "Crear Detalle",
+                icon="add",
+                on_click=lambda: show_detail_dialog(),
+            )
 
         ui.label("Detalles Existentes").classes("text-lg font-semibold text-gray-700 mb-4")
 
@@ -284,7 +294,7 @@ def manage_details_page(session_factory: Callable[[], Session]):
                 """,
         )
 
-        table.on("edit_row", lambda e: show_edit_dialog(e.args["id"]))
+        table.on("edit_row", lambda e: show_detail_dialog(e.args["id"]))
         table.on("delete_row", lambda e: show_delete_dialog(e.args["id"]))
 
     load_details()
