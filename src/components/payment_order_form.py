@@ -899,5 +899,4 @@ def payment_order_form(
             primary_button(button_text, on_click=save_payment_order)
 
     if is_edit_mode:
-        update_invoice_total_display()
-        calculate_total_op()
+        ui.timer(0.3, lambda: (update_invoice_total_display(), calculate_total_op()), once=True)
