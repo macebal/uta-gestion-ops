@@ -821,7 +821,7 @@ def payment_order_form(
         invoice_table = (
             ui.table(columns=columns, rows=invoice_rows, row_key="id")
             .classes(f"w-full {max_width_class}")
-            .props("flat bordered")
+            .props("flat bordered no-data-label='No hay datos disponibles'")
         )
 
         invoice_table.add_slot(

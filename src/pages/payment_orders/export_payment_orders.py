@@ -391,7 +391,7 @@ def export_payment_orders_page(session_factory: Callable[[], Session]):
                 pagination={"rowsPerPage": 10, "sortBy": "order_number"},
             )
             .classes("w-full")
-            .props("flat bordered")
+            .props("flat bordered no-data-label='No hay datos disponibles'")
         )
 
         export_button_container = ui.row().classes("w-full justify-end mt-6")

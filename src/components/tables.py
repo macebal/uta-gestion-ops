@@ -52,7 +52,7 @@ def scrollable_table(
     table = (
         ui.table(columns=columns, rows=rows)
         .classes(classes)
-        .props("virtual-scroll sticky-header")
+        .props("virtual-scroll sticky-header no-data-label='No hay datos disponibles'")
         .style(f"height: {height}")
     )
 
@@ -148,7 +148,7 @@ def simple_table(columns: list, rows: list, **kwargs):
         The ui.table element
     """
     classes = kwargs.pop("classes", "w-full")
-    return ui.table(columns=columns, rows=rows).classes(classes)
+    return ui.table(columns=columns, rows=rows).classes(classes).props("no-data-label='No hay datos disponibles'")
 
 
 def filtered_table(
@@ -439,12 +439,16 @@ def filtered_table(
 
         classes = kwargs.pop("classes", "w-full")
 
-        table_element = ui.table(
-            columns=columns,
-            rows=filtered_rows,
-            row_key=row_key,
-            pagination=pagination or {"rowsPerPage": 10},
-        ).classes(classes)
+        table_element = (
+            ui.table(
+                columns=columns,
+                rows=filtered_rows,
+                row_key=row_key,
+                pagination=pagination or {"rowsPerPage": 10},
+            )
+            .classes(classes)
+            .props("no-data-label='No hay datos disponibles'")
+        )
 
         if custom_slots:
             for slot_name, slot_html in custom_slots.items():
