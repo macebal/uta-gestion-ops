@@ -11,6 +11,7 @@ from src.components import (
 )
 from src.models import Account, PaymentOrder
 from src.services.pdf_generator import generate_pdf
+from src.utils import open_file
 
 
 MONTH_NAMES = [
@@ -144,6 +145,8 @@ def print_check_list_page(session_factory: Callable[[], Session]):
                 f"PDF generado: {Path(pdf_path).name} ({len(payment_orders)} órdenes en {len(pages)} página(s))",
                 type="positive"
             )
+            
+            open_file(pdf_path)
 
         except Exception as e:
             ui.notify(f"Error al generar PDF: {str(e)}", type="negative")
