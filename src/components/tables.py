@@ -375,7 +375,6 @@ def filtered_table(
         active_filters.remove(filter_config)
         render_filters()
         apply_all_filters()
-        ui.notify("Filtro eliminado", type="positive")
 
     def show_add_filter_dialog():
         """Show dialog to add a new filter"""
