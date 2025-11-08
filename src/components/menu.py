@@ -19,6 +19,10 @@ def create_menu():
         # Manage menu
         with ui.button("Gestionar", icon="settings").props("flat color=grey-8"), ui.menu():
             ui.menu_item(
+                "Órdenes de Pago",
+                on_click=lambda: ui.navigate.to("/payment-orders/manage"),
+            )
+            ui.menu_item(
                 "Proveedores",
                 on_click=lambda: ui.navigate.to("/suppliers/manage"),
             )

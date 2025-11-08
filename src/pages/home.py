@@ -107,6 +107,18 @@ def home_page(session_factory: Callable[[], Session]):
                         ui.label("Detalles").classes("text-xl font-semibold text-gray-800")
                         ui.label("Gestionar detalles de pago").classes("text-sm text-gray-500")
 
+                # Payment Orders management
+                with (
+                    ui.card()
+                    .classes("flex-1 p-6 cursor-pointer hover:shadow-lg transition-shadow")
+                    .on("click", lambda: ui.navigate.to("/payment-orders/manage")),
+                    ui.row().classes("items-center gap-4"),
+                ):
+                    ui.icon("receipt_long", size="2.5rem").classes("text-blue-600")
+                    with ui.column().classes("gap-1"):
+                        ui.label("Órdenes de Pago").classes("text-xl font-semibold text-gray-800")
+                        ui.label("Gestionar órdenes de pago").classes("text-sm text-gray-500")
+
         def check_and_show_reminder():
             """Check if reminder should be shown and return visibility state
 

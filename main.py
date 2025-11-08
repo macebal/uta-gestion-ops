@@ -9,6 +9,7 @@ from src.pages.checks.print_check_list import print_check_list_page
 from src.pages.details.manage_details import manage_details_page
 from src.pages.home import home_page
 from src.pages.payment_orders.create_payment_order import create_payment_order_page
+from src.pages.payment_orders.manage_payment_orders import manage_payment_orders_page
 from src.pages.payment_orders.print_payment_orders import print_payment_orders_page
 from src.pages.suppliers.manage_suppliers import manage_suppliers_page
 
@@ -33,6 +34,13 @@ def payment_order_page():
     ui.page_title("Nueva Orden de Pago")
     create_menu()
     create_payment_order_page(SessionLocal)
+
+
+@ui.page("/payment-orders/manage")
+def manage_orders_page():
+    ui.page_title("Gestión de Órdenes de Pago")
+    create_menu()
+    manage_payment_orders_page(SessionLocal)
 
 
 @ui.page("/payment-orders/print")
@@ -74,6 +82,6 @@ ui.run(
     reload=False,
     native=True,
     port=native.find_open_port(),
-    window_size=(1200, 700),
+    window_size=(1300, 800),
     title="UTA - Gestión de Órdenes de Pago",
 )
