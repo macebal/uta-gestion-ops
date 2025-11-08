@@ -1,7 +1,7 @@
 from typing import Callable
 from decimal import Decimal
 from pathlib import Path
-
+from datetime import datetime
 from nicegui import ui
 from sqlalchemy.orm import Session
 
@@ -441,7 +441,8 @@ def create_payment_order_page(session_factory: Callable[[], Session]):
                         "due_date": due_date,
                     }
 
-                    output_path = f"orden_pago_{op}_{account_name}.pdf"
+                    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+                    output_path = f"orden_pago_{op}_{account_name.lower()}_{timestamp}.pdf"
                     pdf_path = generate_pdf(
                         "payment_order", [template_data], output_path
                     )

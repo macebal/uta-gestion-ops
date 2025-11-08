@@ -134,7 +134,7 @@ def print_check_list_page(session_factory: Callable[[], Session]):
                 )
                 pages_data.append(page_data)
 
-            output_path = f"Lista_Cheques_{account_name}_{month_str}_{year}.pdf"
+            output_path = f"lista_cheques_{account_name.lower()}_{month_str.lower()}_{year}.pdf"
             pdf_path = generate_pdf(
                 template_name='check_list',
                 pages_data=pages_data,
