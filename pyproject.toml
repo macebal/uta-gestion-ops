@@ -1,6 +1,6 @@
 [project]
 name = "uta-gestion-ops"
-version = "0.1.0"
+version = "0.3.0"
 description = "An application to manage payment orders for UTA"
 readme = "README.md"
 requires-python = ">=3.13"
@@ -14,4 +14,37 @@ dependencies = [
 ]
 
 [dependency-groups]
+dev = [
+    "ruff>=0.14.4",
+]
+
 packaging = ["pyinstaller>=6.16.0"]
+
+[tool.uv]
+default-groups = "all"
+
+[tool.ruff]
+line-length = 120
+target-version = "py313"
+
+[tool.ruff.lint]
+select = [
+    "E",   # pycodestyle errors
+    "W",   # pycodestyle warnings
+    "F",   # pyflakes
+    "I",   # isort
+    "UP",  # pyupgrade
+    "B",   # flake8-bugbear
+    "C4",  # flake8-comprehensions
+    "SIM", # flake8-simplify
+]
+extend-safe-fixes = [
+    "W293", #Blank line contains whitespace
+]
+ignore = [
+    "SIM117", # combining with statements does not makes sense in this particular case
+]
+
+[tool.ruff.lint.isort]
+known-first-party = ["src"]
+lines-after-imports = 2

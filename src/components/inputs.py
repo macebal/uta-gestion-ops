@@ -1,24 +1,25 @@
-from typing import Callable
+from collections.abc import Callable
+
 from nicegui import ui
 
 
-def text_input(
-    label: str, value: str = "", on_change: Callable | None = None, **kwargs
-):
+def text_input(label: str, value: str = "", on_change: Callable | None = None, readonly: bool = False, **kwargs):
     """
     Standardized text input field with outlined style
 
     Args:
         label: Label for the input field
         value: Default value for the input
-        **kwargs: Additional arguments passed to ui.input (e.g., classes, on_change)
+        on_change: Callback function when value changes
+        readonly: Whether the input is read-only
+        **kwargs: Additional arguments passed to ui.input (e.g., classes)
     """
     classes = kwargs.pop("classes", "w-full")
-    return (
-        ui.input(label=label, value=value, on_change=on_change)
-        .classes(classes)
-        .props("outlined", **kwargs)
-    )
+    props_str = "outlined"
+    if readonly:
+        props_str += " readonly"
+    input_field = ui.input(label=label, value=value, on_change=on_change).classes(classes).props(props_str)
+    return input_field
 
 
 def select_field(options: list, label: str, value=None, **kwargs):
@@ -32,11 +33,7 @@ def select_field(options: list, label: str, value=None, **kwargs):
         **kwargs: Additional arguments passed to ui.select (e.g., classes, on_change)
     """
     classes = kwargs.pop("classes", "w-full")
-    return (
-        ui.select(options, label=label, value=value)
-        .classes(classes)
-        .props("outlined", **kwargs)
-    )
+    return ui.select(options, label=label, value=value).classes(classes).props("outlined", **kwargs)
 
 
 def select_with_edit(options: list, label: str, value=None, on_edit=None, **kwargs):
@@ -52,9 +49,7 @@ def select_with_edit(options: list, label: str, value=None, on_edit=None, **kwar
     """
     with ui.row().classes("w-full gap-2 items-center"):
         classes = kwargs.pop("classes", "flex-1")
-        ui.select(options, label=label, value=value).classes(classes).props(
-            "outlined", **kwargs
-        )
+        ui.select(options, label=label, value=value).classes(classes).props("outlined", **kwargs)
         icon = ui.icon("edit").classes("text-yellow-500 cursor-pointer text-xl")
         if on_edit:
             icon.on("click", on_edit)
@@ -71,9 +66,7 @@ def date_input(label: str, value: str = "", **kwargs):
         **kwargs: Additional arguments passed to ui.input
     """
     classes = kwargs.pop("classes", "w-full")
-    return (
-        ui.input(label=label, value=value).classes(classes).props("outlined", **kwargs)
-    )
+    return ui.input(label=label, value=value).classes(classes).props("outlined", **kwargs)
 
 
 def number_input(label: str, value: str = "", **kwargs):
@@ -86,9 +79,7 @@ def number_input(label: str, value: str = "", **kwargs):
         **kwargs: Additional arguments passed to ui.input
     """
     classes = kwargs.pop("classes", "w-full")
-    return (
-        ui.input(label=label, value=value).classes(classes).props("outlined", **kwargs)
-    )
+    return ui.input(label=label, value=value).classes(classes).props("outlined", **kwargs)
 
 
 def searchable_select(options: list, label: str, value=None, on_change=None, **kwargs):
@@ -104,9 +95,7 @@ def searchable_select(options: list, label: str, value=None, on_change=None, **k
     """
     classes = kwargs.pop("classes", "w-full")
     select = (
-        ui.select(
-            options, label=label, value=value, with_input=True, on_change=on_change
-        )
+        ui.select(options, label=label, value=value, with_input=True, on_change=on_change)
         .classes(classes)
         .props("outlined use-input")
     )
@@ -129,12 +118,11 @@ def date_input_with_calendar(label: str, value: str = "", **kwargs):
         if value:
             date_input.value = value
 
-        with date_input:
-            with ui.menu().props("no-parent-event") as date_menu:
-                with ui.date().props("mask=DD/MM/YYYY") as date_picker:
-                    date_picker.bind_value(date_input)
-                    with ui.row().classes("justify-end q-pa-sm"):
-                        ui.button("Cerrar", on_click=date_menu.close).props("flat")
+        with date_input, ui.menu().props("no-parent-event") as date_menu:
+            with ui.date().props("mask=DD/MM/YYYY") as date_picker:
+                date_picker.bind_value(date_input)
+                with ui.row().classes("justify-end q-pa-sm"):
+                    ui.button("Cerrar", on_click=date_menu.close).props("flat")
 
         with date_input.add_slot("append"):
             ui.icon("event").on("click", date_menu.open).classes("cursor-pointer")

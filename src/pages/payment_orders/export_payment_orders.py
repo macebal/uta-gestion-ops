@@ -1,23 +1,18 @@
-from typing import Callable
+from collections.abc import Callable
 from datetime import datetime
 
 from nicegui import ui
-from sqlalchemy.orm import Session
 from sqlalchemy import and_
+from sqlalchemy.orm import Session
 
-from src.components import (
-    primary_button,
-    searchable_select,
-    secondary_button,
-    text_input,
-)
+from src.components import primary_button, searchable_select, secondary_button, text_input
 from src.models import Account, PaymentOrder
 from src.services.pdf_generator import generate_pdf
-from src.utils import format_currency, format_date, format_check_number
+from src.utils import format_check_number, format_currency, format_date, open_file
 
 
-def print_payment_orders_page(session_factory: Callable[[], Session]):
-    """Create the print payment orders page"""
+def export_payment_orders_page(session_factory: Callable[[], Session]):
+    """Create the export payment orders page"""
 
     accounts_data: list[str] = []
     filtered_orders: list[dict] = []
@@ -25,7 +20,7 @@ def print_payment_orders_page(session_factory: Callable[[], Session]):
 
     account_select = None
     results_table = None
-    print_button_container = None
+    export_button_container = None
     filters_container = None
     add_filter_dialog = None
 
@@ -64,18 +59,12 @@ def print_payment_orders_page(session_factory: Callable[[], Session]):
                         for filter_item in active_filters:
                             filter_type = filter_item["type"]
                             if filter_type == "order_range":
-                                label = (
-                                    f"OP: {filter_item['from']} - {filter_item['to']}"
-                                )
+                                label = f"OP: {filter_item['from']} - {filter_item['to']}"
                             elif filter_type == "check_range":
                                 label = f"Cheque: {filter_item['from']} - {filter_item['to']}"
 
-                            with ui.chip(label, removable=True).classes(
-                                "bg-blue-100"
-                            ) as chip:
-                                chip.on(
-                                    "remove", lambda f=filter_item: remove_filter(f)
-                                )
+                            with ui.chip(label, removable=True).classes("bg-blue-100") as chip:
+                                chip.on("remove", lambda f=filter_item: remove_filter(f))
 
     def add_filter(filter_type: str, from_value: str, to_value: str):
         """Add a new filter"""
@@ -157,16 +146,14 @@ def print_payment_orders_page(session_factory: Callable[[], Session]):
                 )
                 primary_button(
                     "Agregar",
-                    on_click=lambda: add_filter(
-                        filter_type_select.value, from_input.value, to_input.value
-                    ),
+                    on_click=lambda: add_filter(filter_type_select.value, from_input.value, to_input.value),
                 )
 
         dialog.open()
 
     def apply_filters():
         """Apply all active filters and load payment orders"""
-        nonlocal filtered_orders, results_table, print_button_container
+        nonlocal filtered_orders, results_table, export_button_container
 
         account_name = account_select.value if account_select else ""
         if not account_name:
@@ -181,9 +168,7 @@ def print_payment_orders_page(session_factory: Callable[[], Session]):
 
         session = session_factory()
         try:
-            query = session.query(PaymentOrder).filter(
-                PaymentOrder.account_id == account_id
-            )
+            query = session.query(PaymentOrder).filter(PaymentOrder.account_id == account_id)
 
             for filter_item in active_filters:
                 if filter_item["type"] == "order_range":
@@ -225,13 +210,11 @@ def print_payment_orders_page(session_factory: Callable[[], Session]):
                 results_table.rows = filtered_orders
                 results_table.update()
 
-            if print_button_container:
-                print_button_container.clear()
+            if export_button_container:
+                export_button_container.clear()
                 if filtered_orders:
-                    with print_button_container:
-                        primary_button(
-                            "Generar PDF", icon="picture_as_pdf", on_click=handle_generate_pdf
-                        )
+                    with export_button_container:
+                        primary_button("Generar PDF", icon="picture_as_pdf", on_click=handle_generate_pdf)
 
             if active_filters:
                 ui.notify(
@@ -262,9 +245,7 @@ def print_payment_orders_page(session_factory: Callable[[], Session]):
                 account = po.account
                 invoices = po.invoices
 
-                invoice_numbers = ", ".join(
-                    [invoice.invoice_number for invoice in invoices]
-                )
+                invoice_numbers = ", ".join([invoice.invoice_number for invoice in invoices])
 
                 invoices_list = [{"amount": invoice.amount} for invoice in invoices]
 
@@ -287,20 +268,18 @@ def print_payment_orders_page(session_factory: Callable[[], Session]):
                 payment_orders_data.append(template_data)
 
             if not payment_orders_data:
-                ui.notify(
-                    "No se pudieron cargar los datos de las órdenes", type="negative"
-                )
+                ui.notify("No se pudieron cargar los datos de las órdenes", type="negative")
                 return
 
-            ui.notify(
-                f"Generando PDF con {len(payment_orders_data)} órdenes...", type="info"
-            )
+            ui.notify(f"Generando PDF con {len(payment_orders_data)} órdenes...", type="info")
 
             timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
             output_path = f"ordenes_pago_{timestamp}.pdf"
-            generate_pdf("payment_order", payment_orders_data, output_path)
+            pdf_path = generate_pdf("payment_order", payment_orders_data, output_path)
 
             ui.notify(f"PDF generado exitosamente: {output_path}", type="positive")
+
+            open_file(pdf_path)
 
         except Exception as e:
             ui.notify(f"Error al generar PDF: {str(e)}", type="negative")
@@ -309,116 +288,110 @@ def print_payment_orders_page(session_factory: Callable[[], Session]):
 
     load_accounts()
 
-    with ui.column().classes("w-full p-6"):
-        with ui.card().classes("w-full max-w-6xl mx-auto p-6 shadow-lg"):
-            ui.label("Generar PDFs de Órdenes de Pago").classes(
-                "text-2xl font-normal text-gray-700 mb-6"
-            )
+    with ui.column().classes("w-full p-6"), ui.card().classes("w-full max-w-6xl mx-auto p-6 shadow-lg"):
+        ui.label("Generar PDFs de Órdenes de Pago").classes("text-2xl font-normal text-gray-700 mb-6")
 
-            with ui.column().classes("w-full gap-4 mb-6"):
-                with ui.row().classes("w-full gap-4"):
-                    with ui.column().classes("flex-1"):
-                        account_select = searchable_select(
-                            accounts_data,
-                            label="Cuenta",
-                            on_change=lambda: apply_filters(),
-                        )
-
-                with ui.row().classes("w-full items-center justify-between mt-4"):
-                    ui.label("Filtros").classes("text-lg font-semibold text-gray-700")
-                    primary_button(
-                        "Agregar Filtro", icon="add", on_click=show_add_filter_dialog
-                    )
-
-                filters_container = ui.column().classes("w-full min-h-8 py-2")
-                render_filters()
-
-            ui.separator().classes("my-6")
-
-            ui.label("Resultados").classes("text-lg font-semibold text-gray-700 mb-4")
-
-            columns = [
-                {
-                    "name": "order_number",
-                    "label": "OP",
-                    "field": "order_number",
-                    "align": "left",
-                    "sortable": True,
-                },
-                {
-                    "name": "check_number",
-                    "label": "Cheque",
-                    "field": "check_number",
-                    "align": "left",
-                    "sortable": True,
-                },
-                {
-                    "name": "supplier_name",
-                    "label": "Proveedor",
-                    "field": "supplier_name",
-                    "align": "left",
-                    "sortable": True,
-                },
-                {
-                    "name": "detail",
-                    "label": "Detalle",
-                    "field": "detail",
-                    "align": "left",
-                    "sortable": True,
-                },
-                {
-                    "name": "amount",
-                    "label": "Importe",
-                    "field": "amount",
-                    "align": "right",
-                    "sortable": True,
-                },
-                {
-                    "name": "withholding",
-                    "label": "Retenciones",
-                    "field": "withholding",
-                    "align": "right",
-                    "sortable": True,
-                },
-                {
-                    "name": "total",
-                    "label": "Total",
-                    "field": "total",
-                    "align": "right",
-                    "sortable": True,
-                },
-                {
-                    "name": "order_date",
-                    "label": "Fecha OP",
-                    "field": "order_date",
-                    "align": "center",
-                    "sortable": True,
-                },
-                {
-                    "name": "issue_date",
-                    "label": "Emisión",
-                    "field": "issue_date",
-                    "align": "center",
-                    "sortable": True,
-                },
-                {
-                    "name": "due_date",
-                    "label": "Vencimiento",
-                    "field": "due_date",
-                    "align": "center",
-                    "sortable": True,
-                },
-            ]
-
-            results_table = (
-                ui.table(
-                    columns=columns,
-                    rows=filtered_orders,
-                    row_key="id",
-                    pagination={"rowsPerPage": 10, "sortBy": "order_number"},
+        with ui.column().classes("w-full gap-4 mb-6"):
+            with ui.row().classes("w-full gap-4"), ui.column().classes("flex-1"):
+                account_select = searchable_select(
+                    accounts_data,
+                    label="Cuenta",
+                    on_change=lambda: apply_filters(),
                 )
-                .classes("w-full")
-                .props("flat bordered")
-            )
 
-            print_button_container = ui.row().classes("w-full justify-end mt-6")
+            with ui.row().classes("w-full items-center justify-between mt-4"):
+                ui.label("Filtros").classes("text-lg font-semibold text-gray-700")
+                primary_button("Agregar Filtro", icon="add", on_click=show_add_filter_dialog)
+
+            filters_container = ui.column().classes("w-full min-h-8 py-2")
+            render_filters()
+
+        ui.separator().classes("my-6")
+
+        ui.label("Resultados").classes("text-lg font-semibold text-gray-700 mb-4")
+
+        columns = [
+            {
+                "name": "order_number",
+                "label": "OP",
+                "field": "order_number",
+                "align": "left",
+                "sortable": True,
+            },
+            {
+                "name": "check_number",
+                "label": "Cheque",
+                "field": "check_number",
+                "align": "left",
+                "sortable": True,
+            },
+            {
+                "name": "supplier_name",
+                "label": "Proveedor",
+                "field": "supplier_name",
+                "align": "left",
+                "sortable": True,
+            },
+            {
+                "name": "detail",
+                "label": "Detalle",
+                "field": "detail",
+                "align": "left",
+                "sortable": True,
+            },
+            {
+                "name": "amount",
+                "label": "Importe",
+                "field": "amount",
+                "align": "right",
+                "sortable": True,
+            },
+            {
+                "name": "withholding",
+                "label": "Retenciones",
+                "field": "withholding",
+                "align": "right",
+                "sortable": True,
+            },
+            {
+                "name": "total",
+                "label": "Total",
+                "field": "total",
+                "align": "right",
+                "sortable": True,
+            },
+            {
+                "name": "order_date",
+                "label": "Fecha OP",
+                "field": "order_date",
+                "align": "center",
+                "sortable": True,
+            },
+            {
+                "name": "issue_date",
+                "label": "Emisión",
+                "field": "issue_date",
+                "align": "center",
+                "sortable": True,
+            },
+            {
+                "name": "due_date",
+                "label": "Vencimiento",
+                "field": "due_date",
+                "align": "center",
+                "sortable": True,
+            },
+        ]
+
+        results_table = (
+            ui.table(
+                columns=columns,
+                rows=filtered_orders,
+                row_key="id",
+                pagination={"rowsPerPage": 10, "sortBy": "order_number"},
+            )
+            .classes("w-full")
+            .props('flat bordered :rows-per-page-options="[10, 20, 50, 0]"')
+        )
+
+        export_button_container = ui.row().classes("w-full justify-end mt-6")

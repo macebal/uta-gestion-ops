@@ -1,10 +1,11 @@
 import sys
 from pathlib import Path
+
 from jinja2 import Environment, FileSystemLoader, select_autoescape
 from weasyprint import HTML  # type: ignore
 from weasyprint.text.fonts import FontConfiguration  # type: ignore
 
-from src.utils import format_currency, format_date, format_check_number
+from src.utils import format_check_number, format_currency, format_date
 
 
 def get_template_dir(template_name: str) -> tuple[Path, Path]:
@@ -45,11 +46,11 @@ def render_template_html(template_name: str, template_data: dict) -> tuple[str, 
         loader=FileSystemLoader(str(template_dir)),
         autoescape=select_autoescape(["html", "htm"]),
     )
-    
+
     # Add custom filters
-    env.filters['format_date_short'] = format_date
-    env.filters['format_currency'] = format_currency
-    env.filters['format_check_number'] = format_check_number
+    env.filters["format_date_short"] = format_date
+    env.filters["format_currency"] = format_currency
+    env.filters["format_check_number"] = format_check_number
 
     # Load and render the template
     template = env.get_template(f"{template_name}.htm")
