@@ -3,17 +3,23 @@ from collections.abc import Callable
 from nicegui import ui
 
 
-def text_input(label: str, value: str = "", on_change: Callable | None = None, **kwargs):
+def text_input(label: str, value: str = "", on_change: Callable | None = None, readonly: bool = False, **kwargs):
     """
     Standardized text input field with outlined style
 
     Args:
         label: Label for the input field
         value: Default value for the input
-        **kwargs: Additional arguments passed to ui.input (e.g., classes, on_change)
+        on_change: Callback function when value changes
+        readonly: Whether the input is read-only
+        **kwargs: Additional arguments passed to ui.input (e.g., classes)
     """
     classes = kwargs.pop("classes", "w-full")
-    return ui.input(label=label, value=value, on_change=on_change).classes(classes).props("outlined", **kwargs)
+    props_str = "outlined"
+    if readonly:
+        props_str += " readonly"
+    input_field = ui.input(label=label, value=value, on_change=on_change).classes(classes).props(props_str)
+    return input_field
 
 
 def select_field(options: list, label: str, value=None, **kwargs):

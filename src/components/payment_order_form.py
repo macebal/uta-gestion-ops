@@ -867,7 +867,7 @@ def payment_order_form(
                 )
 
             with ui.column().classes("w-32"):
-                op_input = text_input("OP")
+                op_input = text_input("OP", readonly=True)
 
             with ui.column().classes("flex-1"):
                 today = datetime.now().strftime("%d/%m/%Y")
@@ -875,7 +875,7 @@ def payment_order_form(
 
         with ui.row().classes("w-full gap-4 mb-4"):
             with ui.column().classes("flex-1"):
-                check_input = text_input("Cheque")
+                check_input = text_input("Cheque", readonly=True)
 
             with ui.column().classes("flex-1"):
                 issue_date_input = date_input_with_calendar("Emisión")
