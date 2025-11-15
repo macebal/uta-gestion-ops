@@ -1,8 +1,10 @@
 import os
 import platform
 import subprocess
+import tomllib
 from datetime import date, datetime
 from decimal import Decimal
+from pathlib import Path
 
 
 def format_currency(amount: float | Decimal | str | None) -> str:
@@ -158,3 +160,19 @@ def open_file(file_path: str) -> bool:
         return True
     except Exception:
         return False
+
+
+def get_app_version() -> str:
+    """
+    Read version from pyproject.toml.
+
+    Returns:
+        Version string from pyproject.toml or "Unknown" if not found
+    """
+    try:
+        pyproject_path = Path(__file__).parent.parent / "pyproject.toml"
+        with open(pyproject_path, "rb") as f:
+            pyproject_data = tomllib.load(f)
+            return pyproject_data.get("project", {}).get("version", "Unknown")
+    except Exception:
+        return "Unknown"
