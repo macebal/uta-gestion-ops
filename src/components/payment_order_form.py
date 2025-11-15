@@ -8,6 +8,10 @@ from sqlalchemy.orm import Session
 
 from src.components.buttons import primary_button, secondary_button
 from src.components.inputs import date_input_with_calendar, searchable_select, text_input
+from src.db_utils import get_account_id_by_name, get_detail_id_by_value, get_supplier_id_by_name
+from src.db_utils import load_accounts as load_accounts_util
+from src.db_utils import load_details as load_details_util
+from src.db_utils import load_suppliers as load_suppliers_util
 from src.models import Account, Detail, Invoice, PaymentOrder, Supplier
 from src.services.pdf_generator import generate_pdf
 from src.utils import format_check_number, format_currency, format_date, open_file, parse_currency
@@ -60,35 +64,20 @@ def payment_order_form(
     def load_accounts():
         """Load all accounts from database"""
         nonlocal accounts_data
-        session = session_factory()
-        try:
-            accounts = session.query(Account).order_by(Account.name).all()
-            accounts_data.clear()
-            accounts_data.extend([account.name for account in accounts])
-        finally:
-            session.close()
+        accounts_data.clear()
+        accounts_data.extend(load_accounts_util(session_factory, names_only=True))
 
     def load_suppliers():
         """Load all suppliers from database"""
         nonlocal suppliers_data
-        session = session_factory()
-        try:
-            suppliers = session.query(Supplier).order_by(Supplier.name).all()
-            suppliers_data.clear()
-            suppliers_data.extend([supplier.name for supplier in suppliers])
-        finally:
-            session.close()
+        suppliers_data.clear()
+        suppliers_data.extend(load_suppliers_util(session_factory, names_only=True))
 
     def load_details():
         """Load all details from database"""
         nonlocal details_data
-        session = session_factory()
-        try:
-            details = session.query(Detail).order_by(Detail.value).all()
-            details_data.clear()
-            details_data.extend([detail.value for detail in details])
-        finally:
-            session.close()
+        details_data.clear()
+        details_data.extend(load_details_util(session_factory, names_only=True))
 
     def show_create_supplier_dialog():
         """Show dialog to create a new supplier"""
@@ -193,39 +182,6 @@ def payment_order_form(
 
         dialog.open()
 
-    def get_account_id_by_name(account_name: str) -> int | None:
-        """Get account ID by name"""
-        if not account_name:
-            return None
-        session = session_factory()
-        try:
-            account = session.query(Account).filter_by(name=account_name).first()
-            return account.id if account else None
-        finally:
-            session.close()
-
-    def get_supplier_id_by_name(supplier_name: str) -> int | None:
-        """Get supplier ID by name"""
-        if not supplier_name:
-            return None
-        session = session_factory()
-        try:
-            supplier = session.query(Supplier).filter_by(name=supplier_name).first()
-            return supplier.id if supplier else None
-        finally:
-            session.close()
-
-    def get_detail_id_by_value(detail_value: str) -> int | None:
-        """Get detail ID by value"""
-        if not detail_value:
-            return None
-        session = session_factory()
-        try:
-            detail = session.query(Detail).filter_by(value=detail_value).first()
-            return detail.id if detail else None
-        finally:
-            session.close()
-
     def on_account_change(e):
         """Handle account selection change"""
         nonlocal op_input, check_input
@@ -313,7 +269,7 @@ def payment_order_form(
                 ui.notify("Por favor seleccione un proveedor primero", type="negative")
                 return
 
-        supplier_id = get_supplier_id_by_name(supplier_name)
+        supplier_id = get_supplier_id_by_name(session_factory, supplier_name)
         if not supplier_id:
             ui.notify("Error al obtener datos del proveedor", type="negative")
             return
@@ -445,6 +401,7 @@ def payment_order_form(
                 primary_button(
                     "Agregar",
                     on_click=lambda: add_invoice(invoice_number_input.value, amount_input.value),
+                    marker="add-invoice-submit",
                 )
 
         dialog.open()
@@ -532,9 +489,9 @@ def payment_order_form(
             ui.notify("Debe agregar al menos una factura", type="negative")
             return
 
-        account_id = get_account_id_by_name(account_name)
-        supplier_id = get_supplier_id_by_name(supplier_name)
-        detail_id = get_detail_id_by_value(detail_value)
+        account_id = get_account_id_by_name(session_factory, account_name)
+        supplier_id = get_supplier_id_by_name(session_factory, supplier_name)
+        detail_id = get_detail_id_by_value(session_factory, detail_value)
 
         if not all([account_id, supplier_id, detail_id]):
             ui.notify("Error al obtener datos de la base de datos", type="negative")
@@ -1014,7 +971,8 @@ def payment_order_form(
                 secondary_button("Cancelar", on_click=on_cancel)
 
             button_text = "Agregar OP" if not is_edit_mode else "Guardar Cambios"
-            primary_button(button_text, on_click=save_payment_order)
+            marker = "submit-payment-order" if not is_edit_mode else "save-payment-order"
+            primary_button(button_text, on_click=save_payment_order, marker=marker)
 
     if is_edit_mode:
         ui.timer(0.3, lambda: (update_invoice_total_display(), calculate_total_op()), once=True)

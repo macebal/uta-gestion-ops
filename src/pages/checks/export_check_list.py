@@ -6,7 +6,9 @@ from nicegui import ui
 from sqlalchemy.orm import Session, joinedload
 
 from src.components import primary_button, searchable_select
-from src.models import Account, PaymentOrder
+from src.db_utils import get_account_by_name
+from src.db_utils import load_accounts as load_accounts_util
+from src.models import PaymentOrder
 from src.services.pdf_generator import generate_pdf
 from src.utils import open_file
 
@@ -42,24 +44,8 @@ def export_check_list_page(session_factory: Callable[[], Session]):
     def load_accounts():
         """Load all accounts from database"""
         nonlocal accounts_data
-        session = session_factory()
-        try:
-            accounts = session.query(Account).order_by(Account.name).all()
-            accounts_data.clear()
-            accounts_data.extend([account.name for account in accounts])
-        finally:
-            session.close()
-
-    def get_account_by_name(account_name: str) -> Account | None:
-        """Get account by name"""
-        if not account_name:
-            return None
-        session = session_factory()
-        try:
-            account = session.query(Account).filter_by(name=account_name).first()
-            return account
-        finally:
-            session.close()
+        accounts_data.clear()
+        accounts_data.extend(load_accounts_util(session_factory, names_only=True))
 
     def split_into_pages(payment_orders, rows_per_page=ROWS_PER_PAGE):
         """Split payment orders into pages"""
@@ -95,7 +81,7 @@ def export_check_list_page(session_factory: Callable[[], Session]):
             ui.notify("Valores de mes o año inválidos", type="negative")
             return
 
-        account = get_account_by_name(account_name)
+        account = get_account_by_name(session_factory, account_name)
         if not account:
             ui.notify("Cuenta no encontrada", type="negative")
             return

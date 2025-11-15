@@ -1,19 +1,20 @@
 from nicegui import ui
 from nicegui.testing import User
 from sqlalchemy.orm import sessionmaker
-from tests.conftest import SAMPLE_DETAILS, db_session_ctx
 
 from src.models import Detail
-from src.pages.manage_details import manage_details_page
+from src.pages.details.manage_details import manage_details_page
+from tests.conftest import SAMPLE_DETAILS, db_session_ctx
 
 
-async def test_page_loads_correctly(user: User, test_db_session_factory):
-    await user.open("/manage-details")
+async def test_page_loads_correctly(user: User, test_db_session_factory: sessionmaker):
+    @ui.page("/test-details")
+    def test_page():
+        manage_details_page(test_db_session_factory)
+
+    await user.open("/test-details")
     await user.should_see("Gestión de Detalles de Pago")
-    await user.should_see("Nuevo Detalle")
-    await user.should_see("Detalles Existentes")
-    await user.should_see("Buscar detalle")
-    await user.should_see("Agregar")
+    await user.should_see("Crear Detalle")
 
 
 async def test_page_loads_existing_items(user: User, test_db_session_factory: sessionmaker):
@@ -35,12 +36,17 @@ async def test_create_detail_success(user: User, test_db_session_factory: sessio
 
     await user.open("/test-details")
 
-    # Assert initial DB state
     with db_session_ctx(test_db_session_factory) as session:
         assert len(session.query(Detail).all()) == len(SAMPLE_DETAILS)
 
-    user.find("Detalle de Pago").type("New Detail")
-    user.find("Agregar").click()
+    user.find("Crear Detalle").click()
+
+    await user.should_see("Nuevo Detalle")
+
+    detail_input = list(user.find(kind=ui.input).elements)[0]
+    detail_input.set_value("New Detail")
+
+    user.find("Crear").click()
 
     with db_session_ctx(test_db_session_factory) as session:
         assert len(session.query(Detail).all()) == len(SAMPLE_DETAILS) + 1
@@ -49,17 +55,3 @@ async def test_create_detail_success(user: User, test_db_session_factory: sessio
     table = user.find(ui.table).elements.pop()
     assert len(table.rows) == len(SAMPLE_DETAILS) + 1
     assert any(elem["value"] == "New Detail" for elem in table.rows)
-
-
-async def test_delete_detail(user: User, test_db_session_factory: sessionmaker):
-    @ui.page("/test-details")
-    def test_page():
-        manage_details_page(test_db_session_factory)
-
-    await user.open("/test-details")
-
-    # Assert initial DB state
-    with db_session_ctx(test_db_session_factory) as session:
-        assert len(session.query(Detail).all()) == len(SAMPLE_DETAILS)
-
-    # TODO: Finish this

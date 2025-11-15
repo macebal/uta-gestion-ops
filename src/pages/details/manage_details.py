@@ -5,6 +5,7 @@ from nicegui import ui
 from sqlalchemy.orm import Session
 
 from src.components import filtered_table, primary_button, secondary_button, text_input
+from src.db_utils import load_details as load_details_util
 from src.models import Detail
 
 
@@ -20,22 +21,18 @@ def manage_details_page(session_factory: Callable[[], Session]):
     def load_details():
         """Load all details from database"""
         nonlocal details_data, table
-        session = session_factory()
-        try:
-            details = session.query(Detail).order_by(Detail.value).all()
-            details_data.clear()
-            for detail in details:
-                details_data.append(
-                    {
-                        "id": detail.id,
-                        "value": detail.value,
-                        "actions": detail.id,
-                    }
-                )
-            if table and hasattr(table, "refresh_data"):
-                table.refresh_data()
-        finally:
-            session.close()
+        details = load_details_util(session_factory, names_only=False)
+        details_data.clear()
+        for detail in details:
+            details_data.append(
+                {
+                    "id": detail.id,
+                    "value": detail.value,
+                    "actions": detail.id,
+                }
+            )
+        if table and hasattr(table, "refresh_data"):
+            table.refresh_data()
 
     def create_detail(value: str):
         """Create a new detail"""
