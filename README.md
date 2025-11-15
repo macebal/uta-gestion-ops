@@ -1,69 +1,42 @@
-# Running the Project on Windows
+# UTA - Gestión de Órdenes de Pago
 
-To run this project and enable PDF generation (WeasyPrint), the main native dependency is Pango, provided by MSYS2. All Python dependencies are handled by `uv`.
+A desktop application for managing payment orders, checks, accounts, suppliers, and generating PDF documents.
 
-## 1. Install MSYS2 and Pango Dependencies
-1. **Download and install MSYS2** from [msys2.org](https://www.msys2.org/).
-   - **It is strongly recommended to install MSYS2 in the default location**:
-     `C:\msys64`
-2. Open the **MSYS2 MINGW64 Shell** and run:
-   ```bash
-   pacman -S mingw-w64-x86_64-pango
-   ```
-   This installs Pango and its required libraries for WeasyPrint.
+## Features
 
-## 2. Python Environment and Project Dependencies
-- This project uses [`uv`](https://github.com/astral-sh/uv) to install and manage Python dependencies from `pyproject.toml` and `uv.lock`.
-- `uv sync` will create a virtual environment automatically if one does not already exist (in `.venv` by default).
+- **Payment Orders Management**: Create, edit, and manage payment orders with detailed tracking
+- **Check Lists**: Generate and export check lists to PDF
+- **Accounts Management**: Manage banking accounts and track balances
+- **Suppliers Management**: Maintain supplier information and relationships
+- **PDF Export**: Generate professional PDF documents for payment orders and check lists
+- **Details Management**: Configure payment details and categories
 
-**Installation:**
-```bash
-uv sync
-```
+## Tech Stack
 
-## 3. Run Your Project
+This project is built with modern Python tools and frameworks:
 
-```bash
-make run
-```
+- **Python 3.13** - Core language
+- **[NiceGUI](https://nicegui.io/)** - Web-based UI framework packaged as a native desktop application
+- **SQLAlchemy** - Database ORM for data management
+- **SQLite** - Lightweight embedded database
+- **WeasyPrint** - PDF generation engine
+- **Pango** - Text layout and rendering for PDFs
+- **Jinja2** - Template engine for PDF documents
+- **PyInstaller** - Packaging Python applications as standalone executables
 
-## 4. Load Test Data
+## Download
 
-```bash
-make create-test-data
-```
+Download the latest pre-built Windows executable from the [Releases](https://github.com/yourusername/uta-gestion-ops/releases) page.
 
-Loads sample data from `tests/data/*.csv` into the database.
+Simply extract the ZIP file and run `uta-gestion-ops.exe` - no installation required.
 
-## Development and Contributing
+## For Developers
 
-### Branching Strategy
+Interested in contributing or running the project locally?
 
-- `main` - Production-ready code
-- `develop` - Integration branch for features
+- **Development Setup**: See [DEVELOPMENT.md](DEVELOPMENT.md) for instructions on setting up your local environment
+- **Contributing**: See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines on how to contribute to this project
 
-### Contributing Workflow
+## License
 
-1. Branch from `develop`:
-   ```bash
-   git checkout -b feature/your-feature-name develop
-   ```
-
-2. Create PR targeting `develop` branch
-
-## Release Process
-
-1. Merge `develop` → `main`:
-
-2. Tag and push (use semantic versioning):
-   ```bash
-   git tag v1.0.0
-   git push origin v1.0.0
-   ```
-
-3. Build artifact:
-   ```bash
-   make package
-   ```
-
-4. Upload `dist/uta-gestion-ops-<version>.zip` to GitHub Releases
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
