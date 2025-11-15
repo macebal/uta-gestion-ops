@@ -1,7 +1,7 @@
 from nicegui import ui
 
 
-def primary_button(text: str, on_click=None, icon: str | None = None, **kwargs):
+def primary_button(text: str, on_click=None, icon: str | None = None, marker: str | None = None, **kwargs):
     """
     Standardized primary button with blue background
 
@@ -9,10 +9,13 @@ def primary_button(text: str, on_click=None, icon: str | None = None, **kwargs):
         text: Button text
         on_click: Click handler function
         icon: Optional icon name
+        marker: Optional marker for testing
         **kwargs: Additional arguments (e.g., classes)
     """
     classes = kwargs.pop("classes", "bg-blue-500 text-white px-6 py-2 rounded-lg text-base")
     btn = ui.button(text, icon=icon).classes(classes)
+    if marker:
+        btn.mark(marker)
     if on_click:
         btn.on("click", on_click)
     return btn

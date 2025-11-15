@@ -401,6 +401,7 @@ def payment_order_form(
                 primary_button(
                     "Agregar",
                     on_click=lambda: add_invoice(invoice_number_input.value, amount_input.value),
+                    marker="add-invoice-submit",
                 )
 
         dialog.open()
@@ -970,7 +971,8 @@ def payment_order_form(
                 secondary_button("Cancelar", on_click=on_cancel)
 
             button_text = "Agregar OP" if not is_edit_mode else "Guardar Cambios"
-            primary_button(button_text, on_click=save_payment_order)
+            marker = "submit-payment-order" if not is_edit_mode else "save-payment-order"
+            primary_button(button_text, on_click=save_payment_order, marker=marker)
 
     if is_edit_mode:
         ui.timer(0.3, lambda: (update_invoice_total_display(), calculate_total_op()), once=True)

@@ -63,6 +63,7 @@ def generate_pdf(
     template_name: str,
     pages_data: list[dict],
     output_path: str,
+    base_dir: Path | None = None,
 ) -> str:
     """
     Generate a PDF from one or more pages using a specified template.
@@ -71,7 +72,8 @@ def generate_pdf(
         template_name: Name of the template to use (e.g., "payment_order")
         pages_data: List of dictionaries, each containing data for one page.
                     For single page PDFs, pass a list with one element.
-        output_path: Path where the PDF will be saved (relative to executable/project root)
+        output_path: Path where the PDF will be saved (relative to base_dir)
+        base_dir: Base directory for output path. If None, uses executable/project root.
 
     Returns:
         str: Absolute path to the generated PDF file
@@ -84,6 +86,9 @@ def generate_pdf(
         raise ValueError("pages_data cannot be empty")
 
     _, executable_dir = get_template_dir(template_name)
+    if base_dir is None:
+        base_dir = executable_dir
+
     font_config = FontConfiguration()
 
     # Render all pages
@@ -99,7 +104,7 @@ def generate_pdf(
         all_pages.extend(doc.pages)
 
     # Write PDF
-    pdf_path = executable_dir / output_path
+    pdf_path = base_dir / output_path
     documents[0].copy(all_pages).write_pdf(str(pdf_path))
 
     return str(pdf_path.absolute())
