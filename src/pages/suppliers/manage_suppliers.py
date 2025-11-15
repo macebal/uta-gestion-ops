@@ -5,6 +5,7 @@ from nicegui import ui
 from sqlalchemy.orm import Session
 
 from src.components import filtered_table, primary_button, secondary_button, text_input
+from src.db_utils import load_suppliers as load_suppliers_util
 from src.models import Supplier
 
 
@@ -20,25 +21,21 @@ def manage_suppliers_page(session_factory: Callable[[], Session]):
     def load_suppliers():
         """Load all suppliers from database"""
         nonlocal suppliers_data, table
-        session = session_factory()
-        try:
-            suppliers = session.query(Supplier).order_by(Supplier.name).all()
-            suppliers_data.clear()
-            for supplier in suppliers:
-                suppliers_data.append(
-                    {
-                        "id": supplier.id,
-                        "name": supplier.name,
-                        "cuit": supplier.cuit or "",
-                        "phone": supplier.phone or "",
-                        "email": supplier.email or "",
-                        "actions": supplier.id,
-                    }
-                )
-            if table and hasattr(table, "refresh_data"):
-                table.refresh_data()
-        finally:
-            session.close()
+        suppliers = load_suppliers_util(session_factory, names_only=False)
+        suppliers_data.clear()
+        for supplier in suppliers:
+            suppliers_data.append(
+                {
+                    "id": supplier.id,
+                    "name": supplier.name,
+                    "cuit": supplier.cuit or "",
+                    "phone": supplier.phone or "",
+                    "email": supplier.email or "",
+                    "actions": supplier.id,
+                }
+            )
+        if table and hasattr(table, "refresh_data"):
+            table.refresh_data()
 
     def create_supplier(name: str, cuit: str, phone: str, email: str):
         """Create a new supplier"""

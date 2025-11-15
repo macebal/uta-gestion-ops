@@ -6,7 +6,9 @@ from sqlalchemy import and_
 from sqlalchemy.orm import Session
 
 from src.components import primary_button, searchable_select, secondary_button, text_input
-from src.models import Account, PaymentOrder
+from src.db_utils import get_account_id_by_name
+from src.db_utils import load_accounts as load_accounts_util
+from src.models import PaymentOrder
 from src.services.pdf_generator import generate_pdf
 from src.utils import format_check_number, format_currency, format_date, open_file
 
@@ -27,24 +29,8 @@ def export_payment_orders_page(session_factory: Callable[[], Session]):
     def load_accounts():
         """Load all accounts from database"""
         nonlocal accounts_data
-        session = session_factory()
-        try:
-            accounts = session.query(Account).order_by(Account.name).all()
-            accounts_data.clear()
-            accounts_data.extend([account.name for account in accounts])
-        finally:
-            session.close()
-
-    def get_account_id_by_name(account_name: str) -> int | None:
-        """Get account ID by name"""
-        if not account_name:
-            return None
-        session = session_factory()
-        try:
-            account = session.query(Account).filter_by(name=account_name).first()
-            return account.id if account else None
-        finally:
-            session.close()
+        accounts_data.clear()
+        accounts_data.extend(load_accounts_util(session_factory, names_only=True))
 
     def render_filters():
         """Render active filters as chips"""
@@ -161,7 +147,7 @@ def export_payment_orders_page(session_factory: Callable[[], Session]):
                 ui.notify("Por favor seleccione una cuenta", type="negative")
             return
 
-        account_id = get_account_id_by_name(account_name)
+        account_id = get_account_id_by_name(session_factory, account_name)
         if not account_id:
             ui.notify("Cuenta no encontrada", type="negative")
             return
