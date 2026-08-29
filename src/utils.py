@@ -114,6 +114,41 @@ def format_date(date_obj: date | datetime | str | None) -> str:
     return date_obj.strftime("%d/%m/%Y")
 
 
+def format_invoice_number(invoice_number: str) -> str:
+    """
+    Format an Argentine invoice number with AFIP zero padding.
+
+    AFIP format: Punto de Venta (5 digits) - Número de Comprobante (8 digits).
+
+    Examples:
+        "1-3" -> "00001-00000003"
+        "3" -> "00000003"
+        "00001-123" -> "00001-00000123"
+
+    Args:
+        invoice_number: Invoice number as entered by the user
+
+    Returns:
+        Zero-padded invoice number string, or the original value if not numeric
+    """
+    invoice_number = invoice_number.strip()
+    if not invoice_number:
+        return invoice_number
+
+    if "-" in invoice_number:
+        punto_venta, numero = invoice_number.split("-", 1)
+        punto_venta = punto_venta.strip()
+        numero = numero.strip()
+        if punto_venta.isdigit() and numero.isdigit():
+            return f"{punto_venta.zfill(5)}-{numero.zfill(8)}"
+        return invoice_number
+
+    if invoice_number.isdigit():
+        return invoice_number.zfill(8)
+
+    return invoice_number
+
+
 def format_check_number(check_number: int | str) -> str:
     """
     Format a check number with zero padding (8 digits).

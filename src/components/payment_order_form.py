@@ -14,7 +14,14 @@ from src.db_utils import load_details as load_details_util
 from src.db_utils import load_suppliers as load_suppliers_util
 from src.models import Account, Detail, Invoice, PaymentOrder, Supplier
 from src.services.pdf_generator import generate_pdf
-from src.utils import format_check_number, format_currency, format_date, open_file, parse_currency
+from src.utils import (
+    format_check_number,
+    format_currency,
+    format_date,
+    format_invoice_number,
+    open_file,
+    parse_currency,
+)
 
 
 def payment_order_form(
@@ -246,6 +253,8 @@ def payment_order_form(
         """Add an invoice to the list"""
         nonlocal invoice_table, add_invoice_dialog, invoice_counter_label
 
+        invoice_number = format_invoice_number(invoice_number)
+
         if len(invoice_rows) >= 5:
             ui.notify("No se pueden agregar más de 5 facturas", type="negative")
             return
@@ -391,6 +400,10 @@ def payment_order_form(
             ui.label("Agregar Factura").classes("text-xl font-semibold mb-4")
 
             invoice_number_input = text_input("Número de Factura")
+            invoice_number_input.on(
+                "blur",
+                lambda: invoice_number_input.set_value(format_invoice_number(invoice_number_input.value or "")),
+            )
             amount_input = text_input("Importe")
 
             with ui.row().classes("w-full gap-4 mt-6 justify-end"):
