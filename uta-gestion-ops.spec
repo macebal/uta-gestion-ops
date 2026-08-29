@@ -1,7 +1,16 @@
 # -*- mode: python ; coding: utf-8 -*-
-import os
-import sys
+import tomllib
 from pathlib import Path
+
+from PyInstaller.utils.win32.versioninfo import (
+    FixedFileInfo,
+    StringFileInfo,
+    StringStruct,
+    StringTable,
+    VarFileInfo,
+    VarStruct,
+    VSVersionInfo,
+)
 
 msys2_bin = Path('C:/msys64/mingw64/bin')
 
@@ -62,6 +71,46 @@ a = Analysis(
 )
 pyz = PYZ(a.pure)
 
+with open('pyproject.toml', 'rb') as pyproject:
+    project_version = tomllib.load(pyproject)['project']['version']
+
+version_parts = [int(part) for part in project_version.split('.')]
+while len(version_parts) < 4:
+    version_parts.append(0)
+filevers = tuple(version_parts[:4])
+
+version_info = VSVersionInfo(
+    ffi=FixedFileInfo(
+        filevers=filevers,
+        prodvers=filevers,
+        mask=0x3F,
+        flags=0,
+        OS=0x40004,
+        fileType=0x1,
+        subtype=0x0,
+        date=(0, 0),
+    ),
+    kids=[
+        StringFileInfo(
+            [
+                StringTable(
+                    '040904B0',
+                    [
+                        StringStruct('CompanyName', 'UTA'),
+                        StringStruct('FileDescription', 'UTA Gestion de Ordenes de Pago'),
+                        StringStruct('FileVersion', project_version),
+                        StringStruct('InternalName', 'uta-gestion-ops'),
+                        StringStruct('OriginalFilename', 'uta-gestion-ops.exe'),
+                        StringStruct('ProductName', 'UTA Gestion de Ordenes de Pago'),
+                        StringStruct('ProductVersion', project_version),
+                    ],
+                )
+            ]
+        ),
+        VarFileInfo([VarStruct('Translation', [1033, 1200])]),
+    ],
+)
+
 exe = EXE(
     pyz,
     a.scripts,
@@ -71,20 +120,21 @@ exe = EXE(
     debug=False,
     bootloader_ignore_signals=False,
     strip=False,
-    upx=True,
+    upx=False,
     console=False,
     disable_windowed_traceback=False,
     argv_emulation=False,
     target_arch=None,
     codesign_identity=None,
     entitlements_file=None,
+    version=version_info,
 )
 coll = COLLECT(
     exe,
     a.binaries,
     a.datas,
     strip=False,
-    upx=True,
+    upx=False,
     upx_exclude=[],
     name='uta-gestion-ops',
 )
