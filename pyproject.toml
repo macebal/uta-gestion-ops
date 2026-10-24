@@ -1,6 +1,6 @@
 [project]
 name = "uta-gestion-ops"
-version = "1.0.1"
+version = "1.0.2"
 description = "An application to manage payment orders for UTA"
 readme = "README.md"
 requires-python = ">=3.13"

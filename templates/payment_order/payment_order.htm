@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="payment_order.css" />
   </head>
   <body>
+    {% set summarize_invoices = invoices|length > 5 %}
     <div align="center">
       <table id="form-table">
         <col class="col-1" />
@@ -54,26 +55,26 @@
         <tr class="row-6">
           <td colspan="3" class="detail-label">DETALLE:</td>
           <td colspan="2"></td>
-          <td class="invoice-value">{{ invoices[0].amount|format_currency }}</td>
+          <td class="invoice-value">{{ invoices[0].amount|format_currency if not summarize_invoices else '' }}</td>
         </tr>
         <tr class="row-7">
           <td colspan="3" rowspan="5" class="detail-value">
             {{ detail }}
           </td>
           <td colspan="2"></td>
-          <td class="invoice-value">{{ invoices[1].amount|format_currency if invoices|length > 1 else '' }}</td>
+          <td class="invoice-value">{{ invoices[1].amount|format_currency if not summarize_invoices and invoices|length > 1 else '' }}</td>
         </tr>
         <tr class="row-8">
           <td colspan="2"></td>
-          <td class="invoice-value">{{ invoices[2].amount|format_currency if invoices|length > 2 else '' }}</td>
+          <td class="invoice-value">{{ invoices[2].amount|format_currency if not summarize_invoices and invoices|length > 2 else '' }}</td>
         </tr>
         <tr class="row-9">
           <td colspan="2"></td>
-          <td class="invoice-value">{{ invoices[3].amount|format_currency if invoices|length > 3 else '' }}</td>
+          <td class="invoice-value">{{ invoices[3].amount|format_currency if not summarize_invoices and invoices|length > 3 else '' }}</td>
         </tr>
         <tr class="row-10">
-          <td colspan="2"></td>
-          <td class="invoice-value">{{ invoices[4].amount|format_currency if invoices|length > 4 else '' }}</td>
+          <td colspan="2" class="invoice-summary-label">{% if summarize_invoices %}SUBTOTAL FACTURAS{% endif %}</td>
+          <td class="invoice-value">{% if summarize_invoices %}{{ invoices|sum(attribute='amount')|format_currency }}{% elif invoices|length > 4 %}{{ invoices[4].amount|format_currency }}{% endif %}</td>
         </tr>
         <tr class="row-11">
           <td colspan="2" class="withholding-label">R E T E N C I O N E S</td>
@@ -88,7 +89,7 @@
         </tr>
         <tr class="row-14">
           <td colspan="2" class="invoice-number-label">FACTURA N°</td>
-          <td colspan="2" class="invoice-number-value">{{ invoice_number }}</td>
+          <td colspan="2" class="invoice-number-value">{{ invoice_number if not summarize_invoices else '' }}</td>
           <td colspan="2" class="invoice-number-value"></td>
         </tr>
         <tr class="row-15">
