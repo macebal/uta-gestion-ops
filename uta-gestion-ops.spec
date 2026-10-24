@@ -60,6 +60,7 @@ a = Analysis(
     datas=[
         (str(nicegui_path), 'nicegui'),
         ('templates', 'templates'),
+        ('pyproject.toml', '.'),
     ],
     hiddenimports=[],
     hookspath=[],
