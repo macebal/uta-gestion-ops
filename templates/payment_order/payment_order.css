@@ -199,6 +199,12 @@ td.logo {
   font-weight: normal;
 }
 
+.invoice-summary-label {
+  text-align: center;
+  font-size: 10pt;
+  font-weight: normal;
+}
+
 .withholding-label {
   text-align: center;
   font-family: Calibri, Arial, sans-serif;

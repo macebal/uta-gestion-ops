@@ -255,10 +255,6 @@ def payment_order_form(
 
         invoice_number = format_invoice_number(invoice_number)
 
-        if len(invoice_rows) >= 5:
-            ui.notify("No se pueden agregar más de 5 facturas", type="negative")
-            return
-
         if not invoice_number or not amount:
             ui.notify("Por favor complete todos los campos", type="negative")
             return
@@ -328,7 +324,7 @@ def payment_order_form(
             calculate_total_op()
 
             if invoice_counter_label:
-                invoice_counter_label.text = f"{len(invoice_rows)}/5"
+                invoice_counter_label.text = str(len(invoice_rows))
 
             if add_invoice_dialog:
                 add_invoice_dialog.close()
@@ -384,7 +380,7 @@ def payment_order_form(
             calculate_total_op()
 
             if invoice_counter_label:
-                invoice_counter_label.text = f"{len(invoice_rows)}/5"
+                invoice_counter_label.text = str(len(invoice_rows))
 
             ui.notify("Factura eliminada exitosamente", type="positive")
 
@@ -738,7 +734,7 @@ def payment_order_form(
             total_op_label.text = "$0.00"
 
         if invoice_counter_label:
-            invoice_counter_label.text = "0/5"
+            invoice_counter_label.text = "0"
 
         if add_invoice_button:
             add_invoice_button.enabled = False
@@ -879,7 +875,7 @@ def payment_order_form(
             with ui.row().classes("items-center gap-2"):
                 ui.label("Facturas").classes("text-lg font-semibold text-gray-700")
                 initial_count = len(invoice_rows) if is_edit_mode else 0
-                invoice_counter_label = ui.label(f"{initial_count}/5").classes("text-sm text-gray-500")
+                invoice_counter_label = ui.label(str(initial_count)).classes("text-sm text-gray-500")
             add_invoice_button = primary_button("Agregar Factura", icon="add", on_click=show_add_invoice_dialog)
             if not is_edit_mode:
                 add_invoice_button.enabled = False
