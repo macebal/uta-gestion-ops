@@ -1,6 +1,8 @@
 from datetime import datetime
+from decimal import Decimal
 from unittest.mock import patch
 
+import pytest
 from nicegui import ui
 from nicegui.testing import User
 from sqlalchemy.orm import sessionmaker
@@ -41,7 +43,8 @@ async def test_form_elements_present(user: User, test_db_session_factory: sessio
     await user.should_see("Agregar OP")
 
 
-async def test_create_payment_order_success(user: User, test_db_session_factory: sessionmaker, tmp_path):
+@pytest.mark.parametrize("invoice_count", [1, 5, 6, 9])
+async def test_create_payment_order_success(user: User, test_db_session_factory: sessionmaker, tmp_path, invoice_count):
     from src.services import pdf_generator
 
     open_file_called = []
@@ -90,19 +93,19 @@ async def test_create_payment_order_success(user: User, test_db_session_factory:
         detail_select = user.find("Detalle").elements.pop()
         detail_select.set_value("Test Detail 1")
 
-        user.find("Agregar Factura").click()
+        for index in range(1, invoice_count + 1):
+            user.find("Agregar Factura").click()
 
-        await user.should_see("Agregar Factura")
+            invoice_number_input = max(user.find("Número de Factura").elements, key=lambda element: element.id)
+            invoice_amount_input = max(user.find("Importe").elements, key=lambda element: element.id)
+            invoice_number_input.set_value(f"TEST-INV-{index:03}")
+            invoice_amount_input.set_value(str(Decimal("100.01") * index))
 
-        invoice_number_input = user.find("Número de Factura").elements.pop()
-        invoice_amount_input = user.find("Importe").elements.pop()
+            user.find("add-invoice-submit").click()
+            await user.should_see("Factura agregada exitosamente")
 
-        invoice_number_input.set_value("TEST-INV-001")
-        invoice_amount_input.set_value("1000.00")
-
-        user.find("add-invoice-submit").click()
-
-        await user.should_see("Factura agregada exitosamente")
+        user.find("Retenciones").elements.pop().set_value("25.75")
+        expected_total = Decimal("100.01") * sum(range(1, invoice_count + 1)) - Decimal("25.75")
 
         issue_date_inputs = list(user.find(kind=ui.input).elements)
         emission_input = None
@@ -135,8 +138,12 @@ async def test_create_payment_order_success(user: User, test_db_session_factory:
             assert new_po.account.name == test_account["name"]
             assert new_po.supplier.name == "Test Supplier 1"
             assert new_po.detail.value == "Test Detail 1"
-            assert len(new_po.invoices) == 1
-            assert new_po.invoices[0].invoice_number == "TEST-INV-001"
+            assert len(new_po.invoices) == invoice_count
+            assert {invoice.invoice_number for invoice in new_po.invoices} == {
+                f"TEST-INV-{index:03}" for index in range(1, invoice_count + 1)
+            }
+            assert new_po.amount == expected_total
+            assert new_po.withholding_amount == Decimal("25.75")
 
             account = session.query(Account).filter_by(name=test_account["name"]).first()
             assert account.account_sequence.last_order_number == initial_order_number + 1
